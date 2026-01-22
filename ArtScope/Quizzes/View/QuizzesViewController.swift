@@ -8,7 +8,12 @@
 import UIKit
 
 final class QuizzesViewController: UIViewController {
-
+    // MARK: - Constants
+    private enum Constants {
+        // Colors
+        static let backgroundColor: UIColor = UIColor(named: "ArtScopeGreen") ?? .green
+    }
+    
     // MARK: - Fields
     
     // MARK: - Lifecycle
@@ -22,8 +27,12 @@ final class QuizzesViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(named: "Green")
-        title = "Main"
+        configureUI()
+    }
+
+    // MARK: - UI Configuration
+    private func configureUI() {
+        view.backgroundColor = Constants.backgroundColor
     }
 
 

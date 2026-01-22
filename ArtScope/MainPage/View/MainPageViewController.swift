@@ -28,9 +28,12 @@ final class MainPageViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = Constants.backgroundColor
-        title = "Main"
+        configureUI()
+    }
 
+    // MARK: - UI Configuration
+    private func configureUI() {
+        view.backgroundColor = Constants.backgroundColor
     }
 
 

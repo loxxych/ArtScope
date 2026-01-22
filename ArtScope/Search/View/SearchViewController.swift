@@ -8,7 +8,12 @@
 import UIKit
 
 final class SearchViewController: UIViewController {
-
+    // MARK: - Constants
+    private enum Constants {
+        // Colors
+        static let backgroundColor: UIColor = UIColor(named: "ArtScopeGreen") ?? .green
+    }
+    
     // MARK: - Fields
     
     // MARK: - Lifecycle
@@ -22,10 +27,13 @@ final class SearchViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(named: "Green")
-        title = "Search"
+        configureUI()
     }
 
+    // MARK: - UI Configuration
+    private func configureUI() {
+        view.backgroundColor = Constants.backgroundColor
+    }
 
 }
 
