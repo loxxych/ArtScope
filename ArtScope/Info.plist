@@ -4,6 +4,9 @@
 <dict>
 	<key>UIAppFonts</key>
 	<array>
+		<string>InstrumentSans-Bold.ttf</string>
+		<string>InstrumentSans-Regular.ttf</string>
+		<string>InstrumentSans-SemiBold.ttf</string>
 		<string>ByteBounce.ttf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
