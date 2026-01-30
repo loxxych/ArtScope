@@ -10,12 +10,24 @@ import UIKit
 final class ProfileViewController: UIViewController {
     // MARK: - Constants
     private enum Constants {
-        // Text
-        static let titleText: String = "My profile"
+        // UI Constraint properties
+        static let strapAlpha: CGFloat = 0.22
+        static let strapWidth: CGFloat = 400
+        static let strapHeight: CGFloat = 1
+        
+        // Fonts
         static let titleFont: UIFont = UIFont(name: "ByteBounce", size: 49) ?? .systemFont(ofSize: 49)
         
+        // Strings
+        static let titleText: String = "My profile"
+        static let quizzesSectionViewTitleText: String = "Quizzes"
+        static let quizzesSectionViewDescriptionText: String = "Your completed quiz results"
+        static let completedSectionViewTitleText: String = "Completed"
+        static let completedSectionViewDescriptionText: String = "The artists, styles and eras you’ve discovered"
+        
         // Colors
-        static let backgroundColor: UIColor = UIColor(named: "ArtScopeGreen") ?? .green
+        static let backgroundColor: UIColor = .artScopeGreen
+        static let strapColor: UIColor = .black
     }
     
     // MARK: - Fields
@@ -25,7 +37,11 @@ final class ProfileViewController: UIViewController {
     private let contentStack = UIStackView()
     private var titleLabel: UILabel = .init()
     private var miniProfileView: MiniProfileView?
-    
+    private let strap: UIView = .init()
+    private let settingsView = SettingsView()
+    private let quizzesSectionView = SectionView(title: Constants.quizzesSectionViewTitleText, description: Constants.quizzesSectionViewDescriptionText)
+    private let completedSectionView = SectionView(title: Constants.completedSectionViewTitleText, description: Constants.completedSectionViewDescriptionText)
+
     // MARK: - Lifecycle
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -44,7 +60,7 @@ final class ProfileViewController: UIViewController {
         configureUI()
     }
     
-    //    // MARK: - View model configuration
+    // MARK: - View model configuration
         private func configureViewModel() {
             viewModel.onProfileUpdated = { [weak self] profile in
                 guard let self, let profile = profile else { return }
@@ -69,6 +85,8 @@ final class ProfileViewController: UIViewController {
         view.backgroundColor = Constants.backgroundColor
         
         configureTitle()
+        configureStrap()
+        configureSettingsView()
         configureScrollView()
         configureContentStack()
     }
@@ -83,12 +101,34 @@ final class ProfileViewController: UIViewController {
         titleLabel.pinLeft(to: view.leadingAnchor, 20)
     }
     
+    private func configureStrap() {
+        strap.backgroundColor = Constants.strapColor
+        strap.alpha = Constants.strapAlpha
+        
+        strap.setWidth(Constants.strapWidth)
+        strap.setHeight(Constants.strapHeight)
+    }
+    
+    private func configureSettingsView() {
+        settingsView.onEditProfileTapped = { [weak self] in
+            self?.showEditProfileScreen()
+        }
+        settingsView.setHeight(100)
+    }
+    
+    private func configureQuizzesSection() {
+        quizzesSectionView.setHeight(100)
+    }
+    
+    private func configureCompletedSection() {
+        completedSectionView.setHeight(100)
+    }
+    
     private func configureScrollView() {
         view.addSubview(scrollView)
-        
+                
         scrollView.pinTop(to: titleLabel.bottomAnchor, 20)
-        scrollView.pinLeft(to: view.leadingAnchor)
-        scrollView.pinRight(to: view.trailingAnchor)
+        scrollView.pinHorizontal(to: view)
         scrollView.pinBottom(to: view.bottomAnchor)
     }
     
@@ -96,15 +136,25 @@ final class ProfileViewController: UIViewController {
         scrollView.addSubview(contentStack)
         
         contentStack.axis = .vertical
-        contentStack.spacing = 24
+        contentStack.spacing = 50
         contentStack.alignment = .fill
-        
-        contentStack.addArrangedSubview(SettingsView())
+
+        contentStack.addArrangedSubview(strap)
+        contentStack.addArrangedSubview(settingsView)
+        contentStack.addArrangedSubview(quizzesSectionView)
+        contentStack.addArrangedSubview(completedSectionView)
         
         contentStack.pinTop(to: scrollView.contentLayoutGuide.topAnchor)
         contentStack.pinBottom(to: scrollView.contentLayoutGuide.bottomAnchor)
         contentStack.pinLeft(to: scrollView.frameLayoutGuide.leadingAnchor, 10)
         contentStack.pinRight(to: scrollView.frameLayoutGuide.trailingAnchor, 10)
+    }
+    
+    // MARK: - Navigation
+    private func showEditProfileScreen() {
+        let vc = EditProfileViewController()
+
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
 

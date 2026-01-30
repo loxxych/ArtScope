@@ -11,19 +11,17 @@ import UIKit
 final class ProfilePictureView : UIView {
     // MARK: - Constants
     private enum Constants {
-        // Strings
-        
-        // Images
-        
         // UI Constraint properties
         static let imageSize: CGFloat = 141
-        static let cornerRadius: CGFloat = imageSize / 2
+        static let imageCornerRadius: CGFloat = imageSize / 2
         
-        // Colors
+        // Images
+        static let cameraImage: UIImage? = UIImage(named: "camera")
     }
     
     // MARK: - Fields
     private let imageView: UIImageView = .init()
+    private let button: UIButton = .init(type: .system)
     
     private var onButtonPressed: (() -> Void)?
     
@@ -39,24 +37,40 @@ final class ProfilePictureView : UIView {
     
     // MARK: - UI Configuration
     private func configureUI() {
+        setWidth(Constants.imageSize)
+        setHeight(Constants.imageSize)
+        
         configureImageView()
+        configureAddButton()
     }
     
     private func configureImageView() {
         addSubview(imageView)
         
-        imageView.setHeight(Constants.imageSize)
-        imageView.setWidth(Constants.imageSize)
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        imageView.layer.cornerRadius = Constants.imageCornerRadius
         imageView.pin(to: self)
     }
     
     private func configureAddButton() {
-        // TODO: Add button
-        // addSubview(button)
+        addSubview(button)
+        
+        button.setImage(Constants.cameraImage, for: .normal)
+        button.backgroundColor = .black
+        button.tintColor = .white
+        button.layer.cornerRadius = 37 / 2
+        
+        button.setWidth(37)
+        button.setHeight(37)
+        button.pinLeft(to: imageView.trailingAnchor)
+        button.pinBottom(to: imageView.bottomAnchor)
+        
+        button.addTarget(self, action: #selector(addButtonPressed), for: .touchUpInside)
     }
     
     // MARK: - Button press functions
-    private func addButtonPressed() {
+    @objc private func addButtonPressed() {
         onButtonPressed?()
     }
     
@@ -65,5 +79,9 @@ final class ProfilePictureView : UIView {
         if let image = image {
             imageView.image = image
         }
+    }
+    
+    func getPicture() -> UIImage? {
+        return imageView.image
     }
 }

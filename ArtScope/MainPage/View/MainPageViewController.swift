@@ -21,7 +21,10 @@ final class MainPageViewController: UIViewController {
     }
     
     // MARK: - Fields
-    private var artistsSectionTitle: SectionTitleView?
+    private let viewModel = MainPageViewModel(artistService: WikiDataArtistService(client: URLSessionNetworkClient() as NetworkClient))
+    
+    private var artistsSectionTitle: SectionTitleView = .init(title: "Artists")
+    private let artistOfTheDayView: ArtistOfTheDayView = .init()
     
     // MARK: - Lifecycle
     init() {
@@ -34,21 +37,52 @@ final class MainPageViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        bindViewModel()
         configureUI()
     }
+    
+    private func bindViewModel() {
+        viewModel.onArtistsLoaded = { [weak self] artists in
+            guard let self else { return }
+
+            let artist = artists.first!
+
+//            URLSession.shared.dataTask(with: artist.imageURL) { data, _, _ in
+//                guard let data, let image = UIImage(data: data) else { return }
+//
+//                DispatchQueue.main.async {
+//                    let view = ArtistPreviewView(
+//                        name: artist.name,
+//                        image: image
+//                    )
+//
+//                    self.view.addSubview(view)
+//                    // constraints
+//                }
+//            }.resume()
+        }
+    }
+
 
     // MARK: - UI Configuration
     private func configureUI() {
         view.backgroundColor = Constants.backgroundColor
         
+        configureArtistOfTheDayView()
         configureArtistsSection()
     }
 
+    private func configureArtistOfTheDayView() {
+        view.addSubview(artistOfTheDayView)
+        
+        artistOfTheDayView.pinTop(to: view.topAnchor, 50)
+        artistOfTheDayView.pinLeft(to: view.leadingAnchor, 20)
+    }
+    
     // MARK: - Artist section configuration
     private func configureArtistsSection() {
         artistsSectionTitle = SectionTitleView(title: Constants.artistsSectionTitle)
-        
-        guard let artistsSectionTitle else { return }
         
         view.addSubview(artistsSectionTitle)
         

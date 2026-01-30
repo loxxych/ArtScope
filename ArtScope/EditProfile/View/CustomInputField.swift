@@ -46,23 +46,27 @@ final class CustomInputField : UIView {
         
         titleLabel.font = Constants.titleFont
         titleLabel.pinTop(to: self.topAnchor)
-        titleLabel.pinLeft(to: self.leftAnchor, Constants.titleLeft)
+        titleLabel.pinLeft(to: self.leadingAnchor, Constants.titleLeft)
     }
     
     private func configureTextField() {
         addSubview(textField)
         
-        textField.placeholder = "\(Constants.placeholderStart) + \(String(describing: titleLabel.text))"
-        
+        textField.placeholder = "\(Constants.placeholderStart) \(titleLabel.text)"
         textField.borderStyle = .roundedRect
         textField.layer.cornerRadius = 10
+        textField.isUserInteractionEnabled = true
         
         textField.pinHorizontal(to: self)
         textField.pinTop(to: titleLabel.bottomAnchor, 5)
     }
 
-    // MARK: - Getters
+    // MARK: - Getters and setters
     func getTextInput() -> String {
         return textField.text ?? Constants.defaultText
+    }
+    
+    func setTextInput(_ text: String) {
+        textField.text = text
     }
 }

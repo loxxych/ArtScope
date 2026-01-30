@@ -23,7 +23,9 @@ final class SettingsView : UIView {
     
     // MARK: - Fields
     private let title: UILabel = .init()
-    private let settingsItem: SettingsItem = .init()
+    let settingsItem: SettingsItem = .init()
+    
+    var onEditProfileTapped: (() -> Void)?
     
     // MARK: - Lifecycle
     init() {
@@ -39,6 +41,7 @@ final class SettingsView : UIView {
     private func configureUI() {
         configureTitle()
         configureSettingsItem()
+        
     }
     
     private func configureTitle() {
@@ -54,7 +57,14 @@ final class SettingsView : UIView {
     private func configureSettingsItem() {
         addSubview(settingsItem)
         
+        settingsItem.onButtonPressed = { [weak self] in
+            self?.onEditProfileTapped?()
+        }
+        
+        settingsItem.isUserInteractionEnabled = true
+        
         settingsItem.pinTop(to: title.bottomAnchor, Constants.itemTop)
         settingsItem.pinHorizontal(to: self)
+        settingsItem.setHeight(50)
     }
 }

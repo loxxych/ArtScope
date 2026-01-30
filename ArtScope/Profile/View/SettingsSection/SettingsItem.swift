@@ -41,22 +41,21 @@ final class SettingsItem : UIView {
     private let imageView: UIImageView = .init()
     private let button: UIButton = .init(type: .system)
     
-    private var onButtonPressed: (() -> Void)?
+    var onButtonPressed: (() -> Void)?
     
     // MARK: - Lifecycle
     init() {
         super.init(frame: .zero)
+        
         configureUI()
     }
     
-    required init?(coder: NSCoder) {
+    required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - UI Configuration
     private func configureUI() {
-        self.setHeight(Constants.viewHeight)
-
         configureImageView()
         configureTextStack()
         configureDescription()
@@ -67,6 +66,7 @@ final class SettingsItem : UIView {
         addSubview(imageView)
         
         imageView.image = Constants.userIcon
+        imageView.tintColor = Constants.tintColor
         
         imageView.setHeight(Constants.imageSize)
         imageView.setWidth(Constants.imageSize)
@@ -111,10 +111,12 @@ final class SettingsItem : UIView {
         button.pinCenterY(to: self)
         button.setWidth(Constants.buttonSize)
         button.setHeight(Constants.buttonSize)
+        
+        button.addTarget(self, action: #selector(itemTapped), for: .touchUpInside)
     }
     
     // MARK: - Button press functions
-    private func buttonPressed() {
+    @objc private func itemTapped() {
         onButtonPressed?()
     }
 }

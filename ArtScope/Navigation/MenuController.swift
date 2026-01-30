@@ -7,13 +7,17 @@
 
 import UIKit
 
-final class MenuController : UITabBarController, MenuBarDelegate {
+final class MenuController : UITabBarController, MenuBarControllable {
     // MARK: - Constants
     private enum Constants {
         // UI Constraint properties
         static let menuHorizontal: CGFloat = 20
         static let menuBottom: CGFloat = 20
         static let menuHeight: CGFloat = 64
+        static let visible: CGFloat = 1
+        static let invisible: CGFloat = 0
+        static let animationDuration: TimeInterval = 0.25
+
     }
     
     // MARK: - Fields
@@ -49,8 +53,26 @@ final class MenuController : UITabBarController, MenuBarDelegate {
         tabBar.isHidden = true
     }
     
-    // MARK: - Menu bar delegate
+    // MARK: - Utility functions
+    func setMenuBarHidden(_ hidden: Bool, animated: Bool) {
+        let animations = {
+            self.menuBarView.alpha = hidden ? Constants.invisible : Constants.visible
+        }
+        
+        if animated {
+            UIView.animate(withDuration: Constants.animationDuration, animations: animations)
+        } else {
+            animations()
+        }
+        
+        menuBarView.isUserInteractionEnabled = !hidden
+    }
+}
+
+// MARK: - Menu bar delegate
+extension MenuController: MenuBarDelegate {
     func didSelectTab(index: Int) {
         selectedIndex = index
     }
 }
+
