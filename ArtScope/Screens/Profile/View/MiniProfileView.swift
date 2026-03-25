@@ -90,12 +90,12 @@ final class MiniProfileView : UIView {
         profileImage.contentMode = .scaleAspectFill
         profileImage.layer.cornerRadius = 24
         profileImage.layer.borderWidth = 0.5
-        //profileImage.layer.borderColor = .clear
+        profileImage.layer.borderColor = .none
 
         profileImage.setWidth(48)
         profileImage.setHeight(48)
         profileImage.pinCenterY(to: self)
-        profileImage.pinLeft(to: self)
+        profileImage.pinLeft(to: self, 10)
     }
     
     // MARK: - Update functions

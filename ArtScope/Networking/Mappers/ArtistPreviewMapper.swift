@@ -13,6 +13,7 @@ final class ArtistPreviewMapper {
             ArtistPreview(
                 id: binding.artist.value,
                 name: binding.artistLabel.value,
+                summary: binding.artistDescription?.value ?? "Artist and encyclopedic figure in world art.",
                 imageURL: URL(string: binding.image?.value ?? "")
             )
         }

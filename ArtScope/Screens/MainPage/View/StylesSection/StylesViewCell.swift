@@ -1,41 +1,45 @@
 //
-//  ArtistPreviewView.swift
+//  StylesSectionViewCell.swift
 //  ArtScope
 //
-//  Created by loxxy on 28.01.2026.
+//  Created by loxxy on 31.01.2026.
 //
 
 import UIKit
 
-final class ArtistPreviewView : UIView {
+final class StylesViewCell : UICollectionViewCell {
     // MARK: - Constants
     private enum Constants {
         // UI Constraint properties
         
         // Strings
+        static let reuseId: String = "ArtistPreviewViewCell"
         
         // Fonts
         static let font: UIFont? = UIFont(name: "InstrumentSans-Regular", size: 15)
     }
     
     // MARK: - Fields
+    static let reuseId: String = Constants.reuseId
+    
     private let nameLabel: UILabel = .init()
     private let imageView: UIImageView = .init()
     
-    var onArtistTapped: (() -> Void)?
+    var onStyleTapped: (() -> Void)?
     
     // MARK: - Lifecycle
-    init(name: String, image: UIImage) {
+    init() {
         super.init(frame: .zero)
-        
-        nameLabel.text = name
-        imageView.image = image
-        
         configureUI()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func configure(artistName: String, artistPicture: UIImage) {
+        nameLabel.text = artistName
+        imageView.image = artistPicture
     }
     
     // MARK: - UI Configuration

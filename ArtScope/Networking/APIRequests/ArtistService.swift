@@ -6,10 +6,5 @@
 //
 
 protocol ArtistService {
-//    func fetchArtist(
-//        name: String,
-//        completion: @escaping (Result<Artist, Error>) -> Void
-//    )
-    
     func fetchArtists(completion: @escaping (Result<[ArtistPreview], Error>) -> Void)
 }

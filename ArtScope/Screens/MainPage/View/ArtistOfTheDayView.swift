@@ -13,28 +13,38 @@ final class ArtistOfTheDayView : UIView {
         // UI Constraint properties
         static let textLeft: CGFloat = 25
         static let textTop: CGFloat = 20
+        
         static let buttonLeft: CGFloat = 25
-        static let buttonTop: CGFloat = 40
+        static let buttonTop: CGFloat = 60
         static let buttonHeight: CGFloat = 31
         static let buttonWidth: CGFloat = 133
         static let cornerRadius: CGFloat = buttonHeight / 2
+        static let buttonRight: CGFloat = stackRight
+
         static let wrapCornerRadius: CGFloat = 10
+        
         static let imageSize: CGFloat = 55
         static let paletteImageRight: CGFloat = 10
         static let imageBottom: CGFloat = 10
+        
         static let stackSpacing: CGFloat = 6
-        static let stackLeft: CGFloat = 10
-        static let stackTop: CGFloat = 15
+        static let stackRight: CGFloat = 20
+        static let stackTop: CGFloat = 5
+        
+        static let titleBorderWidth: CGFloat = 2
+        
+        static let artistImageSize: CGFloat = 183
+        static let artistImageCornerRadius: CGFloat = artistImageSize / 2
         
         // Strings
-        static let titleText: String = "Quiz of the day"
+        static let titleText: String = "Artist of the day"
         static let learnMoreButtonText: String = "Learn more"
         
         // Fonts
         static let titleFont: UIFont? = UIFont(name: "ByteBounce", size: 41)
-        static let artistNameFont: UIFont? = UIFont(name: "InstrumentSans-SemiBold", size: 26)
+        static let artistNameFont: UIFont? = UIFont(name: "InstrumentSans-Bold", size: 26)
         static let descriptionFont: UIFont? = UIFont(name: "InstrumentSans-Regular", size: 12)
-        static let buttonFont: UIFont? = UIFont(name: "InstrumentSans-SemiBold", size: 17)
+        static let buttonFont: UIFont? = UIFont(name: "InstrumentSans-SemiBold", size: 15)
         
         // Colors
         static let wrapColor: UIColor = .artScopePink
@@ -42,6 +52,7 @@ final class ArtistOfTheDayView : UIView {
         static let learnMoreButtonTintColor: UIColor = .white
         static let textColor: UIColor = .white
         static let imageColor: UIColor = .white
+        static let titleBorderColor: CGColor = CGColor(red: 55/255, green: 113/255, blue: 255/255, alpha: 1)
         
         // Images
         static let paletteImage: UIImage = .palette
@@ -55,6 +66,8 @@ final class ArtistOfTheDayView : UIView {
     private let paletteImageView: UIImageView = .init()
     private let learnMoreButton: UIButton = .init(type: .system)
     private let textStack: UIStackView = .init()
+    private let artistImageView: UIImageView = .init()
+    private var currentImageURL: URL?
     
     var onLearnMoreButtonTapped: (() -> Void)?
     
@@ -71,10 +84,14 @@ final class ArtistOfTheDayView : UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         applyPerimeterFade(to: wrap)
+        artistImageView.layer.cornerRadius = artistImageView.bounds.width / 2
     }
 
     // MARK: - UI Configuration
     private func configureUI() {
+        self.setWidth(362)
+        self.setHeight(275)
+
         configureWrap()
         configureTitle()
         configureArtistName()
@@ -82,8 +99,10 @@ final class ArtistOfTheDayView : UIView {
         configureTextStack()
         configureLearnMoreButton()
         configurePaletteImageView()
+        configureArtistImageView()
     }
     
+    // MARK: - Wrap configuration
     private func configureWrap() {
         addSubview(wrap)
         
@@ -97,6 +116,7 @@ final class ArtistOfTheDayView : UIView {
         wrap.pinTop(to: self.topAnchor, 10)
     }
     
+    // MARK: - Title configuration
     private func configureTitle() {
         wrap.addSubview(titleLabel)
         
@@ -108,18 +128,23 @@ final class ArtistOfTheDayView : UIView {
         titleLabel.pinTop(to: wrap.topAnchor, Constants.textTop)
     }
     
+    // MARK: - Artist name configuration
     private func configureArtistName() {
-        artistNameLabel.text = "Van Gogh"
+        artistNameLabel.text = "Artist"
         artistNameLabel.font = Constants.artistNameFont
         artistNameLabel.textColor = Constants.textColor
+        artistNameLabel.numberOfLines = 2
     }
     
+    // MARK: - Description configuration
     private func configureDescription() {
-        descirptionLabel.text = "Impressionist painter who is among\n the most famous and influential\n figures in the history of Western art."
+        descirptionLabel.text = "A featured artist from the encyclopedia."
         descirptionLabel.font = Constants.descriptionFont
         descirptionLabel.textColor = Constants.textColor
+        descirptionLabel.numberOfLines = 4
     }
     
+    // MARK: - Text stack configuration
     private func configureTextStack() {
         wrap.addSubview(textStack)
         
@@ -129,26 +154,30 @@ final class ArtistOfTheDayView : UIView {
         textStack.addArrangedSubview(artistNameLabel)
         textStack.addArrangedSubview(descirptionLabel)
         
-        textStack.pinRight(to: wrap.trailingAnchor, Constants.stackLeft)
+        textStack.pinRight(to: wrap.trailingAnchor, Constants.stackRight)
         textStack.pinTop(to: titleLabel.bottomAnchor, Constants.stackTop)
-
     }
     
+    // MARK: - Learn more button configuration
     private func configureLearnMoreButton() {
         wrap.addSubview(learnMoreButton)
         
         learnMoreButton.setTitle(Constants.learnMoreButtonText, for: .normal)
+        learnMoreButton.titleLabel?.font = Constants.buttonFont
         learnMoreButton.backgroundColor = Constants.learnMoreButtonColor
         learnMoreButton.tintColor = Constants.learnMoreButtonTintColor
         learnMoreButton.layer.cornerRadius = Constants.cornerRadius
+        learnMoreButton.addTarget(self, action: #selector(learnMoreButtonPressed), for: .touchUpInside)
         
         learnMoreButton.pinTop(to: textStack.bottomAnchor, Constants.buttonTop)
+        learnMoreButton.pinRight(to: wrap.trailingAnchor, Constants.buttonRight)
         learnMoreButton.setWidth(Constants.buttonWidth)
         learnMoreButton.setHeight(Constants.buttonHeight)
     }
     
+    // MARK: - Palette image view configuration
     private func configurePaletteImageView() {
-        wrap.addSubview(paletteImageView)
+        addSubview(paletteImageView)
         
         paletteImageView.image = Constants.paletteImage
         paletteImageView.tintColor = Constants.imageColor
@@ -159,7 +188,41 @@ final class ArtistOfTheDayView : UIView {
         paletteImageView.pinTop(to: self.topAnchor)
     }
     
+    // MARK: - Artist image view configuration
+    private func configureArtistImageView() {
+        addSubview(artistImageView)
+        
+        artistImageView.image = AppImages.defaultArtistPreview
+        artistImageView.clipsToBounds = true
+        artistImageView.contentMode = .scaleAspectFill
+        
+        artistImageView.setWidth(Constants.artistImageSize)
+        artistImageView.setHeight(Constants.artistImageSize)
+        artistImageView.pinLeft(to: self.leadingAnchor)
+        artistImageView.pinBottom(to: self.bottomAnchor)
+    }
+    
+    func configure(with artist: ArtistPreview) {
+        currentImageURL = artist.imageURL
+        artistNameLabel.text = artist.name
+        descirptionLabel.text = artist.summary
+        artistImageView.image = AppImages.defaultArtistPreview
+        
+        RemoteImageLoader.shared.loadImage(from: artist.imageURL) { [weak self] image in
+            guard let self, self.currentImageURL == artist.imageURL else { return }
+            
+            DispatchQueue.main.async {
+                self.artistImageView.image = image ?? AppImages.defaultArtistPreview
+            }
+        }
+    }
+
     // MARK: - UI utilities
+    @objc private func learnMoreButtonPressed() {
+        onLearnMoreButtonTapped?()
+    }
+    
+    //Function to blur edges of a view
     private func applyPerimeterFade(to view: UIView, fade: CGFloat = 20) {
         let maskLayer = CAGradientLayer()
         maskLayer.frame = view.bounds

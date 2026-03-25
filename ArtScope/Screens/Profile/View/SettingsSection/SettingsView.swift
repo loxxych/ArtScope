@@ -50,7 +50,7 @@ final class SettingsView : UIView {
         title.text = Constants.titleText
         title.font = Constants.titleFont
         
-        title.pinLeft(to: self)
+        title.pinLeft(to: self, 10)
         title.pinTop(to: self)
     }
     
@@ -64,7 +64,7 @@ final class SettingsView : UIView {
         settingsItem.isUserInteractionEnabled = true
         
         settingsItem.pinTop(to: title.bottomAnchor, Constants.itemTop)
-        settingsItem.pinHorizontal(to: self)
+        settingsItem.pinHorizontal(to: self, 10)
         settingsItem.setHeight(50)
     }
 }

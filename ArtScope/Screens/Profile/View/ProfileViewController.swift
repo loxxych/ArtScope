@@ -12,7 +12,7 @@ final class ProfileViewController: UIViewController {
     private enum Constants {
         // UI Constraint properties
         static let strapAlpha: CGFloat = 0.22
-        static let strapWidth: CGFloat = 400
+        static let strapWidth: CGFloat = 402
         static let strapHeight: CGFloat = 1
         
         // Fonts
@@ -97,8 +97,8 @@ final class ProfileViewController: UIViewController {
         titleLabel.text = Constants.titleText
         titleLabel.font = Constants.titleFont
         
-        titleLabel.pinTop(to: view.safeAreaLayoutGuide.topAnchor)
-        titleLabel.pinLeft(to: view.leadingAnchor, 20)
+        titleLabel.pinTop(to: view.topAnchor, 50)
+        titleLabel.pinCenterX(to: view)
     }
     
     private func configureStrap() {
@@ -117,11 +117,11 @@ final class ProfileViewController: UIViewController {
     }
     
     private func configureQuizzesSection() {
-        quizzesSectionView.setHeight(100)
+        quizzesSectionView.setHeight(200)
     }
     
     private func configureCompletedSection() {
-        completedSectionView.setHeight(100)
+        completedSectionView.setHeight(200)
     }
     
     private func configureScrollView() {
@@ -136,7 +136,7 @@ final class ProfileViewController: UIViewController {
         scrollView.addSubview(contentStack)
         
         contentStack.axis = .vertical
-        contentStack.spacing = 50
+        contentStack.spacing = 25
         contentStack.alignment = .fill
 
         contentStack.addArrangedSubview(strap)
@@ -146,8 +146,7 @@ final class ProfileViewController: UIViewController {
         
         contentStack.pinTop(to: scrollView.contentLayoutGuide.topAnchor)
         contentStack.pinBottom(to: scrollView.contentLayoutGuide.bottomAnchor)
-        contentStack.pinLeft(to: scrollView.frameLayoutGuide.leadingAnchor, 10)
-        contentStack.pinRight(to: scrollView.frameLayoutGuide.trailingAnchor, 10)
+        contentStack.pinHorizontal(to: view)
     }
     
     // MARK: - Navigation

@@ -10,5 +10,6 @@ import UIKit
 struct ArtistPreview {
     let id: String
     let name: String
+    let summary: String
     let imageURL: URL?
 }

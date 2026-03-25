@@ -51,7 +51,7 @@ final class SectionView : UIView {
         
         titleLabel.font = Constants.titleFont
         
-        titleLabel.pinLeft(to: self)
+        titleLabel.pinLeft(to: self, 10)
         titleLabel.pinTop(to: self)
     }
     
@@ -60,7 +60,7 @@ final class SectionView : UIView {
         
         descriptionLabel.font = Constants.descriptionFont
         
-        descriptionLabel.pinLeft(to: self)
+        descriptionLabel.pinLeft(to: self, 10)
         descriptionLabel.pinTop(to: titleLabel.bottomAnchor, Constants.descriptionTop)
     }
 }

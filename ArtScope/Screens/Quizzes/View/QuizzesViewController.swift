@@ -70,7 +70,7 @@ final class QuizzesViewController: UIViewController {
         titleLabel.text = Constants.titleText
         titleLabel.font = Constants.titleFont
         
-        titleLabel.pinTop(to: view.safeAreaLayoutGuide.topAnchor/*, Constants.titleTop*/)
+        titleLabel.pinTop(to: view.safeAreaLayoutGuide.topAnchor)
         titleLabel.pinCenterX(to: view)
     }
     

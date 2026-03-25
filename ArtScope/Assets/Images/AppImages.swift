@@ -9,4 +9,41 @@ import UIKit
 
 enum AppImages {
     static let defaultProfile = UIImage(named: "defaultProfilePicture")
+    static let defaultArtistPreview = UIImage(named: "defaultProfilePicture") ?? UIImage(systemName: "person.crop.circle.fill")
+}
+
+final class RemoteImageLoader {
+    static let shared = RemoteImageLoader()
+    
+    private let cache = NSCache<NSURL, UIImage>()
+    
+    private init() {}
+    
+    func loadImage(from url: URL?, completion: @escaping (UIImage?) -> Void) {
+        guard let url else {
+            completion(nil)
+            return
+        }
+        
+        let cacheKey = url as NSURL
+        
+        if let cachedImage = cache.object(forKey: cacheKey) {
+            completion(cachedImage)
+            return
+        }
+        
+        URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
+            guard
+                let self,
+                let data,
+                let image = UIImage(data: data)
+            else {
+                completion(nil)
+                return
+            }
+            
+            self.cache.setObject(image, forKey: cacheKey)
+            completion(image)
+        }.resume()
+    }
 }
