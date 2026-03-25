@@ -63,7 +63,7 @@ enum WikidataEndpoint {
     }
     
     static func artistDetails(entityID: String) -> URLRequest {
-        var components = URLComponents(
+        let components = URLComponents(
             url: baseURL.appendingPathComponent("sparql"),
             resolvingAgainstBaseURL: false
         )!
@@ -117,6 +117,42 @@ enum WikidataEndpoint {
           }
         }
         LIMIT \(limit)
+        """
+        
+        return makeRequest(components: components, query: query)
+    }
+    
+    static func workDetails(workID: String) -> URLRequest {
+        var components = URLComponents(
+            url: baseURL.appendingPathComponent("sparql"),
+            resolvingAgainstBaseURL: false
+        )!
+        
+        let query = """
+        PREFIX bd: <http://www.bigdata.com/rdf#>
+        PREFIX schema: <http://schema.org/>
+        PREFIX wikibase: <http://wikiba.se/ontology#>
+        PREFIX wd: <http://www.wikidata.org/entity/>
+        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+        PREFIX p: <http://www.wikidata.org/prop/>
+        PREFIX psn: <http://www.wikidata.org/prop/statement/value-normalized/>
+
+        SELECT ?workLabel ?inception ?height ?width ?materialLabel ?workDescription ?movementLabel WHERE {
+          BIND(wd:\(workID) AS ?work)
+          OPTIONAL { ?work wdt:P571 ?inception. }
+          OPTIONAL { ?work p:P2048/psn:P2048/wikibase:quantityAmount ?height. }
+          OPTIONAL { ?work p:P2049/psn:P2049/wikibase:quantityAmount ?width. }
+          OPTIONAL { ?work wdt:P186 ?material. }
+          OPTIONAL { ?work wdt:P135 ?movement. }
+          OPTIONAL {
+            ?work schema:description ?workDescription.
+            FILTER(LANG(?workDescription) = "en")
+          }
+          
+          SERVICE wikibase:label {
+            bd:serviceParam wikibase:language "en".
+          }
+        }
         """
         
         return makeRequest(components: components, query: query)

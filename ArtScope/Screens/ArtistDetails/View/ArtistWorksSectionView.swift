@@ -22,6 +22,8 @@ final class ArtistWorksSectionView: UIView {
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
     
+    var onWorkSelected: ((ArtistWork) -> Void)?
+    
     // MARK: - Lifecycle
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -66,7 +68,11 @@ final class ArtistWorksSectionView: UIView {
         }
         
         works.forEach { work in
-            stackView.addArrangedSubview(ArtistWorkCardView(work: work))
+            let cardView = ArtistWorkCardView(work: work)
+            cardView.onTap = { [weak self] in
+                self?.onWorkSelected?(work)
+            }
+            stackView.addArrangedSubview(cardView)
         }
     }
 }
@@ -87,6 +93,8 @@ private final class ArtistWorkCardView: UIView {
     private let imageView = UIImageView()
     private let titleLabel = UILabel()
     
+    var onTap: (() -> Void)?
+    
     // MARK: - Lifecycle
     init(work: ArtistWork) {
         self.work = work
@@ -102,6 +110,9 @@ private final class ArtistWorkCardView: UIView {
     // MARK: - UI Setup
     private func configureUI() {
         setWidth(Constants.cardSize.width)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        addGestureRecognizer(tapGesture)
+        isUserInteractionEnabled = true
         
         addSubview(imageView)
         addSubview(titleLabel)
@@ -130,5 +141,10 @@ private final class ArtistWorkCardView: UIView {
                 self?.imageView.image = image ?? AppImages.defaultArtistPreview
             }
         }
+    }
+    
+    // MARK: - Actions
+    @objc private func handleTap() {
+        onTap?()
     }
 }

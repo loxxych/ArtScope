@@ -15,6 +15,10 @@ final class ArtistsSectionView: UIView {
         
         // UI Constraint properties
         static let artistsTitleLeft: CGFloat = 20
+        static let collectionLeft: CGFloat = 8
+        static let collectionTop: CGFloat = 10
+        static let sectionInsetLeft: CGFloat = 8
+        static let sectionInsetRight: CGFloat = 20
     }
     
     // MARK: - Fields
@@ -65,8 +69,8 @@ final class ArtistsSectionView: UIView {
         
         addSubview(artistsPreviewCollectionView)
         
-        artistsPreviewCollectionView.pinLeft(to: self.leadingAnchor, Constants.artistsTitleLeft)
-        artistsPreviewCollectionView.pinTop(to: artistsSectionTitle.bottomAnchor, 10)
+        artistsPreviewCollectionView.pinLeft(to: self.leadingAnchor, Constants.collectionLeft)
+        artistsPreviewCollectionView.pinTop(to: artistsSectionTitle.bottomAnchor, Constants.collectionTop)
         artistsPreviewCollectionView.pinRight(to: self.trailingAnchor)
         artistsPreviewCollectionView.pinBottom(to: self.bottomAnchor)
     }
@@ -84,9 +88,9 @@ final class ArtistsSectionView: UIView {
         layout.minimumLineSpacing = 12
         layout.sectionInset = UIEdgeInsets(
             top: 0,
-            left: 20,
+            left: Constants.sectionInsetLeft,
             bottom: 0,
-            right: 20
+            right: Constants.sectionInsetRight
         )
         return layout
     }

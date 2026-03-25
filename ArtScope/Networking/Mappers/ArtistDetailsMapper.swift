@@ -28,9 +28,14 @@ enum ArtistDetailsMapper {
     
     static func map(works dto: WikiDataArtistWorksDTO) -> [ArtistWork] {
         dto.results.bindings.compactMap { binding in
-            guard let title = binding.workLabel?.value, !title.isEmpty else { return nil }
+            guard
+                let id = binding.work?.value,
+                let title = binding.workLabel?.value,
+                !title.isEmpty
+            else { return nil }
             
             return ArtistWork(
+                id: id,
                 title: title,
                 imageURL: URL(string: binding.image?.value ?? "")
             )

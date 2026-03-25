@@ -22,6 +22,7 @@ final class ArtistOfTheDayView : UIView {
         static let buttonRight: CGFloat = stackRight
 
         static let wrapCornerRadius: CGFloat = 10
+        static let wrapCutoutInset: CGFloat = 6
         
         static let imageSize: CGFloat = 55
         static let paletteImageRight: CGFloat = 10
@@ -83,7 +84,7 @@ final class ArtistOfTheDayView : UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        applyPerimeterFade(to: wrap)
+        applyWrapMask()
         artistImageView.layer.cornerRadius = artistImageView.bounds.width / 2
     }
 
@@ -222,16 +223,24 @@ final class ArtistOfTheDayView : UIView {
         onLearnMoreButtonTapped?()
     }
     
-    //Function to blur edges of a view
-    private func applyPerimeterFade(to view: UIView, fade: CGFloat = 20) {
-        let maskLayer = CAGradientLayer()
-        maskLayer.frame = view.bounds
-        maskLayer.shadowRadius = 5
-        maskLayer.shadowPath = CGPath(roundedRect: view.bounds.insetBy(dx: 5, dy: 5), cornerWidth: 10, cornerHeight: 10, transform: nil)
-        maskLayer.shadowOpacity = 1;
-        maskLayer.shadowOffset = CGSize.zero;
-        maskLayer.shadowColor = UIColor.white.cgColor
-        view.layer.mask = maskLayer;
+    private func applyWrapMask() {
+        let maskPath = UIBezierPath(
+            roundedRect: wrap.bounds,
+            byRoundingCorners: [.topLeft, .topRight, .bottomRight],
+            cornerRadii: CGSize(width: Constants.wrapCornerRadius, height: Constants.wrapCornerRadius)
+        )
+        
+        let cutoutFrame = wrap.convert(
+            artistImageView.bounds,
+            from: artistImageView
+        ).insetBy(dx: -Constants.wrapCutoutInset, dy: -Constants.wrapCutoutInset)
+        let cutoutPath = UIBezierPath(ovalIn: cutoutFrame)
+        maskPath.append(cutoutPath)
+        
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.path = maskPath.cgPath
+        shapeLayer.fillRule = .evenOdd
+        wrap.layer.mask = shapeLayer
     }
 
 }

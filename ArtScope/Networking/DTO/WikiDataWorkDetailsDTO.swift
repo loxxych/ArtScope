@@ -1,11 +1,11 @@
 //
-//  WikiDataArtistWorksDTO.swift
+//  WikiDataWorkDetailsDTO.swift
 //  ArtScope
 //
 //  Created by loxxy on 25.03.2026.
 //
 
-struct WikiDataArtistWorksDTO: Decodable {
+struct WikiDataWorkDetailsDTO: Decodable {
     let results: Results
     
     struct Results: Decodable {
@@ -13,9 +13,13 @@ struct WikiDataArtistWorksDTO: Decodable {
     }
     
     struct Binding: Decodable {
-        let work: Value?
         let workLabel: Value?
-        let image: Value?
+        let inception: Value?
+        let height: Value?
+        let width: Value?
+        let materialLabel: Value?
+        let workDescription: Value?
+        let movementLabel: Value?
         
         struct Value: Decodable {
             let value: String

@@ -15,6 +15,8 @@ final class StylesSectionView: UIView {
         
         // UI Constraint properties
         static let artistsTitleLeft: CGFloat = 20
+        static let collectionLeft: CGFloat = 8
+        static let collectionTop: CGFloat = 10
     }
     
     // MARK: - Fields
@@ -50,6 +52,7 @@ final class StylesSectionView: UIView {
     private func configureArtistsCollectionView() {
         artistsPreviewCollectionView.delegate = self
         artistsPreviewCollectionView.dataSource = self
+        artistsPreviewCollectionView.backgroundColor = .clear
         
         artistsPreviewCollectionView.showsHorizontalScrollIndicator = false
         artistsPreviewCollectionView.register(
@@ -59,8 +62,10 @@ final class StylesSectionView: UIView {
         
         addSubview(artistsPreviewCollectionView)
         
-        artistsPreviewCollectionView.pinLeft(to: self.leadingAnchor, Constants.artistsTitleLeft)
-        artistsPreviewCollectionView.pinTop(to: artistsSectionTitle.bottomAnchor, 10)
+        artistsPreviewCollectionView.pinLeft(to: self.leadingAnchor, Constants.collectionLeft)
+        artistsPreviewCollectionView.pinTop(to: artistsSectionTitle.bottomAnchor, Constants.collectionTop)
+        artistsPreviewCollectionView.pinRight(to: self.trailingAnchor)
+        artistsPreviewCollectionView.pinBottom(to: self.bottomAnchor)
     }
     
     // MARK: - Make layout for collection view function
@@ -104,4 +109,3 @@ extension StylesSectionView: UICollectionViewDataSource {
         10
     }
 }
-

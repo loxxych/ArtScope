@@ -5,7 +5,7 @@
 //  Created by loxxy on 28.01.2026.
 //
 
-final class WikiDataArtistService: ArtistService, ArtistDetailsService {
+final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDetailsService {
     private let client: NetworkClient
 
     init(client: NetworkClient) {
@@ -42,6 +42,19 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService {
         
         client.request(request) { (result: Result<WikiDataArtistWorksDTO, Error>) in
             completion(result.map { ArtistDetailsMapper.map(works: $0) })
+        }
+    }
+    
+    func fetchWorkDetails(
+        workID: String,
+        work: ArtistWork,
+        artistName: String,
+        completion: @escaping (Result<WorkDetailsContent, Error>) -> Void
+    ) {
+        let request = WikidataEndpoint.workDetails(workID: workID)
+        
+        client.request(request) { (result: Result<WikiDataWorkDetailsDTO, Error>) in
+            completion(result.map { WorkDetailsMapper.map(dto: $0, work: work, artistName: artistName) })
         }
     }
 }

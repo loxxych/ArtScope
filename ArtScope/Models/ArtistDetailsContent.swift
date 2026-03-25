@@ -16,6 +16,21 @@ struct ArtistDetailsContent {
 }
 
 struct ArtistWork {
+    let id: String
     let title: String
     let imageURL: URL?
+}
+
+struct WorkDetailsContent {
+    let title: String
+    let metadataLine: String
+    let artistName: String
+    let infoText: String
+    let imageURL: URL?
+    let relatedItems: [WorkRelatedItem]
+}
+
+struct WorkRelatedItem {
+    let title: String
+    let subtitle: String
 }

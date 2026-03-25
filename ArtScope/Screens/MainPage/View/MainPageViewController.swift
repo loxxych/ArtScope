@@ -10,9 +10,12 @@ import UIKit
 final class MainPageViewController: UIViewController {
     // MARK: - Constants
     private enum Constants {
-        // Strings
-        
         // UI Constraint properties
+        static let contentTop: CGFloat = 50
+        static let sectionSpacing: CGFloat = 20
+        static let contentSideInset: CGFloat = 10
+        static let artistsSectionHeight: CGFloat = 260
+        static let stylesSectionHeight: CGFloat = 260
         
         // Colors
         static let backgroundColor: UIColor = UIColor(named: "ArtScopeGreen") ?? .green
@@ -21,6 +24,8 @@ final class MainPageViewController: UIViewController {
     // MARK: - Fields
     private let viewModel = MainPageViewModel(artistService: WikiDataArtistService(client: URLSessionNetworkClient() as NetworkClient))
     
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
     private let artistOfTheDayView: ArtistOfTheDayView = .init()
     private let artistsSectionView: ArtistsSectionView = .init()
     private let stylesSectionView: StylesSectionView = .init()
@@ -42,6 +47,16 @@ final class MainPageViewController: UIViewController {
         bindViewModel()
         configureUI()
         viewModel.loadArtists()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
     private func bindViewModel() {
@@ -74,35 +89,51 @@ final class MainPageViewController: UIViewController {
     // MARK: - UI Configuration
     private func configureUI() {
         view.backgroundColor = Constants.backgroundColor
+        configureScrollView()
         
         configureArtistOfTheDayView()
         configureArtistsSectionView()
         configureStylesSectionView()
     }
+    
+    private func configureScrollView() {
+        view.addSubview(scrollView)
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.backgroundColor = .clear
+        scrollView.pin(to: view)
+        
+        scrollView.addSubview(contentView)
+        contentView.pinTop(to: scrollView.contentLayoutGuide.topAnchor)
+        contentView.pinLeft(to: scrollView.contentLayoutGuide.leadingAnchor)
+        contentView.pinRight(to: scrollView.contentLayoutGuide.trailingAnchor)
+        contentView.pinBottom(to: scrollView.contentLayoutGuide.bottomAnchor)
+        contentView.pinWidth(to: scrollView.frameLayoutGuide.widthAnchor)
+    }
 
     private func configureArtistOfTheDayView() {
-        view.addSubview(artistOfTheDayView)
+        contentView.addSubview(artistOfTheDayView)
         
-        artistOfTheDayView.pinTop(to: view.topAnchor, 50)
-        artistOfTheDayView.pinCenterX(to: view)
+        artistOfTheDayView.pinTop(to: contentView.topAnchor, Constants.contentTop)
+        artistOfTheDayView.pinCenterX(to: contentView)
     }
     
     private func configureArtistsSectionView() {
-        view.addSubview(artistsSectionView)
+        contentView.addSubview(artistsSectionView)
         
-        artistsSectionView.pinTop(to: artistOfTheDayView.bottomAnchor, 20)
-        artistsSectionView.pinLeft(to: view.leadingAnchor, 10)
-        artistsSectionView.setHeight(260)
-        artistsSectionView.setWidth(400)
+        artistsSectionView.pinTop(to: artistOfTheDayView.bottomAnchor, Constants.sectionSpacing)
+        artistsSectionView.pinLeft(to: contentView.leadingAnchor, Constants.contentSideInset)
+        artistsSectionView.pinRight(to: contentView.trailingAnchor, Constants.contentSideInset)
+        artistsSectionView.setHeight(Constants.artistsSectionHeight)
     }
     
     private func configureStylesSectionView() {
-        view.addSubview(stylesSectionView)
+        contentView.addSubview(stylesSectionView)
         
-        stylesSectionView.pinTop(to: artistsSectionView.bottomAnchor, 20)
-        stylesSectionView.pinLeft(to: view.leadingAnchor, 10)
-        stylesSectionView.setHeight(260)
-        stylesSectionView.setWidth(400)
+        stylesSectionView.pinTop(to: artistsSectionView.bottomAnchor, Constants.sectionSpacing)
+        stylesSectionView.pinLeft(to: contentView.leadingAnchor, Constants.contentSideInset)
+        stylesSectionView.pinRight(to: contentView.trailingAnchor, Constants.contentSideInset)
+        stylesSectionView.setHeight(Constants.stylesSectionHeight)
+        stylesSectionView.pinBottom(to: contentView.bottomAnchor, Constants.sectionSpacing)
     }
     
     private func makeFeaturedArtist(from artists: [ArtistPreview]) -> ArtistPreview {

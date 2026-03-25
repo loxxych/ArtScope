@@ -61,6 +61,7 @@ final class ArtistDetailsViewController: UIViewController {
     )
     private let quizSectionView = ArtistQuizPlaceholderView()
     private var portraitImageURL: URL?
+    private var works: [ArtistWork] = []
     
     init(artist: ArtistPreview) {
         self.artist = artist
@@ -110,6 +111,9 @@ final class ArtistDetailsViewController: UIViewController {
         configureHero()
         configureContentStack()
         configureSections()
+        worksSectionView.onWorkSelected = { [weak self] work in
+            self?.showWorkDetails(for: work)
+        }
     }
     
     private func configureScrollView() {
@@ -222,6 +226,7 @@ final class ArtistDetailsViewController: UIViewController {
         }
         
         viewModel.onWorksLoaded = { [weak self] works in
+            self?.works = works
             self?.worksSectionView.update(with: works)
             self?.loadHeroImage(from: works.first?.imageURL)
         }
@@ -272,6 +277,15 @@ final class ArtistDetailsViewController: UIViewController {
     }
     
     // MARK: - Actions
+    private func showWorkDetails(for work: ArtistWork) {
+        let vc = WorkDetailsViewController(
+            work: work,
+            artistName: artist.name,
+            artistImageURL: portraitImageURL
+        )
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
     @objc private func backButtonPressed() {
         navigationController?.popViewController(animated: true)
     }
