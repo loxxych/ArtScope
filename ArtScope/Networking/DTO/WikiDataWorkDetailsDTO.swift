@@ -14,6 +14,7 @@ struct WikiDataWorkDetailsDTO: Decodable {
     
     struct Binding: Decodable {
         let workLabel: Value?
+        let wikipediaTitle: Value?
         let inception: Value?
         let height: Value?
         let width: Value?

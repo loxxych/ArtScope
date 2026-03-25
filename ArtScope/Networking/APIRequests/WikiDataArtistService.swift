@@ -5,7 +5,28 @@
 //  Created by loxxy on 28.01.2026.
 //
 
+import Foundation
+
 final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDetailsService {
+    private struct StyleSeed {
+        let id: String
+        let name: String
+        let wikipediaTitle: String
+    }
+    
+    private enum StyleConstants {
+        static let seeds: [StyleSeed] = [
+            .init(id: "style-impressionism", name: "Impressionism", wikipediaTitle: "Impressionism"),
+            .init(id: "style-cubism", name: "Cubism", wikipediaTitle: "Cubism"),
+            .init(id: "style-surrealism", name: "Surrealism", wikipediaTitle: "Surrealism"),
+            .init(id: "style-baroque", name: "Baroque", wikipediaTitle: "Baroque"),
+            .init(id: "style-expressionism", name: "Expressionism", wikipediaTitle: "Expressionism"),
+            .init(id: "style-romanticism", name: "Romanticism", wikipediaTitle: "Romanticism"),
+            .init(id: "style-realism", name: "Realism", wikipediaTitle: "Realism_(arts)"),
+            .init(id: "style-symbolism", name: "Symbolism", wikipediaTitle: "Symbolism_(arts)")
+        ]
+    }
+    
     private let client: NetworkClient
 
     init(client: NetworkClient) {
@@ -22,6 +43,54 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
             }
         }
     
+    func fetchStyles(
+        completion: @escaping (Result<[StylePreview], Error>) -> Void
+    ) {
+        let group = DispatchGroup()
+        let lock = NSLock()
+        var collected: [StylePreview] = []
+        var capturedError: Error?
+        
+        StyleConstants.seeds.forEach { seed in
+            group.enter()
+            
+            let request = WikidataEndpoint.wikipediaPageSummary(title: seed.wikipediaTitle)
+            client.request(request) { (result: Result<WikipediaStyleSummaryDTO, Error>) in
+                lock.lock()
+                defer {
+                    lock.unlock()
+                    group.leave()
+                }
+                
+                switch result {
+                case let .success(summary):
+                    collected.append(
+                        StylePreview(
+                            id: seed.id,
+                            name: seed.name,
+                            imageURL: URL(string: summary.thumbnail?.source ?? "")
+                        )
+                    )
+                case let .failure(error):
+                    if capturedError == nil {
+                        capturedError = error
+                    }
+                }
+            }
+        }
+        
+        group.notify(queue: .global()) {
+            if collected.isEmpty, let capturedError {
+                completion(.failure(capturedError))
+            } else {
+                let ordered = StyleConstants.seeds.compactMap { seed in
+                    collected.first(where: { $0.id == seed.id })
+                }
+                completion(.success(ordered))
+            }
+        }
+    }
+    
     func fetchArtistDetails(
         entityID: String,
         preview: ArtistPreview,
@@ -30,7 +99,21 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
         let request = WikidataEndpoint.artistDetails(entityID: entityID)
         
         client.request(request) { (result: Result<WikiDataArtistDetailsDTO, Error>) in
-            completion(result.map { ArtistDetailsMapper.map(details: $0, preview: preview) })
+            switch result {
+            case let .success(dto):
+                let wikipediaTitle = dto.results.bindings.first?.wikipediaTitle?.value
+                self.fetchWikipediaSummary(title: wikipediaTitle) { summary in
+                    completion(.success(
+                        ArtistDetailsMapper.map(
+                            details: dto,
+                            preview: preview,
+                            wikipediaSummary: summary
+                        )
+                    ))
+                }
+            case let .failure(error):
+                completion(.failure(error))
+            }
         }
     }
     
@@ -54,7 +137,39 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
         let request = WikidataEndpoint.workDetails(workID: workID)
         
         client.request(request) { (result: Result<WikiDataWorkDetailsDTO, Error>) in
-            completion(result.map { WorkDetailsMapper.map(dto: $0, work: work, artistName: artistName) })
+            switch result {
+            case let .success(dto):
+                let wikipediaTitle = dto.results.bindings.first?.wikipediaTitle?.value
+                self.fetchWikipediaSummary(title: wikipediaTitle) { summary in
+                    completion(.success(
+                        WorkDetailsMapper.map(
+                            dto: dto,
+                            work: work,
+                            artistName: artistName,
+                            wikipediaSummary: summary
+                        )
+                    ))
+                }
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    private func fetchWikipediaSummary(title: String?, completion: @escaping (String?) -> Void) {
+        guard let title, !title.isEmpty else {
+            completion(nil)
+            return
+        }
+        
+        let request = WikidataEndpoint.wikipediaPageSummary(title: title)
+        client.request(request) { (result: Result<WikipediaStyleSummaryDTO, Error>) in
+            switch result {
+            case let .success(summary):
+                completion(summary.extract)
+            case .failure:
+                completion(nil)
+            }
         }
     }
 }

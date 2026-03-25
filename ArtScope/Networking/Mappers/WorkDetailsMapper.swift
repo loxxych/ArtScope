@@ -11,12 +11,18 @@ enum WorkDetailsMapper {
     static func map(
         dto: WikiDataWorkDetailsDTO,
         work: ArtistWork,
-        artistName: String
+        artistName: String,
+        wikipediaSummary: String?
     ) -> WorkDetailsContent {
         let firstBinding = dto.results.bindings.first
         let title = firstBinding?.workLabel?.value ?? work.title
         let metadataLine = buildMetadataLine(binding: firstBinding)
-        let infoText = buildInfoText(binding: firstBinding, title: title, artistName: artistName)
+        let infoText = buildInfoText(
+            binding: firstBinding,
+            title: title,
+            artistName: artistName,
+            wikipediaSummary: wikipediaSummary
+        )
         let relatedItems = buildRelatedItems(from: dto)
         
         return WorkDetailsContent(
@@ -48,10 +54,11 @@ enum WorkDetailsMapper {
     private static func buildInfoText(
         binding: WikiDataWorkDetailsDTO.Binding?,
         title: String,
-        artistName: String
+        artistName: String,
+        wikipediaSummary: String?
     ) -> String {
         let material = binding?.materialLabel?.value
-        let description = normalizedSentence(from: binding?.workDescription?.value)
+        let description = normalizedSentence(from: wikipediaSummary ?? binding?.workDescription?.value)
         let year = formatYear(from: binding?.inception?.value)
         
         var parts: [String] = []

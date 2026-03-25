@@ -23,12 +23,10 @@ final class SettingsItem : UIView {
         static let descriptionFont: UIFont? = UIFont(name: "InstrumentSans-Regular", size: 13)
         
         // UI Constraint properties
-        static let titleDescriptionLeft: CGFloat = 26
-        static let descriptionTop: CGFloat = 5
+        static let titleDescriptionLeft: CGFloat = 18
         static let buttonSize: CGFloat = 24
         static let spacing: CGFloat = 4
         static let imageSize: CGFloat = 24
-        static let viewHeight: CGFloat = 42
         
         // Colors
         static let tintColor: UIColor = .black
@@ -99,6 +97,7 @@ final class SettingsItem : UIView {
     private func configureDescription() {
         descriptionLabel.text = Constants.descriptionText
         descriptionLabel.font = Constants.descriptionFont
+        descriptionLabel.numberOfLines = 2
     }
     
     private func configureButton() {

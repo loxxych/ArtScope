@@ -47,6 +47,7 @@ final class MainPageViewController: UIViewController {
         bindViewModel()
         configureUI()
         viewModel.loadArtists()
+        viewModel.loadStyles()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -78,6 +79,10 @@ final class MainPageViewController: UIViewController {
             self.featuredArtist = featuredArtist
             self.artistOfTheDayView.configure(with: featuredArtist)
             self.artistsSectionView.update(with: artists)
+        }
+        
+        viewModel.onStylesLoaded = { [weak self] styles in
+            self?.stylesSectionView.update(with: styles)
         }
         
         viewModel.onLoadingFailed = { error in

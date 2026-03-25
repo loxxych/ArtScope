@@ -7,65 +7,93 @@
 
 import UIKit
 
-final class CustomInputField : UIView {
+final class CustomInputField: UIView {
     // MARK: - Constants
     private enum Constants {
+        // Layout
+        static let titleBottomInset: CGFloat = 10
+        static let horizontalTextInset: CGFloat = 18
+        static let fieldHeight: CGFloat = 56
+        static let cornerRadius: CGFloat = 28
+        static let borderWidth: CGFloat = 1
+
         // Strings
         static let defaultText: String = ""
-        static let placeholderStart: String = "Enter your "
-        // Fonts
-        static let titleFont: UIFont? = UIFont(name: "InstrumentSans-Bold", size: 20)
+        static let placeholderPrefix: String = "Enter your "
 
-        // UI Constraint properties
-        static let titleLeft: CGFloat = 6
+        // Fonts
+        static let titleFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 18) ?? .systemFont(ofSize: 18, weight: .bold)
+        static let textFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 18) ?? .systemFont(ofSize: 18)
+
+        // Colors
+        static let textColor: UIColor = .black
+        static let placeholderColor: UIColor = UIColor.black.withAlphaComponent(0.28)
+        static let borderColor: UIColor = UIColor.black.withAlphaComponent(0.18)
+        static let backgroundColor: UIColor = .clear
     }
-    
+
     // MARK: - Fields
     private let textField: UITextField = .init()
     private let titleLabel: UILabel = .init()
-    
+
     // MARK: - Lifecycle
     init(title: String) {
         titleLabel.text = title
         super.init(frame: .zero)
         configureUI()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - UI Configuration
     private func configureUI() {
         configureTitle()
         configureTextField()
+        pinBottom(to: textField.bottomAnchor)
     }
-    
+
     private func configureTitle() {
         addSubview(titleLabel)
-        
+
         titleLabel.font = Constants.titleFont
-        titleLabel.pinTop(to: self.topAnchor)
-        titleLabel.pinLeft(to: self.leadingAnchor, Constants.titleLeft)
+        titleLabel.textColor = Constants.textColor
+
+        titleLabel.pinTop(to: topAnchor)
+        titleLabel.pinLeft(to: leadingAnchor)
+        titleLabel.pinRight(to: trailingAnchor)
     }
-    
+
     private func configureTextField() {
         addSubview(textField)
-        
-        textField.placeholder = "\(Constants.placeholderStart) \(titleLabel.text)"
-        textField.borderStyle = .roundedRect
-        textField.layer.cornerRadius = 10
-        textField.isUserInteractionEnabled = true
-        
+
+        textField.font = Constants.textFont
+        textField.textColor = Constants.textColor
+        textField.backgroundColor = Constants.backgroundColor
+        textField.borderStyle = .none
+        textField.layer.cornerRadius = Constants.cornerRadius
+        textField.layer.borderWidth = Constants.borderWidth
+        textField.layer.borderColor = Constants.borderColor.cgColor
+        textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: Constants.horizontalTextInset, height: Constants.fieldHeight))
+        textField.leftViewMode = .always
+        textField.rightView = UIView(frame: CGRect(x: 0, y: 0, width: Constants.horizontalTextInset, height: Constants.fieldHeight))
+        textField.rightViewMode = .always
+        textField.attributedPlaceholder = NSAttributedString(
+            string: Constants.placeholderPrefix + (titleLabel.text ?? "").lowercased(),
+            attributes: [.foregroundColor: Constants.placeholderColor]
+        )
+
+        textField.pinTop(to: titleLabel.bottomAnchor, Constants.titleBottomInset)
         textField.pinHorizontal(to: self)
-        textField.pinTop(to: titleLabel.bottomAnchor, 5)
+        textField.setHeight(Constants.fieldHeight)
     }
 
     // MARK: - Getters and setters
     func getTextInput() -> String {
-        return textField.text ?? Constants.defaultText
+        textField.text ?? Constants.defaultText
     }
-    
+
     func setTextInput(_ text: String) {
         textField.text = text
     }

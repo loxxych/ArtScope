@@ -10,8 +10,8 @@ import UIKit
 final class SettingsView : UIView {
     // MARK: - Constants
     private enum Constants {
-        // UI Constraint properties
-        static let viewHeight: CGFloat = 42
+        // Layout
+        static let horizontalInset: CGFloat = 20
         static let itemTop: CGFloat = 10
         
         // Strings
@@ -50,7 +50,7 @@ final class SettingsView : UIView {
         title.text = Constants.titleText
         title.font = Constants.titleFont
         
-        title.pinLeft(to: self, 10)
+        title.pinLeft(to: self, Constants.horizontalInset)
         title.pinTop(to: self)
     }
     
@@ -64,7 +64,7 @@ final class SettingsView : UIView {
         settingsItem.isUserInteractionEnabled = true
         
         settingsItem.pinTop(to: title.bottomAnchor, Constants.itemTop)
-        settingsItem.pinHorizontal(to: self, 10)
+        settingsItem.pinHorizontal(to: self, Constants.horizontalInset)
         settingsItem.setHeight(50)
     }
 }

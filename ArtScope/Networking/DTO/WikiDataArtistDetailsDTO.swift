@@ -15,6 +15,7 @@ struct WikiDataArtistDetailsDTO: Decodable {
     struct Binding: Decodable {
         let artistLabel: Value?
         let artistDescription: Value?
+        let wikipediaTitle: Value?
         let birthName: Value?
         let birthDate: Value?
         let deathDate: Value?

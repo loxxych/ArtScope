@@ -11,6 +11,7 @@ final class MainPageViewModel {
     private let artistService: ArtistService
     
     var onArtistsLoaded: (([ArtistPreview]) -> Void)?
+    var onStylesLoaded: (([StylePreview]) -> Void)?
     var onLoadingFailed: ((Error) -> Void)?
     
     init(artistService: ArtistService) {
@@ -25,6 +26,21 @@ final class MainPageViewModel {
                 switch result {
                 case let .success(artists):
                     self.onArtistsLoaded?(artists)
+                case let .failure(error):
+                    self.onLoadingFailed?(error)
+                }
+            }
+        }
+    }
+    
+    func loadStyles() {
+        artistService.fetchStyles { [weak self] result in
+            guard let self else { return }
+            
+            DispatchQueue.main.async {
+                switch result {
+                case let .success(styles):
+                    self.onStylesLoaded?(styles)
                 case let .failure(error):
                     self.onLoadingFailed?(error)
                 }

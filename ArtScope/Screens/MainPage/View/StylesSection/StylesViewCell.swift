@@ -10,13 +10,12 @@ import UIKit
 final class StylesViewCell : UICollectionViewCell {
     // MARK: - Constants
     private enum Constants {
-        // UI Constraint properties
-        
-        // Strings
-        static let reuseId: String = "ArtistPreviewViewCell"
-        
-        // Fonts
-        static let font: UIFont? = UIFont(name: "InstrumentSans-Regular", size: 15)
+        static let reuseId: String = "StylesViewCell"
+        static let imageHeight: CGFloat = 156
+        static let imageCornerRadius: CGFloat = 24
+        static let titleTopSpacing: CGFloat = 10
+        static let titleFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 15) ?? .systemFont(ofSize: 15)
+        static let titleLinesCount: Int = 2
     }
     
     // MARK: - Fields
@@ -24,12 +23,13 @@ final class StylesViewCell : UICollectionViewCell {
     
     private let nameLabel: UILabel = .init()
     private let imageView: UIImageView = .init()
+    private var currentImageURL: URL?
     
     var onStyleTapped: (() -> Void)?
     
     // MARK: - Lifecycle
-    init() {
-        super.init(frame: .zero)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         configureUI()
     }
     
@@ -37,9 +37,25 @@ final class StylesViewCell : UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(artistName: String, artistPicture: UIImage) {
-        nameLabel.text = artistName
-        imageView.image = artistPicture
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        currentImageURL = nil
+        nameLabel.text = nil
+        imageView.image = AppImages.defaultArtistPreview
+    }
+    
+    func configure(with style: StylePreview) {
+        currentImageURL = style.imageURL
+        nameLabel.text = style.name
+        imageView.image = AppImages.defaultArtistPreview
+        
+        RemoteImageLoader.shared.loadImage(from: style.imageURL) { [weak self] image in
+            guard let self, self.currentImageURL == style.imageURL else { return }
+            
+            DispatchQueue.main.async {
+                self.imageView.image = image ?? AppImages.defaultArtistPreview
+            }
+        }
     }
     
     // MARK: - UI Configuration
@@ -51,10 +67,11 @@ final class StylesViewCell : UICollectionViewCell {
     private func configureImageView() {
         addSubview(imageView)
         
-        imageView.layer.cornerRadius = 41
-
-        imageView.setWidth(82)
-        imageView.setHeight(82)
+        imageView.layer.cornerRadius = Constants.imageCornerRadius
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        
+        imageView.setHeight(Constants.imageHeight)
         imageView.pinHorizontal(to: self)
         imageView.pinTop(to: self.topAnchor)
     }
@@ -62,11 +79,12 @@ final class StylesViewCell : UICollectionViewCell {
     private func configureNameLabel() {
         addSubview(nameLabel)
         
-        nameLabel.font = Constants.font
-        nameLabel.textAlignment = .center
+        nameLabel.font = Constants.titleFont
+        nameLabel.textAlignment = .left
+        nameLabel.numberOfLines = Constants.titleLinesCount
         
         nameLabel.pinHorizontal(to: self)
-        nameLabel.pinTop(to: imageView.bottomAnchor, 8)
+        nameLabel.pinTop(to: imageView.bottomAnchor, Constants.titleTopSpacing)
+        nameLabel.pinBottom(to: self.bottomAnchor)
     }
 }
-

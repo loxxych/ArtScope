@@ -7,104 +7,81 @@
 
 import UIKit
 
-final class MiniProfileView : UIView {
+final class MiniProfileView: UIView {
     // MARK: - Constants
     private enum Constants {
-        // Text
-        static let font: UIFont? = UIFont(name: "InstrumentSans-Regular", size: 17)
-        
-        // UI Constraint properties
-        static let viewHeight: CGFloat = 53
-        
+        // Layout
+        static let viewHeight: CGFloat = 60
+        static let horizontalInset: CGFloat = 24
+        static let imageSize: CGFloat = 48
+        static let labelLeftInset: CGFloat = 14
+
+        // Fonts
+        static let font: UIFont = UIFont(name: "InstrumentSans-SemiBold", size: 17) ?? .systemFont(ofSize: 17, weight: .semibold)
+
         // Colors
-        static let tintColor: UIColor = .black
         static let textColor: UIColor = .black
-        
     }
-    
+
     // MARK: - Fields
     private let label: UILabel = .init()
-    private var profileImage: UIImageView = .init()
+    private let profileImage: UIImageView = .init()
 
     // MARK: - Lifecycle
     init(title: String, image: UIImage?) {
         label.text = title
         profileImage.image = image
-        
+
         super.init(frame: .zero)
-        
         configureUI()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
-
-        print("---- MiniProfileView DEBUG ----")
-        print("MiniProfileView frame:", self.frame)
-        print("MiniProfileView bounds:", self.bounds)
-
-        print("profileImage frame:", profileImage.frame)
-        print("profileImage bounds:", profileImage.bounds)
-
-        print("alpha:", profileImage.alpha)
-        print("hidden:", profileImage.isHidden)
-        print("clipsToBounds:", profileImage.clipsToBounds)
-        print("translatesAutoresizingMaskIntoConstraints:",
-              profileImage.translatesAutoresizingMaskIntoConstraints)
-
-        print("superview:", profileImage.superview)
-
-        print("constraints affecting image H:",
-              profileImage.constraintsAffectingLayout(for: .horizontal))
-        print("constraints affecting image V:",
-              profileImage.constraintsAffectingLayout(for: .vertical))
+        profileImage.layer.cornerRadius = Constants.imageSize / 2
     }
 
     // MARK: - UI configuration
     private func configureUI() {
-        self.setHeight(Constants.viewHeight)
-        
+        setHeight(Constants.viewHeight)
         configureProfileImage()
         configureLabel()
     }
-    
-    // MARK: - Label configuration
+
     private func configureLabel() {
         addSubview(label)
-        
+
         label.font = Constants.font
         label.textColor = Constants.textColor
-        
+
         label.pinCenterY(to: self)
-        label.pinLeft(to: profileImage.trailingAnchor, 10)
+        label.pinLeft(to: profileImage.trailingAnchor, Constants.labelLeftInset)
+        label.pinRight(to: trailingAnchor, Constants.horizontalInset)
     }
-    
-    // MARK: - Profile image configuration
+
     private func configureProfileImage() {
         addSubview(profileImage)
+
         profileImage.clipsToBounds = true
         profileImage.contentMode = .scaleAspectFill
-        profileImage.layer.cornerRadius = 24
-        profileImage.layer.borderWidth = 0.5
-        profileImage.layer.borderColor = .none
 
-        profileImage.setWidth(48)
-        profileImage.setHeight(48)
+        profileImage.setWidth(Constants.imageSize)
+        profileImage.setHeight(Constants.imageSize)
         profileImage.pinCenterY(to: self)
-        profileImage.pinLeft(to: self, 10)
+        profileImage.pinLeft(to: self, Constants.horizontalInset)
     }
-    
+
     // MARK: - Update functions
     func updatePicture(with image: UIImage?) {
-        if let image = image {
+        if let image {
             profileImage.image = image
         }
     }
-    
+
     func updateUsername(with username: String) {
         label.text = username
     }

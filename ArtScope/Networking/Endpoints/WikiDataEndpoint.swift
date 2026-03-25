@@ -9,6 +9,7 @@ import Foundation
 
 enum WikidataEndpoint {
     static let baseURL = URL(string: "https://query.wikidata.org")!
+    static let wikipediaBaseURL = URL(string: "https://en.wikipedia.org/api/rest_v1/page/summary")!
     private static let userAgent = "ArtScope/1.0 (educational iOS app)"
     private static let requestTimeout: TimeInterval = 30
 
@@ -62,6 +63,15 @@ enum WikidataEndpoint {
         return request
     }
     
+    static func wikipediaStyleSummary(title: String) -> URLRequest {
+        let encodedTitle = title.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? title
+        var request = URLRequest(url: wikipediaBaseURL.appendingPathComponent(encodedTitle))
+        request.timeoutInterval = requestTimeout
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        return request
+    }
+    
     static func artistDetails(entityID: String) -> URLRequest {
         let components = URLComponents(
             url: baseURL.appendingPathComponent("sparql"),
@@ -70,14 +80,21 @@ enum WikidataEndpoint {
         
         let query = """
         PREFIX bd: <http://www.bigdata.com/rdf#>
+        PREFIX schema: <http://schema.org/>
         PREFIX wikibase: <http://wikiba.se/ontology#>
         PREFIX wd: <http://www.wikidata.org/entity/>
         PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 
-        SELECT ?artistLabel ?artistDescription ?birthName ?birthDate ?deathDate ?citizenshipLabel ?birthPlaceLabel ?deathPlaceLabel
+        SELECT ?artistLabel ?artistDescription ?wikipediaTitle ?birthName ?birthDate ?deathDate ?citizenshipLabel ?birthPlaceLabel ?deathPlaceLabel
                (GROUP_CONCAT(DISTINCT ?occupationLabel; separator=", ") AS ?occupations)
         WHERE {
           BIND(wd:\(entityID) AS ?artist)
+          OPTIONAL {
+            ?article schema:about ?artist;
+                     schema:isPartOf <https://en.wikipedia.org/>;
+                     schema:name ?wikipediaTitle.
+            FILTER(LANG(?wikipediaTitle) = "en")
+          }
           OPTIONAL { ?artist wdt:P1477 ?birthName. FILTER(LANG(?birthName) = "en") }
           OPTIONAL { ?artist wdt:P569 ?birthDate. }
           OPTIONAL { ?artist wdt:P570 ?deathDate. }
@@ -90,7 +107,7 @@ enum WikidataEndpoint {
             bd:serviceParam wikibase:language "en".
           }
         }
-        GROUP BY ?artistLabel ?artistDescription ?birthName ?birthDate ?deathDate ?citizenshipLabel ?birthPlaceLabel ?deathPlaceLabel
+        GROUP BY ?artistLabel ?artistDescription ?wikipediaTitle ?birthName ?birthDate ?deathDate ?citizenshipLabel ?birthPlaceLabel ?deathPlaceLabel
         LIMIT 1
         """
         
@@ -137,8 +154,14 @@ enum WikidataEndpoint {
         PREFIX p: <http://www.wikidata.org/prop/>
         PREFIX psn: <http://www.wikidata.org/prop/statement/value-normalized/>
 
-        SELECT ?workLabel ?inception ?height ?width ?materialLabel ?workDescription ?movementLabel WHERE {
+        SELECT ?workLabel ?wikipediaTitle ?inception ?height ?width ?materialLabel ?workDescription ?movementLabel WHERE {
           BIND(wd:\(workID) AS ?work)
+          OPTIONAL {
+            ?article schema:about ?work;
+                     schema:isPartOf <https://en.wikipedia.org/>;
+                     schema:name ?wikipediaTitle.
+            FILTER(LANG(?wikipediaTitle) = "en")
+          }
           OPTIONAL { ?work wdt:P571 ?inception. }
           OPTIONAL { ?work p:P2048/psn:P2048/wikibase:quantityAmount ?height. }
           OPTIONAL { ?work p:P2049/psn:P2049/wikibase:quantityAmount ?width. }
@@ -156,6 +179,15 @@ enum WikidataEndpoint {
         """
         
         return makeRequest(components: components, query: query)
+    }
+    
+    static func wikipediaPageSummary(title: String) -> URLRequest {
+        let encodedTitle = title.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? title
+        var request = URLRequest(url: wikipediaBaseURL.appendingPathComponent(encodedTitle))
+        request.timeoutInterval = requestTimeout
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        return request
     }
     
     private static func makeRequest(components: URLComponents, query: String) -> URLRequest {

@@ -8,10 +8,17 @@
 import Foundation
 
 enum ArtistDetailsMapper {
-    static func map(details dto: WikiDataArtistDetailsDTO, preview: ArtistPreview) -> ArtistDetailsContent {
+    static func map(
+        details dto: WikiDataArtistDetailsDTO,
+        preview: ArtistPreview,
+        wikipediaSummary: String?
+    ) -> ArtistDetailsContent {
         let binding = dto.results.bindings.first
         let realName = binding?.birthName?.value ?? preview.name
-        let biography = buildBiography(binding: binding, fallback: preview.summary)
+        let biography = buildBiography(
+            binding: binding,
+            fallback: wikipediaSummary ?? preview.summary
+        )
         let lifeSpan = buildLifeSpan(
             birthDateString: binding?.birthDate?.value,
             deathDateString: binding?.deathDate?.value
@@ -52,7 +59,7 @@ enum ArtistDetailsMapper {
         let occupations = binding.occupations?.value
         let birthPlace = binding.birthPlaceLabel?.value
         let deathPlace = binding.deathPlaceLabel?.value
-        let description = binding.artistDescription?.value ?? fallback
+        let description = fallback.isEmpty ? (binding.artistDescription?.value ?? fallback) : fallback
         let normalizedDescription = normalizedSentence(from: description)
         
         var parts: [String] = []

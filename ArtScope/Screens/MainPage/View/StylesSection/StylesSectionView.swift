@@ -10,18 +10,20 @@ import UIKit
 final class StylesSectionView: UIView {
     // MARK: - Constants
     private enum Constants {
-        // Strings
         static let stylesSectionTitle: String = "Styles"
-        
-        // UI Constraint properties
         static let artistsTitleLeft: CGFloat = 20
         static let collectionLeft: CGFloat = 8
         static let collectionTop: CGFloat = 10
+        static let sectionInsetLeft: CGFloat = 12
+        static let sectionInsetRight: CGFloat = 20
+        static let itemSize = CGSize(width: 170, height: 210)
+        static let minimumLineSpacing: CGFloat = 16
     }
     
     // MARK: - Fields
     private var artistsSectionTitle: SectionTitleView = .init(title: Constants.stylesSectionTitle)
     private lazy var artistsPreviewCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: makeLayout())
+    private var styles: [StylePreview] = []
     
     // MARK: - Lifecycle
     init() {
@@ -56,8 +58,8 @@ final class StylesSectionView: UIView {
         
         artistsPreviewCollectionView.showsHorizontalScrollIndicator = false
         artistsPreviewCollectionView.register(
-            ArtistPreviewViewCell.self,
-            forCellWithReuseIdentifier: ArtistPreviewViewCell.reuseId
+            StylesViewCell.self,
+            forCellWithReuseIdentifier: StylesViewCell.reuseId
         )
         
         addSubview(artistsPreviewCollectionView)
@@ -68,17 +70,22 @@ final class StylesSectionView: UIView {
         artistsPreviewCollectionView.pinBottom(to: self.bottomAnchor)
     }
     
+    func update(with styles: [StylePreview]) {
+        self.styles = styles
+        artistsPreviewCollectionView.reloadData()
+    }
+    
     // MARK: - Make layout for collection view function
     private func makeLayout() -> UICollectionViewFlowLayout {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 110, height: 160)
-        layout.minimumLineSpacing = 12
+        layout.itemSize = Constants.itemSize
+        layout.minimumLineSpacing = Constants.minimumLineSpacing
         layout.sectionInset = UIEdgeInsets(
             top: 0,
-            left: 20,
+            left: Constants.sectionInsetLeft,
             bottom: 0,
-            right: 20
+            right: Constants.sectionInsetRight
         )
         return layout
     }
@@ -86,19 +93,17 @@ final class StylesSectionView: UIView {
 
 // MARK: - UICollectionViewDelegate
 extension StylesSectionView: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let cell = cell as? ArtistPreviewViewCell else { return }
-    }
 }
 
 // MARK: - UICollectionViewDataSource
 extension StylesSectionView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: ArtistPreviewViewCell.reuseId,
+            withReuseIdentifier: StylesViewCell.reuseId,
             for: indexPath
-        ) as! ArtistPreviewViewCell
+        ) as! StylesViewCell
         
+        cell.configure(with: styles[indexPath.item])
         return cell
     }
     
@@ -106,6 +111,6 @@ extension StylesSectionView: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        10
+        styles.count
     }
 }

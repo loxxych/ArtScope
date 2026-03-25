@@ -10,11 +10,11 @@ import UIKit
 final class SectionView : UIView {
     // MARK: - Constants
     private enum Constants {
-        // UI Constraint properties
+        // Layout
+        static let horizontalInset: CGFloat = 20
         static let descriptionTop: CGFloat = 5
-        
-        // Strings
-        
+        static let descriptionRightInset: CGFloat = 20
+
         // Fonts
         static let titleFont: UIFont? = UIFont(name: "InstrumentSans-Bold", size: 27)
         static let descriptionFont: UIFont? = UIFont(name: "InstrumentSans-Regular", size: 13)
@@ -51,7 +51,7 @@ final class SectionView : UIView {
         
         titleLabel.font = Constants.titleFont
         
-        titleLabel.pinLeft(to: self, 10)
+        titleLabel.pinLeft(to: self, Constants.horizontalInset)
         titleLabel.pinTop(to: self)
     }
     
@@ -59,8 +59,10 @@ final class SectionView : UIView {
         addSubview(descriptionLabel)
         
         descriptionLabel.font = Constants.descriptionFont
+        descriptionLabel.numberOfLines = 0
         
-        descriptionLabel.pinLeft(to: self, 10)
+        descriptionLabel.pinLeft(to: self, Constants.horizontalInset)
+        descriptionLabel.pinRight(to: self.trailingAnchor, Constants.descriptionRightInset)
         descriptionLabel.pinTop(to: titleLabel.bottomAnchor, Constants.descriptionTop)
     }
 }
