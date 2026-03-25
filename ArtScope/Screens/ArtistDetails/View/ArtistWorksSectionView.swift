@@ -11,6 +11,10 @@ final class ArtistWorksSectionView: UIView {
     // MARK: - Constants
     private enum Constants {
         static let itemSize = CGSize(width: 148, height: 180)
+        static let titleText: String = "Works"
+        static let scrollTopSpacing: CGFloat = 12
+        static let stackSpacing: CGFloat = 12
+        static let titleFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 27) ?? .boldSystemFont(ofSize: 27)
     }
     
     // MARK: - Properties
@@ -33,20 +37,20 @@ final class ArtistWorksSectionView: UIView {
         addSubview(titleLabel)
         addSubview(scrollView)
         
-        titleLabel.text = "Works"
-        titleLabel.font = UIFont(name: "InstrumentSans-Bold", size: 27) ?? .boldSystemFont(ofSize: 27)
+        titleLabel.text = Constants.titleText
+        titleLabel.font = Constants.titleFont
         titleLabel.pinTop(to: topAnchor)
         titleLabel.pinHorizontal(to: self)
         
         scrollView.showsHorizontalScrollIndicator = false
-        scrollView.pinTop(to: titleLabel.bottomAnchor, 12)
+        scrollView.pinTop(to: titleLabel.bottomAnchor, Constants.scrollTopSpacing)
         scrollView.pinHorizontal(to: self)
         scrollView.setHeight(Constants.itemSize.height)
         scrollView.pinBottom(to: bottomAnchor)
         
         scrollView.addSubview(stackView)
         stackView.axis = .horizontal
-        stackView.spacing = 12
+        stackView.spacing = Constants.stackSpacing
         stackView.pinTop(to: scrollView.contentLayoutGuide.topAnchor)
         stackView.pinLeft(to: scrollView.contentLayoutGuide.leadingAnchor)
         stackView.pinRight(to: scrollView.contentLayoutGuide.trailingAnchor)
@@ -71,6 +75,11 @@ private final class ArtistWorkCardView: UIView {
     // MARK: - Constants
     private enum Constants {
         static let cardSize = CGSize(width: 148, height: 180)
+        static let imageHeight: CGFloat = 104
+        static let imageCornerRadius: CGFloat = 16
+        static let titleTopSpacing: CGFloat = 8
+        static let titleFont: UIFont = UIFont(name: "InstrumentSans-SemiBold", size: 18) ?? .systemFont(ofSize: 18)
+        static let titleLinesCount: Int = 3
     }
     
     // MARK: - Properties
@@ -100,16 +109,16 @@ private final class ArtistWorkCardView: UIView {
         imageView.backgroundColor = .white.withAlphaComponent(0.28)
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 16
+        imageView.layer.cornerRadius = Constants.imageCornerRadius
         imageView.image = AppImages.defaultArtistPreview
         imageView.pinTop(to: topAnchor)
         imageView.pinHorizontal(to: self)
-        imageView.setHeight(104)
+        imageView.setHeight(Constants.imageHeight)
         
         titleLabel.text = work.title
-        titleLabel.font = UIFont(name: "InstrumentSans-Regular", size: 14) ?? .systemFont(ofSize: 14)
-        titleLabel.numberOfLines = 3
-        titleLabel.pinTop(to: imageView.bottomAnchor, 8)
+        titleLabel.font = Constants.titleFont
+        titleLabel.numberOfLines = Constants.titleLinesCount
+        titleLabel.pinTop(to: imageView.bottomAnchor, Constants.titleTopSpacing)
         titleLabel.pinHorizontal(to: self)
         titleLabel.pinBottom(to: bottomAnchor)
     }

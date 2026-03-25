@@ -15,7 +15,7 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService {
     func fetchArtists(
             completion: @escaping (Result<[ArtistPreview], Error>) -> Void
         ) {
-            let request = WikidataEndpoint.artistsList(limit: 12)
+            let request = WikidataEndpoint.artistsList(limit: 8)
 
             client.request(request) { (result: Result<WikidataArtistsDTO, Error>) in
                 completion(result.map(ArtistPreviewMapper.map))

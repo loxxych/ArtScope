@@ -40,10 +40,8 @@ enum WikidataEndpoint {
 
         SELECT DISTINCT ?artist ?artistLabel ?artistDescription ?image WHERE {
           ?artist wdt:P31 wd:Q5;
-                  wdt:P106 ?occupation;
+                  wdt:P106 wd:Q1028181;
                   wdt:P18 ?image.
-          
-          ?occupation wdt:P279* wd:Q3391743.
 
           SERVICE wikibase:label {
             bd:serviceParam wikibase:language "en".

@@ -8,6 +8,15 @@
 import UIKit
 
 final class ArtistIdentitySectionView: UIView {
+    // MARK: - Constants
+    private enum Constants {
+        static let stackSpacing: CGFloat = 6
+        static let nameFont: UIFont = UIFont(name: "ByteBounce", size: 52) ?? .boldSystemFont(ofSize: 52)
+        static let lifeSpanFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 16) ?? .systemFont(ofSize: 16)
+        static let textAlignment: NSTextAlignment = .center
+        static let linesCount: Int = 0
+    }
+    
     // MARK: - Properties
     private let nameLabel = UILabel()
     private let lifeSpanLabel = UILabel()
@@ -28,7 +37,7 @@ final class ArtistIdentitySectionView: UIView {
         addSubview(stackView)
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.spacing = 6
+        stackView.spacing = Constants.stackSpacing
         stackView.addArrangedSubview(nameLabel)
         stackView.addArrangedSubview(lifeSpanLabel)
         stackView.pinTop(to: topAnchor)
@@ -36,13 +45,13 @@ final class ArtistIdentitySectionView: UIView {
         stackView.pinRight(to: trailingAnchor)
         stackView.pinBottom(to: bottomAnchor)
         
-        nameLabel.font = UIFont(name: "ByteBounce", size: 52) ?? .boldSystemFont(ofSize: 52)
-        nameLabel.numberOfLines = 0
-        nameLabel.textAlignment = .center
+        nameLabel.font = Constants.nameFont
+        nameLabel.numberOfLines = Constants.linesCount
+        nameLabel.textAlignment = Constants.textAlignment
         
-        lifeSpanLabel.font = UIFont(name: "InstrumentSans-Regular", size: 16) ?? .systemFont(ofSize: 16)
-        lifeSpanLabel.textAlignment = .center
-        lifeSpanLabel.numberOfLines = 0
+        lifeSpanLabel.font = Constants.lifeSpanFont
+        lifeSpanLabel.textAlignment = Constants.textAlignment
+        lifeSpanLabel.numberOfLines = Constants.linesCount
     }
     
     // MARK: - Update

@@ -11,6 +11,20 @@ final class ArtistQuizPlaceholderView: UIView {
     // MARK: - Constants
     private enum Constants {
         static let accentColor: UIColor = UIColor(named: "ArtScopePink") ?? .systemPink
+        static let titleText: String = "Quiz"
+        static let subtitleText: String = "Quiz content for this artist will be added next."
+        static let cardTitleText: String = "Test yourself!"
+        static let cardSubtitleText: String = "We will add questions, answers and scoring here later."
+        static let titleBottomSpacing: CGFloat = 6
+        static let cardTopSpacing: CGFloat = 12
+        static let cardCornerRadius: CGFloat = 18
+        static let cardInset: CGFloat = 18
+        static let cardTitleBottomSpacing: CGFloat = 10
+        static let titleFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 27) ?? .boldSystemFont(ofSize: 27)
+        static let subtitleFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 15) ?? .systemFont(ofSize: 15)
+        static let cardTitleFont: UIFont = UIFont(name: "ByteBounce", size: 40) ?? .boldSystemFont(ofSize: 40)
+        static let cardSubtitleFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 15) ?? .systemFont(ofSize: 15)
+        static let bodyLinesCount: Int = 0
     }
     
     // MARK: - Properties
@@ -39,42 +53,42 @@ final class ArtistQuizPlaceholderView: UIView {
     
     private func configureTitle() {
         addSubview(titleLabel)
-        titleLabel.text = "Quiz"
-        titleLabel.font = UIFont(name: "InstrumentSans-Bold", size: 27) ?? .boldSystemFont(ofSize: 27)
+        titleLabel.text = Constants.titleText
+        titleLabel.font = Constants.titleFont
         titleLabel.pinTop(to: topAnchor)
         titleLabel.pinHorizontal(to: self)
     }
     
     private func configureSubtitle() {
         addSubview(subtitleLabel)
-        subtitleLabel.text = "Quiz content for this artist will be added next."
-        subtitleLabel.font = UIFont(name: "InstrumentSans-Regular", size: 15) ?? .systemFont(ofSize: 15)
-        subtitleLabel.numberOfLines = 0
-        subtitleLabel.pinTop(to: titleLabel.bottomAnchor, 6)
+        subtitleLabel.text = Constants.subtitleText
+        subtitleLabel.font = Constants.subtitleFont
+        subtitleLabel.numberOfLines = Constants.bodyLinesCount
+        subtitleLabel.pinTop(to: titleLabel.bottomAnchor, Constants.titleBottomSpacing)
         subtitleLabel.pinHorizontal(to: self)
     }
     
     private func configureCard() {
         addSubview(card)
         card.backgroundColor = Constants.accentColor
-        card.layer.cornerRadius = 18
-        card.pinTop(to: subtitleLabel.bottomAnchor, 12)
+        card.layer.cornerRadius = Constants.cardCornerRadius
+        card.pinTop(to: subtitleLabel.bottomAnchor, Constants.cardTopSpacing)
         card.pinHorizontal(to: self)
         card.pinBottom(to: bottomAnchor)
         
         card.addSubview(cardTitle)
         card.addSubview(cardSubtitle)
         
-        cardTitle.text = "Test yourself!"
-        cardTitle.font = UIFont(name: "ByteBounce", size: 40) ?? .boldSystemFont(ofSize: 40)
-        cardTitle.pinTop(to: card.topAnchor, 18)
-        cardTitle.pinHorizontal(to: card, 18)
+        cardTitle.text = Constants.cardTitleText
+        cardTitle.font = Constants.cardTitleFont
+        cardTitle.pinTop(to: card.topAnchor, Constants.cardInset)
+        cardTitle.pinHorizontal(to: card, Constants.cardInset)
         
-        cardSubtitle.text = "We will add questions, answers and scoring here later."
-        cardSubtitle.font = UIFont(name: "InstrumentSans-Regular", size: 15) ?? .systemFont(ofSize: 15)
-        cardSubtitle.numberOfLines = 0
-        cardSubtitle.pinTop(to: cardTitle.bottomAnchor, 10)
-        cardSubtitle.pinHorizontal(to: card, 18)
-        cardSubtitle.pinBottom(to: card.bottomAnchor, 18)
+        cardSubtitle.text = Constants.cardSubtitleText
+        cardSubtitle.font = Constants.cardSubtitleFont
+        cardSubtitle.numberOfLines = Constants.bodyLinesCount
+        cardSubtitle.pinTop(to: cardTitle.bottomAnchor, Constants.cardTitleBottomSpacing)
+        cardSubtitle.pinHorizontal(to: card, Constants.cardInset)
+        cardSubtitle.pinBottom(to: card.bottomAnchor, Constants.cardInset)
     }
 }
