@@ -107,17 +107,27 @@ enum ArtistDetailsMapper {
     private static func format(dateString: String?) -> String? {
         guard let dateString else { return nil }
         
-        let cleaned = String(dateString.dropFirst().prefix(10))
-        let inputFormatter = DateFormatter()
-        inputFormatter.locale = Locale(identifier: "en_US_POSIX")
-        inputFormatter.dateFormat = "yyyy-MM-dd"
+        let trimmed = dateString.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
         
-        guard let date = inputFormatter.date(from: cleaned) else { return nil }
+        if let fullDate = extractFullDate(from: trimmed) {
+            let inputFormatter = DateFormatter()
+            inputFormatter.locale = Locale(identifier: "en_US_POSIX")
+            inputFormatter.dateFormat = "yyyy-MM-dd"
+            
+            if let date = inputFormatter.date(from: fullDate) {
+                let outputFormatter = DateFormatter()
+                outputFormatter.locale = Locale(identifier: "en_US_POSIX")
+                outputFormatter.dateFormat = "MMMM d, yyyy"
+                return outputFormatter.string(from: date)
+            }
+        }
         
-        let outputFormatter = DateFormatter()
-        outputFormatter.locale = Locale(identifier: "en_US_POSIX")
-        outputFormatter.dateFormat = "MMMM d, yyyy"
-        return outputFormatter.string(from: date)
+        if let year = extractYear(from: trimmed) {
+            return year
+        }
+        
+        return nil
     }
     
     private static func normalizedSentence(from text: String) -> String {
@@ -142,5 +152,32 @@ enum ArtistDetailsMapper {
     
     private static func containsCaseInsensitive(_ text: String, in target: String) -> Bool {
         target.range(of: text, options: .caseInsensitive) != nil
+    }
+    
+    private static func extractFullDate(from value: String) -> String? {
+        let normalized = value.hasPrefix("+") || value.hasPrefix("-")
+            ? String(value.dropFirst())
+            : value
+        
+        guard normalized.count >= 10 else { return nil }
+        
+        let candidate = String(normalized.prefix(10))
+        return candidate.range(
+            of: #"^\d{4}-\d{2}-\d{2}$"#,
+            options: .regularExpression
+        ) != nil ? candidate : nil
+    }
+    
+    private static func extractYear(from value: String) -> String? {
+        let normalized = value.hasPrefix("+") ? String(value.dropFirst()) : value
+        
+        guard let match = normalized.range(
+            of: #"^-?\d{1,6}"#,
+            options: .regularExpression
+        ) else {
+            return nil
+        }
+        
+        return String(normalized[match])
     }
 }
