@@ -64,19 +64,21 @@ enum ArtistDetailsMapper {
         
         var parts: [String] = []
         
-        if let citizenship, let occupations, !occupations.isEmpty {
-            parts.append("A \(citizenship.lowercased()) \(occupations.lowercased()).")
-        } else if let occupations, !occupations.isEmpty {
-            parts.append("An artist known as \(occupations.lowercased()).")
+        if shouldAddMetadataLead(to: normalizedDescription) {
+            if let citizenship, let occupations, !occupations.isEmpty {
+                parts.append("A \(citizenship.lowercased()) \(occupations.lowercased()).")
+            } else if let occupations, !occupations.isEmpty {
+                parts.append("An artist known as \(occupations.lowercased()).")
+            }
         }
         
         parts.append(normalizedDescription)
         
-        if let birthPlace {
+        if let birthPlace, shouldAddBirthPlace(to: normalizedDescription, birthPlace: birthPlace) {
             parts.append("Born in \(birthPlace).")
         }
         
-        if let deathPlace {
+        if let deathPlace, shouldAddDeathPlace(to: normalizedDescription, deathPlace: deathPlace) {
             parts.append("Died in \(deathPlace).")
         }
         
@@ -124,5 +126,21 @@ enum ArtistDetailsMapper {
         
         let sentence = trimmed.prefix(1).uppercased() + trimmed.dropFirst()
         return sentence.hasSuffix(".") ? sentence : sentence + "."
+    }
+    
+    private static func shouldAddMetadataLead(to biography: String) -> Bool {
+        biography.count < 220
+    }
+    
+    private static func shouldAddBirthPlace(to biography: String, birthPlace: String) -> Bool {
+        !containsCaseInsensitive(birthPlace, in: biography)
+    }
+    
+    private static func shouldAddDeathPlace(to biography: String, deathPlace: String) -> Bool {
+        !containsCaseInsensitive(deathPlace, in: biography)
+    }
+    
+    private static func containsCaseInsensitive(_ text: String, in target: String) -> Bool {
+        target.range(of: text, options: .caseInsensitive) != nil
     }
 }

@@ -12,10 +12,11 @@ final class MainPageViewController: UIViewController {
     private enum Constants {
         // UI Constraint properties
         static let contentTop: CGFloat = 50
-        static let sectionSpacing: CGFloat = 20
+        static let sectionSpacing: CGFloat = 10
         static let contentSideInset: CGFloat = 10
-        static let artistsSectionHeight: CGFloat = 260
+        static let artistsSectionHeight: CGFloat = 200
         static let stylesSectionHeight: CGFloat = 260
+        static let scrollViewBottom: CGFloat = -200
         
         // Colors
         static let backgroundColor: UIColor = UIColor(named: "ArtScopeGreen") ?? .green
@@ -74,7 +75,6 @@ final class MainPageViewController: UIViewController {
             guard let self, !artists.isEmpty else { return }
             
             let featuredArtist = self.makeFeaturedArtist(from: artists)
-            print("Loaded artists count: \(artists.count)")
             self.artists = artists
             self.featuredArtist = featuredArtist
             self.artistOfTheDayView.configure(with: featuredArtist)
@@ -83,10 +83,6 @@ final class MainPageViewController: UIViewController {
         
         viewModel.onStylesLoaded = { [weak self] styles in
             self?.stylesSectionView.update(with: styles)
-        }
-        
-        viewModel.onLoadingFailed = { error in
-            print("Failed to load artists: \(error)")
         }
     }
 
@@ -105,8 +101,11 @@ final class MainPageViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.showsVerticalScrollIndicator = false
         scrollView.backgroundColor = .clear
-        scrollView.pin(to: view)
-        
+        scrollView.pinTop(to: view.safeAreaLayoutGuide.topAnchor)
+        scrollView.pinBottom(to: view.safeAreaLayoutGuide.bottomAnchor, Constants.scrollViewBottom)
+        scrollView.pinLeft(to: view.safeAreaLayoutGuide.leadingAnchor)
+        scrollView.pinRight(to: view.safeAreaLayoutGuide.trailingAnchor)
+
         scrollView.addSubview(contentView)
         contentView.pinTop(to: scrollView.contentLayoutGuide.topAnchor)
         contentView.pinLeft(to: scrollView.contentLayoutGuide.leadingAnchor)

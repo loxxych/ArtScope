@@ -10,6 +10,7 @@ import Foundation
 enum WikidataEndpoint {
     static let baseURL = URL(string: "https://query.wikidata.org")!
     static let wikipediaBaseURL = URL(string: "https://en.wikipedia.org/api/rest_v1/page/summary")!
+    static let wikipediaAPIBaseURL = URL(string: "https://en.wikipedia.org/w/api.php")!
     private static let userAgent = "ArtScope/1.0 (educational iOS app)"
     private static let requestTimeout: TimeInterval = 30
 
@@ -115,7 +116,7 @@ enum WikidataEndpoint {
     }
     
     static func artistWorks(entityID: String, limit: Int) -> URLRequest {
-        var components = URLComponents(
+        let components = URLComponents(
             url: baseURL.appendingPathComponent("sparql"),
             resolvingAgainstBaseURL: false
         )!
@@ -140,7 +141,7 @@ enum WikidataEndpoint {
     }
     
     static func workDetails(workID: String) -> URLRequest {
-        var components = URLComponents(
+        let components = URLComponents(
             url: baseURL.appendingPathComponent("sparql"),
             resolvingAgainstBaseURL: false
         )!
@@ -184,6 +185,30 @@ enum WikidataEndpoint {
     static func wikipediaPageSummary(title: String) -> URLRequest {
         let encodedTitle = title.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? title
         var request = URLRequest(url: wikipediaBaseURL.appendingPathComponent(encodedTitle))
+        request.timeoutInterval = requestTimeout
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        return request
+    }
+    
+    static func wikipediaPageExtract(title: String) -> URLRequest {
+        var components = URLComponents(
+            url: wikipediaAPIBaseURL,
+            resolvingAgainstBaseURL: false
+        )!
+        
+        components.queryItems = [
+            .init(name: "action", value: "query"),
+            .init(name: "prop", value: "extracts"),
+            .init(name: "exintro", value: "1"),
+            .init(name: "explaintext", value: "1"),
+            .init(name: "redirects", value: "1"),
+            .init(name: "formatversion", value: "2"),
+            .init(name: "titles", value: title),
+            .init(name: "format", value: "json")
+        ]
+        
+        var request = URLRequest(url: components.url!)
         request.timeoutInterval = requestTimeout
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")

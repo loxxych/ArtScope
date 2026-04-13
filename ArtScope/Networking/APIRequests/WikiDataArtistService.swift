@@ -101,8 +101,14 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
         client.request(request) { (result: Result<WikiDataArtistDetailsDTO, Error>) in
             switch result {
             case let .success(dto):
-                let wikipediaTitle = dto.results.bindings.first?.wikipediaTitle?.value
-                self.fetchWikipediaSummary(title: wikipediaTitle) { summary in
+                let binding = dto.results.bindings.first
+                let candidateTitles = [
+                    binding?.wikipediaTitle?.value,
+                    binding?.artistLabel?.value,
+                    binding?.birthName?.value,
+                    preview.name
+                ]
+                self.fetchWikipediaExtract(from: candidateTitles) { summary in
                     completion(.success(
                         ArtistDetailsMapper.map(
                             details: dto,
@@ -169,6 +175,65 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
                 completion(summary.extract)
             case .failure:
                 completion(nil)
+            }
+        }
+    }
+    
+    private func fetchWikipediaExtract(
+        from titles: [String?],
+        completion: @escaping (String?) -> Void
+    ) {
+        let uniqueTitles = Array(
+            NSOrderedSet(array: titles.compactMap { title in
+                let trimmed = title?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                return trimmed.isEmpty ? nil : trimmed
+            })
+        ) as? [String] ?? []
+        
+        fetchWikipediaExtract(
+            titles: uniqueTitles,
+            currentIndex: 0,
+            completion: completion
+        )
+    }
+    
+    private func fetchWikipediaExtract(
+        titles: [String],
+        currentIndex: Int,
+        completion: @escaping (String?) -> Void
+    ) {
+        guard titles.indices.contains(currentIndex) else {
+            completion(nil)
+            return
+        }
+        
+        let title = titles[currentIndex]
+        let request = WikidataEndpoint.wikipediaPageExtract(title: title)
+        print("[WikiDataArtistService] fetchWikipediaExtract: \(request.url?.absoluteString ?? "nil-url")")
+        
+        client.request(request) { (result: Result<WikipediaPageExtractDTO, Error>) in
+            switch result {
+            case let .success(dto):
+                let extract = dto.query.pages.first?.extract?.trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                if let extract, !extract.isEmpty {
+                    print("[WikiDataArtistService] fetchWikipediaExtract success: title=\(title)")
+                    completion(extract)
+                } else {
+                    print("[WikiDataArtistService] fetchWikipediaExtract empty: title=\(title)")
+                    self.fetchWikipediaExtract(
+                        titles: titles,
+                        currentIndex: currentIndex + 1,
+                        completion: completion
+                    )
+                }
+            case .failure:
+                print("[WikiDataArtistService] fetchWikipediaExtract failure: title=\(title)")
+                self.fetchWikipediaExtract(
+                    titles: titles,
+                    currentIndex: currentIndex + 1,
+                    completion: completion
+                )
             }
         }
     }

@@ -211,6 +211,7 @@ final class ArtistDetailsViewController: UIViewController {
     
     // MARK: - Sections
     private func configureSections() {
+        biographySectionView.setExpandable(true)
         contentStack.addArrangedSubview(identitySectionView)
         contentStack.addArrangedSubview(realNameSectionView)
         contentStack.addArrangedSubview(biographySectionView)
