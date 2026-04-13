@@ -28,6 +28,7 @@ final class WorkDetailsViewController: UIViewController {
         static let authorImageSize: CGFloat = 48
         static let authorNameLeft: CGFloat = 12
         static let infoTopSpacing: CGFloat = 12
+        static let infoButtonTopSpacing: CGFloat = 10
         static let dividerTopSpacing: CGFloat = 16
         static let dividerHeight: CGFloat = 1
         static let dividerAlpha: CGFloat = 0.15
@@ -41,7 +42,11 @@ final class WorkDetailsViewController: UIViewController {
         static let authorFont: UIFont = UIFont(name: "InstrumentSans-SemiBold", size: 18) ?? .systemFont(ofSize: 18)
         static let infoFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 16) ?? .systemFont(ofSize: 16)
         static let linesCount: Int = 0
+        static let collapsedInfoLinesCount: Int = 4
         static let gradientLocations: [NSNumber] = [0.0, 0.65, 0.86, 1.0]
+        static let infoActionTitleExpanded: String = "Hide >"
+        static let infoActionTitleCollapsed: String = "Learn more >"
+        static let infoActionTintColor: UIColor = .artScopeBlue
     }
     
     // MARK: - Properties
@@ -67,7 +72,10 @@ final class WorkDetailsViewController: UIViewController {
     private let authorNameLabel = UILabel()
     private let dividerView = UIView()
     private let infoLabel = UILabel()
+    private let infoActionButton = UIButton(type: .system)
     private var relatedSectionView = ArtistRelatedSectionView(items: [])
+    private var isInfoExpanded = false
+    private var currentInfoText: String?
     
     // MARK: - Lifecycle
     init(work: ArtistWork, artistName: String, artistImageURL: URL?) {
@@ -110,6 +118,7 @@ final class WorkDetailsViewController: UIViewController {
         super.viewDidLayoutSubviews()
         heroGradientLayer.frame = heroGradientView.bounds
         authorImageView.layer.cornerRadius = authorImageView.bounds.width / 2
+        refreshInfoExpansionAvailability()
     }
     
     // MARK: - UI Setup
@@ -220,6 +229,7 @@ final class WorkDetailsViewController: UIViewController {
         infoContainer.addSubview(authorRow)
         infoContainer.addSubview(dividerView)
         infoContainer.addSubview(infoLabel)
+        infoContainer.addSubview(infoActionButton)
         
         workTitleLabel.font = Constants.titleFont
         workTitleLabel.numberOfLines = Constants.linesCount
@@ -263,7 +273,16 @@ final class WorkDetailsViewController: UIViewController {
         infoLabel.numberOfLines = Constants.linesCount
         infoLabel.pinTop(to: dividerView.bottomAnchor, Constants.infoTopSpacing)
         infoLabel.pinHorizontal(to: infoContainer)
-        infoLabel.pinBottom(to: infoContainer.bottomAnchor)
+        
+        infoActionButton.titleLabel?.font = Constants.infoFont
+        infoActionButton.tintColor = Constants.infoActionTintColor
+        infoActionButton.contentHorizontalAlignment = .left
+        infoActionButton.addTarget(self, action: #selector(toggleInfoExpandedState), for: .touchUpInside)
+        infoActionButton.pinTop(to: infoLabel.bottomAnchor, Constants.infoButtonTopSpacing)
+        infoActionButton.pinLeft(to: infoContainer.leadingAnchor)
+        infoActionButton.pinRight(to: infoContainer.trailingAnchor)
+        infoActionButton.pinBottom(to: infoContainer.bottomAnchor)
+        infoActionButton.isHidden = true
         
         contentStack.addArrangedSubview(relatedSectionView)
     }
@@ -283,7 +302,7 @@ final class WorkDetailsViewController: UIViewController {
         workTitleLabel.text = work.title
         metadataLabel.text = "Artwork details unavailable"
         authorNameLabel.text = artistName
-        infoLabel.text = "Information about this artwork is loading."
+        updateInfoText("Information about this artwork is loading.")
         loadHeroImage(from: work.imageURL)
         loadArtistImage(from: artistImageURL)
     }
@@ -293,7 +312,7 @@ final class WorkDetailsViewController: UIViewController {
         workTitleLabel.text = details.title
         metadataLabel.text = details.metadataLine
         authorNameLabel.text = details.artistName
-        infoLabel.text = details.infoText
+        updateInfoText(details.infoText)
         contentStack.removeArrangedSubview(relatedSectionView)
         relatedSectionView.removeFromSuperview()
         
@@ -332,5 +351,52 @@ final class WorkDetailsViewController: UIViewController {
     
     @objc private func backButtonPressed() {
         navigationController?.popViewController(animated: true)
+    }
+    
+    @objc private func toggleInfoExpandedState() {
+        isInfoExpanded.toggle()
+        refreshInfoExpansionAvailability()
+        view.layoutIfNeeded()
+    }
+    
+    private func updateInfoText(_ text: String) {
+        currentInfoText = text
+        infoLabel.text = text
+        isInfoExpanded = false
+        refreshInfoExpansionAvailability()
+    }
+    
+    private func refreshInfoExpansionAvailability() {
+        guard let text = currentInfoText, !text.isEmpty else {
+            infoActionButton.isHidden = true
+            infoLabel.numberOfLines = Constants.linesCount
+            return
+        }
+        
+        let hasOverflow = infoTextExceedsCollapsedLimit(text)
+        infoActionButton.isHidden = !hasOverflow
+        infoLabel.numberOfLines = isInfoExpanded || !hasOverflow
+            ? Constants.linesCount
+            : Constants.collapsedInfoLinesCount
+        infoActionButton.setTitle(
+            isInfoExpanded ? Constants.infoActionTitleExpanded : Constants.infoActionTitleCollapsed,
+            for: .normal
+        )
+    }
+    
+    private func infoTextExceedsCollapsedLimit(_ text: String) -> Bool {
+        let labelWidth = infoLabel.bounds.width > 0 ? infoLabel.bounds.width : view.bounds.width - (Constants.sideInset * 2)
+        guard labelWidth > 0 else { return false }
+        
+        let maxCollapsedHeight = Constants.infoFont.lineHeight * CGFloat(Constants.collapsedInfoLinesCount)
+        let constrainedSize = CGSize(width: labelWidth, height: .greatestFiniteMagnitude)
+        let textBounds = (text as NSString).boundingRect(
+            with: constrainedSize,
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            attributes: [.font: Constants.infoFont],
+            context: nil
+        )
+        
+        return ceil(textBounds.height) > ceil(maxCollapsedHeight)
     }
 }

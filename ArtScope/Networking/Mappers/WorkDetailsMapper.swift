@@ -58,21 +58,31 @@ enum WorkDetailsMapper {
         wikipediaSummary: String?
     ) -> String {
         let material = binding?.materialLabel?.value
+        let movement = binding?.movementLabel?.value
+        let dimensions = formatDimensions(height: binding?.height?.value, width: binding?.width?.value)
         let description = normalizedSentence(from: wikipediaSummary ?? binding?.workDescription?.value)
         let year = formatYear(from: binding?.inception?.value)
         
         var parts: [String] = []
         
-        if let material, let year {
-            parts.append("\"\(title)\" is a \(material.lowercased()) work by \(artistName) created in \(year).")
-        } else if let year {
-            parts.append("\"\(title)\" is a work by \(artistName) created in \(year).")
-        } else {
-            parts.append("\"\(title)\" is a work by \(artistName).")
-        }
+        parts.append(buildLeadSentence(
+            title: title,
+            artistName: artistName,
+            year: year,
+            material: material,
+            movement: movement
+        ))
         
         if let description {
             parts.append(description)
+        }
+        
+        if let dimensions, shouldAddDimensions(dimensions, to: description) {
+            parts.append("Its documented dimensions are \(dimensions).")
+        }
+        
+        if let movement, shouldAddMovement(movement, to: description) {
+            parts.append("The work is associated with \(movement).")
         }
         
         return parts.joined(separator: " ")
@@ -91,20 +101,20 @@ enum WorkDetailsMapper {
     
     private static func formatYear(from dateString: String?) -> String? {
         guard let dateString, !dateString.isEmpty else { return nil }
-        return String(dateString.dropFirst().prefix(4))
+        
+        let normalized = dateString.hasPrefix("+") ? String(dateString.dropFirst()) : dateString
+        return String(normalized.prefix(4))
     }
     
     private static func formatDimensions(height: String?, width: String?) -> String? {
         guard
-            let height = height?.components(separatedBy: ".").first,
-            let width = width?.components(separatedBy: ".").first,
-            !height.isEmpty,
-            !width.isEmpty
+            let formattedHeight = formatDimensionValue(height),
+            let formattedWidth = formatDimensionValue(width)
         else {
             return nil
         }
         
-        return "\(height)×\(width) cm"
+        return "\(formattedHeight)×\(formattedWidth) cm"
     }
     
     private static func normalizedSentence(from text: String?) -> String? {
@@ -114,5 +124,71 @@ enum WorkDetailsMapper {
         
         let sentence = trimmed.prefix(1).uppercased() + trimmed.dropFirst()
         return sentence.hasSuffix(".") ? sentence : sentence + "."
+    }
+    
+    private static func buildLeadSentence(
+        title: String,
+        artistName: String,
+        year: String?,
+        material: String?,
+        movement: String?
+    ) -> String {
+        var qualifiers: [String] = []
+        
+        if let material, !material.isEmpty {
+            qualifiers.append(material.lowercased())
+        }
+        
+        qualifiers.append("artwork")
+        
+        if let movement, !movement.isEmpty {
+            qualifiers.append("associated with \(movement)")
+        }
+        
+        let subject = "\"\(title)\" is a \(qualifiers.joined(separator: " ")) by \(artistName)"
+        
+        if let year, !year.isEmpty {
+            return subject + ", created in \(year)."
+        }
+        
+        return subject + "."
+    }
+    
+    private static func shouldAddDimensions(_ dimensions: String, to description: String?) -> Bool {
+        guard let description else { return true }
+        return description.range(of: dimensions, options: .caseInsensitive) == nil
+    }
+    
+    private static func shouldAddMovement(_ movement: String, to description: String?) -> Bool {
+        guard let description else { return true }
+        return description.range(of: movement, options: .caseInsensitive) == nil
+    }
+    
+    private static func formatDimensionValue(_ value: String?) -> String? {
+        guard
+            let value,
+            let numericValue = parseDecimal(from: value)
+        else {
+            return nil
+        }
+        
+        let centimeterValue = numericValue <= 20 ? (numericValue * 100) : numericValue
+        guard centimeterValue > 0 else { return nil }
+        
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = centimeterValue.rounded() == centimeterValue ? 0 : 1
+        
+        return formatter.string(from: NSNumber(value: centimeterValue))
+    }
+    
+    private static func parseDecimal(from value: String) -> Double? {
+        let normalized = value
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "+", with: "")
+        
+        return Double(normalized)
     }
 }

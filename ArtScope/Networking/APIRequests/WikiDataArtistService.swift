@@ -145,8 +145,13 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
         client.request(request) { (result: Result<WikiDataWorkDetailsDTO, Error>) in
             switch result {
             case let .success(dto):
-                let wikipediaTitle = dto.results.bindings.first?.wikipediaTitle?.value
-                self.fetchWikipediaSummary(title: wikipediaTitle) { summary in
+                let binding = dto.results.bindings.first
+                let candidateTitles = [
+                    binding?.wikipediaTitle?.value,
+                    binding?.workLabel?.value,
+                    work.title
+                ]
+                self.fetchWikipediaExtract(from: candidateTitles) { summary in
                     completion(.success(
                         WorkDetailsMapper.map(
                             dto: dto,
@@ -209,7 +214,6 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
         
         let title = titles[currentIndex]
         let request = WikidataEndpoint.wikipediaPageExtract(title: title)
-        print("[WikiDataArtistService] fetchWikipediaExtract: \(request.url?.absoluteString ?? "nil-url")")
         
         client.request(request) { (result: Result<WikipediaPageExtractDTO, Error>) in
             switch result {
@@ -217,10 +221,8 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
                 let extract = dto.query.pages.first?.extract?.trimmingCharacters(in: .whitespacesAndNewlines)
                 
                 if let extract, !extract.isEmpty {
-                    print("[WikiDataArtistService] fetchWikipediaExtract success: title=\(title)")
                     completion(extract)
                 } else {
-                    print("[WikiDataArtistService] fetchWikipediaExtract empty: title=\(title)")
                     self.fetchWikipediaExtract(
                         titles: titles,
                         currentIndex: currentIndex + 1,
@@ -228,7 +230,6 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
                     )
                 }
             case .failure:
-                print("[WikiDataArtistService] fetchWikipediaExtract failure: title=\(title)")
                 self.fetchWikipediaExtract(
                     titles: titles,
                     currentIndex: currentIndex + 1,

@@ -215,6 +215,7 @@ final class ArtistDetailsViewController: UIViewController {
         contentStack.addArrangedSubview(identitySectionView)
         contentStack.addArrangedSubview(realNameSectionView)
         contentStack.addArrangedSubview(biographySectionView)
+        contentStack.setCustomSpacing(12, after: realNameSectionView)
         contentStack.addArrangedSubview(relatedSectionView)
         contentStack.addArrangedSubview(worksSectionView)
         contentStack.addArrangedSubview(quizSectionView)
