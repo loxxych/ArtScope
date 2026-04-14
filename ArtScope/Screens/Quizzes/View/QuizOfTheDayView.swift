@@ -27,6 +27,7 @@ final class QuizOfTheDayView : UIView {
         static let titleText: String = "Quiz of the day"
         static let themeText: String = "Theme: "
         static let startButtonText: String = "Start"
+        static let fallbackThemeText: String = "Loading..."
         
         // Fonts
         static let titleFont: UIFont? = UIFont(name: "ByteBounce", size: 41)
@@ -40,7 +41,7 @@ final class QuizOfTheDayView : UIView {
         static let imageColor: UIColor = .white
         
         // Images
-        static let image: UIImage = .drawingBoard
+        static let image: UIImage = UIImage(named: "drawing-board-icon") ?? UIImage()
     }
     
     // MARK: - Fields
@@ -115,6 +116,7 @@ final class QuizOfTheDayView : UIView {
         startButton.backgroundColor = Constants.startButtonColor
         startButton.tintColor = Constants.startButtonTintColor
         startButton.layer.cornerRadius = Constants.cornerRadius
+        startButton.addTarget(self, action: #selector(startButtonPressed), for: .touchUpInside)
         
         startButton.pinLeft(to: wrap.leadingAnchor, Constants.buttonLeft)
         startButton.pinBottom(to: wrap.bottomAnchor, Constants.buttonBottom)
@@ -134,6 +136,11 @@ final class QuizOfTheDayView : UIView {
         imageView.pinBottom(to: wrap.bottomAnchor, Constants.imageBottom)
     }
     
+    func configure(with quiz: Quiz?) {
+        let theme = quiz?.subtitle ?? quiz?.title ?? Constants.fallbackThemeText
+        themeLabel.text = Constants.themeText + theme
+    }
+    
     // MARK: - UI utilities
     private func applyPerimeterFade(to view: UIView, fade: CGFloat = 20) {
         let maskLayer = CAGradientLayer()
@@ -144,6 +151,10 @@ final class QuizOfTheDayView : UIView {
         maskLayer.shadowOffset = CGSize.zero;
         maskLayer.shadowColor = UIColor.white.cgColor
         view.layer.mask = maskLayer;
+    }
+    
+    @objc private func startButtonPressed() {
+        onStartButtonTapped?()
     }
 
 }

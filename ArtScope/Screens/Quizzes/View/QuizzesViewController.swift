@@ -39,6 +39,11 @@ final class QuizzesViewController: UIViewController {
     private let quizOfTheDayView: QuizOfTheDayView = .init()
     private let strap: UIView = .init()
     private let quizzesTitleLabel: UILabel = .init()
+    private let viewModel = QuizzesViewModel(
+        quizService: ArtScopeQuizService(client: URLSessionNetworkClient())
+    )
+    private var topics: [QuizTopic] = []
+    private var quizzes: [QuizListItem] = []
     
     // MARK: - Lifecycle
     init() {
@@ -51,7 +56,9 @@ final class QuizzesViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        bindViewModel()
         configureUI()
+        viewModel.load()
     }
 
     // MARK: - UI Configuration
@@ -62,6 +69,24 @@ final class QuizzesViewController: UIViewController {
         configureQuizOfTheDay()
         configureStrap()
         configureQuizzesTitle()
+    }
+    
+    private func bindViewModel() {
+        viewModel.onDailyQuizLoaded = { [weak self] quiz in
+            self?.quizOfTheDayView.configure(with: quiz)
+        }
+        
+        viewModel.onTopicsLoaded = { [weak self] topics in
+            self?.topics = topics
+        }
+        
+        viewModel.onQuizzesLoaded = { [weak self] quizzes in
+            self?.quizzes = quizzes
+        }
+        
+        viewModel.onLoadingFailed = { error in
+            print("[Quizzes] backend loading failed: \(error)")
+        }
     }
 
     private func configureTitle() {
@@ -106,4 +131,3 @@ final class QuizzesViewController: UIViewController {
     }
 
 }
-

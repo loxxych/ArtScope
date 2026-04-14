@@ -28,7 +28,7 @@ final class ArtistDetailsViewController: UIViewController {
         static let headerTitleLeftSpacing: CGFloat = 12
         static let headerTitleRight: CGFloat = 56
         static let contentTopSpacing: CGFloat = 16
-        static let contentBottom: CGFloat = 32
+        static let contentBottom: CGFloat = 300
         static let portraitBorderWidth: CGFloat = 5
         static let gradientLocations: [NSNumber] = [0.0, 0.55, 0.82, 1.0]
         static let headerTitleFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 18) ?? .boldSystemFont(ofSize: 18)
@@ -38,6 +38,7 @@ final class ArtistDetailsViewController: UIViewController {
     // MARK: - Properties
     private let artist: ArtistPreview
     private let viewModel: ArtistDetailsViewModel
+    private let artistQuizViewModel: ArtistQuizViewModel
     
     private let scrollView = UIScrollView()
     private let contentView = UIView()
@@ -69,6 +70,10 @@ final class ArtistDetailsViewController: UIViewController {
             preview: artist,
             service: WikiDataArtistService(client: URLSessionNetworkClient())
         )
+        self.artistQuizViewModel = ArtistQuizViewModel(
+            artistID: artist.id,
+            quizService: ArtScopeQuizService(client: URLSessionNetworkClient())
+        )
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -95,6 +100,7 @@ final class ArtistDetailsViewController: UIViewController {
         configureUI()
         applyInitialState()
         viewModel.load()
+        artistQuizViewModel.load()
     }
     
     override func viewDidLayoutSubviews() {
@@ -119,6 +125,8 @@ final class ArtistDetailsViewController: UIViewController {
     private func configureScrollView() {
         view.addSubview(scrollView)
         scrollView.showsVerticalScrollIndicator = false
+        scrollView.delaysContentTouches = false
+        scrollView.canCancelContentTouches = true
         scrollView.pinTop(to: headerBar.bottomAnchor)
         scrollView.pinLeft(to: view.leadingAnchor)
         scrollView.pinRight(to: view.trailingAnchor)
@@ -236,6 +244,15 @@ final class ArtistDetailsViewController: UIViewController {
         viewModel.onLoadingFailed = { error in
             print("Failed to load artist details: \(error)")
         }
+        
+        artistQuizViewModel.onQuizLoaded = { [weak self] quiz in
+            self?.quizSectionView.configure(with: quiz)
+        }
+        
+        artistQuizViewModel.onLoadingFailed = { [weak self] error in
+            self?.quizSectionView.configureUnavailableState()
+            print("Failed to load artist quiz: \(error)")
+        }
     }
     
     private func applyInitialState() {
@@ -248,6 +265,7 @@ final class ArtistDetailsViewController: UIViewController {
         )
         
         apply(details: initial)
+        quizSectionView.configureUnavailableState()
         loadHeroImage(from: nil)
     }
     
