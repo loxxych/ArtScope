@@ -11,6 +11,8 @@ from app.services.artist_quiz_generation_service import ArtistQuizGenerationServ
 
 
 class QuizService:
+    minimum_artist_question_count = 5
+
     def __init__(self, db: Session) -> None:
         self.repository = QuizRepository(db)
         self.wikidata_client = WikidataClient()
@@ -30,7 +32,7 @@ class QuizService:
 
     def get_artist_quiz(self, artist_id: str) -> QuizResponse | None:
         quiz = self.repository.get_artist_quiz(artist_id)
-        if quiz:
+        if quiz and self._is_sufficient_artist_quiz(quiz):
             return self._map_quiz(quiz)
 
         if not self._looks_like_entity_id(artist_id):
@@ -103,3 +105,9 @@ class QuizService:
     @staticmethod
     def _looks_like_entity_id(artist_id: str) -> bool:
         return artist_id.startswith("Q") and artist_id[1:].isdigit()
+
+    def _is_sufficient_artist_quiz(self, quiz: Quiz) -> bool:
+        if quiz.expires_at and quiz.expires_at < datetime.now(timezone.utc):
+            return False
+
+        return quiz.question_count >= self.minimum_artist_question_count

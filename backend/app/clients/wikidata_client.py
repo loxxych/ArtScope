@@ -16,6 +16,7 @@ class ArtistContext:
     death_date: str | None
     citizenship: str | None
     birth_place: str | None
+    death_place: str | None
     occupations: list[str]
     movements: list[str]
     works: list[str]
@@ -53,6 +54,7 @@ class WikidataClient:
             death_date=self._value(binding, "deathDate"),
             citizenship=self._value(binding, "citizenshipLabel"),
             birth_place=self._value(binding, "birthPlaceLabel"),
+            death_place=self._value(binding, "deathPlaceLabel"),
             occupations=self._split_values(self._value(binding, "occupations")),
             movements=self._split_values(self._value(binding, "movements")),
             works=self._split_values(self._value(binding, "works")),
@@ -66,7 +68,7 @@ class WikidataClient:
         PREFIX wd: <http://www.wikidata.org/entity/>
         PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 
-        SELECT ?artistLabel ?artistDescription ?birthDate ?deathDate ?citizenshipLabel ?birthPlaceLabel
+        SELECT ?artistLabel ?artistDescription ?birthDate ?deathDate ?citizenshipLabel ?birthPlaceLabel ?deathPlaceLabel
                (GROUP_CONCAT(DISTINCT ?occupationLabel; separator="||") AS ?occupations)
                (GROUP_CONCAT(DISTINCT ?movementLabel; separator="||") AS ?movements)
                (GROUP_CONCAT(DISTINCT ?workLabel; separator="||") AS ?works)
@@ -81,6 +83,7 @@ class WikidataClient:
           OPTIONAL {{ ?artist wdt:P570 ?deathDate. }}
           OPTIONAL {{ ?artist wdt:P27 ?citizenship. }}
           OPTIONAL {{ ?artist wdt:P19 ?birthPlace. }}
+          OPTIONAL {{ ?artist wdt:P20 ?deathPlace. }}
           OPTIONAL {{ ?artist wdt:P106 ?occupation. }}
           OPTIONAL {{
             ?work wdt:P170 ?artist.
@@ -91,7 +94,7 @@ class WikidataClient:
             bd:serviceParam wikibase:language "en".
           }}
         }}
-        GROUP BY ?artistLabel ?artistDescription ?birthDate ?deathDate ?citizenshipLabel ?birthPlaceLabel
+        GROUP BY ?artistLabel ?artistDescription ?birthDate ?deathDate ?citizenshipLabel ?birthPlaceLabel ?deathPlaceLabel
         LIMIT 1
         """
 

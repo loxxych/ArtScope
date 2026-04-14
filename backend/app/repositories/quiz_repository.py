@@ -34,12 +34,12 @@ class QuizRepository:
         return self.db.scalars(stmt).first()
 
     def save_topic(self, topic: QuizTopic) -> QuizTopic:
-        self.db.add(topic)
+        topic = self.db.merge(topic)
         self.db.flush()
         return topic
 
     def save_quiz(self, quiz: Quiz) -> Quiz:
-        self.db.add(quiz)
+        quiz = self.db.merge(quiz)
         self.db.commit()
         self.db.refresh(quiz)
         return quiz
