@@ -1,0 +1,9 @@
+//
+//  Secrets.xcconfig
+//  ArtScope
+//
+//  Created by loxxy on 15.04.2026.
+//
+
+GEMINI_API_KEY = AIzaSyDWl0rkOC7DVUBmWfFA7ehXPs6H8iomWNc
+GEMINI_MODEL = gemini-2.5-flash

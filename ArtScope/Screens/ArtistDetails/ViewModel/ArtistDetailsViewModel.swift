@@ -14,7 +14,8 @@ final class ArtistDetailsViewModel {
     
     var onDetailsLoaded: ((ArtistDetailsContent) -> Void)?
     var onWorksLoaded: (([ArtistWork]) -> Void)?
-    var onLoadingFailed: ((Error) -> Void)?
+    var onDetailsLoadingFailed: ((Error) -> Void)?
+    var onWorksLoadingFailed: ((Error) -> Void)?
     
     // MARK: - Lifecycle
     init(preview: ArtistPreview, service: ArtistDetailsService) {
@@ -32,7 +33,7 @@ final class ArtistDetailsViewModel {
                 case let .success(details):
                     self?.onDetailsLoaded?(details)
                 case let .failure(error):
-                    self?.onLoadingFailed?(error)
+                    self?.onDetailsLoadingFailed?(error)
                 }
             }
         }
@@ -43,7 +44,7 @@ final class ArtistDetailsViewModel {
                 case let .success(works):
                     self?.onWorksLoaded?(works)
                 case let .failure(error):
-                    self?.onLoadingFailed?(error)
+                    self?.onWorksLoadingFailed?(error)
                 }
             }
         }

@@ -40,7 +40,7 @@ final class QuizzesViewController: UIViewController {
     private let strap: UIView = .init()
     private let quizzesTitleLabel: UILabel = .init()
     private let viewModel = QuizzesViewModel(
-        quizService: ArtScopeQuizService(client: URLSessionNetworkClient())
+        quizService: QuizServiceFactory.makeQuizService()
     )
     private var topics: [QuizTopic] = []
     private var quizzes: [QuizListItem] = []
@@ -85,7 +85,7 @@ final class QuizzesViewController: UIViewController {
         }
         
         viewModel.onLoadingFailed = { error in
-            print("[Quizzes] backend loading failed: \(error)")
+            print("[Quizzes] quiz generation failed: \(error)")
         }
     }
 

@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		590A1E0B2F8FBF7D0020C2CF /* Config.xcconfig in Sources */ = {isa = PBXBuildFile; fileRef = 590A1E0A2F8FBF620020C2CF /* Config.xcconfig */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		59029F7B2F228E71009CDE57 /* ArtScope.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ArtScope.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		590A1E0A2F8FBF620020C2CF /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -45,6 +50,7 @@
 		59029F722F228E71009CDE57 = {
 			isa = PBXGroup;
 			children = (
+				590A1E0A2F8FBF620020C2CF /* Config.xcconfig */,
 				59029F7D2F228E71009CDE57 /* ArtScope */,
 				59029F7C2F228E71009CDE57 /* Products */,
 			);
@@ -132,6 +138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				590A1E0B2F8FBF7D0020C2CF /* Config.xcconfig in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -140,6 +147,7 @@
 /* Begin XCBuildConfiguration section */
 		59029F8F2F228E79009CDE57 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 590A1E0A2F8FBF620020C2CF /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -167,6 +175,7 @@
 		};
 		59029F902F228E79009CDE57 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 590A1E0A2F8FBF620020C2CF /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -194,6 +203,7 @@
 		};
 		59029F912F228E79009CDE57 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 590A1E0A2F8FBF620020C2CF /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -259,6 +269,7 @@
 		};
 		59029F922F228E79009CDE57 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 590A1E0A2F8FBF620020C2CF /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

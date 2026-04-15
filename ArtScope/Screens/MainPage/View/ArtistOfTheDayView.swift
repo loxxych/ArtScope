@@ -13,6 +13,7 @@ final class ArtistOfTheDayView : UIView {
         // UI Constraint properties
         static let textLeft: CGFloat = 25
         static let textTop: CGFloat = 20
+        static let textStackLeft: CGFloat = 148
         
         static let buttonLeft: CGFloat = 25
         static let buttonTop: CGFloat = 60
@@ -30,7 +31,7 @@ final class ArtistOfTheDayView : UIView {
         
         static let stackSpacing: CGFloat = 6
         static let stackRight: CGFloat = 20
-        static let stackTop: CGFloat = 5
+        static let stackTop: CGFloat = 10
         
         static let titleBorderWidth: CGFloat = 2
         
@@ -43,8 +44,8 @@ final class ArtistOfTheDayView : UIView {
         
         // Fonts
         static let titleFont: UIFont? = UIFont(name: "ByteBounce", size: 41)
-        static let artistNameFont: UIFont? = UIFont(name: "InstrumentSans-Bold", size: 26)
-        static let descriptionFont: UIFont? = UIFont(name: "InstrumentSans-Regular", size: 12)
+        static let artistNameFont: UIFont? = UIFont(name: "InstrumentSans-Bold", size: 20)
+        static let descriptionFont: UIFont? = UIFont(name: "InstrumentSans-Regular", size: 11)
         static let buttonFont: UIFont? = UIFont(name: "InstrumentSans-SemiBold", size: 15)
         
         // Colors
@@ -155,6 +156,7 @@ final class ArtistOfTheDayView : UIView {
         textStack.addArrangedSubview(artistNameLabel)
         textStack.addArrangedSubview(descirptionLabel)
         
+        textStack.pinLeft(to: wrap.leadingAnchor, Constants.textStackLeft)
         textStack.pinRight(to: wrap.trailingAnchor, Constants.stackRight)
         textStack.pinTop(to: titleLabel.bottomAnchor, Constants.stackTop)
     }

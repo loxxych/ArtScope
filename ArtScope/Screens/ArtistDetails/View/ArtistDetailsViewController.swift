@@ -63,6 +63,10 @@ final class ArtistDetailsViewController: UIViewController {
     private let quizSectionView = ArtistQuizPlaceholderView()
     private var portraitImageURL: URL?
     private var works: [ArtistWork] = []
+    private var currentBiography: String?
+    private var didLoadArtistDetails = false
+    private var didResolveArtistWorks = false
+    private var didRequestArtistQuiz = false
     
     init(artist: ArtistPreview) {
         self.artist = artist
@@ -72,7 +76,8 @@ final class ArtistDetailsViewController: UIViewController {
         )
         self.artistQuizViewModel = ArtistQuizViewModel(
             artistID: artist.id,
-            quizService: ArtScopeQuizService(client: URLSessionNetworkClient())
+            artistName: artist.name,
+            quizService: QuizServiceFactory.makeQuizService()
         )
         super.init(nibName: nil, bundle: nil)
     }
@@ -99,8 +104,8 @@ final class ArtistDetailsViewController: UIViewController {
         bindViewModel()
         configureUI()
         applyInitialState()
+        bindQuizSectionActions()
         viewModel.load()
-        artistQuizViewModel.load()
     }
     
     override func viewDidLayoutSubviews() {
@@ -228,21 +233,43 @@ final class ArtistDetailsViewController: UIViewController {
         contentStack.addArrangedSubview(worksSectionView)
         contentStack.addArrangedSubview(quizSectionView)
     }
+
+    private func bindQuizSectionActions() {
+        quizSectionView.onRetryTapped = { [weak self] in
+            self?.requestArtistQuiz(force: true)
+        }
+    }
     
     // MARK: - Data
     private func bindViewModel() {
         viewModel.onDetailsLoaded = { [weak self] details in
             self?.apply(details: details)
+            self?.didLoadArtistDetails = true
+            self?.loadArtistQuizIfPossible()
         }
         
         viewModel.onWorksLoaded = { [weak self] works in
             self?.works = works
             self?.worksSectionView.update(with: works)
             self?.loadHeroImage(from: works.first?.imageURL)
+            self?.didResolveArtistWorks = true
+            self?.loadArtistQuizIfPossible()
         }
         
-        viewModel.onLoadingFailed = { error in
+        viewModel.onDetailsLoadingFailed = { [weak self] error in
+            self?.quizSectionView.configureUnavailableState()
             print("Failed to load artist details: \(error)")
+        }
+
+        viewModel.onWorksLoadingFailed = { [weak self] error in
+            self?.didResolveArtistWorks = true
+            self?.loadArtistQuizIfPossible()
+            print("Failed to load artist works: \(error)")
+        }
+
+        artistQuizViewModel.onLoadingStateChanged = { [weak self] isLoading in
+            guard isLoading else { return }
+            self?.quizSectionView.configureLoadingState()
         }
         
         artistQuizViewModel.onQuizLoaded = { [weak self] quiz in
@@ -265,17 +292,40 @@ final class ArtistDetailsViewController: UIViewController {
         )
         
         apply(details: initial)
-        quizSectionView.configureUnavailableState()
+        quizSectionView.configureLoadingState()
         loadHeroImage(from: nil)
     }
     
     private func apply(details: ArtistDetailsContent) {
         portraitImageURL = details.imageURL
+        currentBiography = details.biography
         titleLabel.text = details.displayName
         identitySectionView.configure(name: details.displayName, lifeSpan: details.lifeSpan)
         realNameSectionView.updateBody(details.realName)
         biographySectionView.updateBody(details.biography)
         loadPortraitImage(from: details.imageURL)
+    }
+
+    private func loadArtistQuizIfPossible() {
+        guard didLoadArtistDetails, didResolveArtistWorks, !didRequestArtistQuiz else {
+            return
+        }
+
+        requestArtistQuiz(force: false)
+    }
+
+    private func requestArtistQuiz(force: Bool) {
+        if force {
+            didRequestArtistQuiz = false
+        }
+
+        guard didLoadArtistDetails, didResolveArtistWorks, !didRequestArtistQuiz else {
+            return
+        }
+
+        didRequestArtistQuiz = true
+        artistQuizViewModel.updateContext(biography: currentBiography, works: works)
+        artistQuizViewModel.load(force: force)
     }
     
     private func loadPortraitImage(from imageURL: URL?) {

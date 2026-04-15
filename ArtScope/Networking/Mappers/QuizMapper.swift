@@ -6,7 +6,7 @@
 //
 
 enum QuizMapper {
-    static func map(_ dto: QuizResponseDTO) -> Quiz {
+    static func map(_ dto: GeneratedQuizDTO) -> Quiz {
         Quiz(
             id: dto.id,
             topicID: dto.topicID,
@@ -23,7 +23,7 @@ enum QuizMapper {
         )
     }
     
-    static func map(_ dto: QuizPayloadDTO) -> QuizPayload {
+    static func map(_ dto: GeneratedQuizPayloadDTO) -> QuizPayload {
         QuizPayload(
             id: dto.id,
             title: dto.title,
@@ -33,7 +33,7 @@ enum QuizMapper {
         )
     }
     
-    static func map(_ dto: QuizQuestionDTO) -> QuizQuestion {
+    static func map(_ dto: GeneratedQuizQuestionDTO) -> QuizQuestion {
         QuizQuestion(
             id: dto.id,
             prompt: dto.prompt,
@@ -44,34 +44,7 @@ enum QuizMapper {
         )
     }
     
-    static func map(_ dto: QuizOptionDTO) -> QuizOption {
+    static func map(_ dto: GeneratedQuizOptionDTO) -> QuizOption {
         QuizOption(id: dto.id, text: dto.text)
-    }
-    
-    static func map(_ dto: QuizTopicDTO) -> QuizTopic {
-        QuizTopic(
-            id: dto.id,
-            type: dto.type,
-            title: dto.title,
-            subtitle: dto.subtitle,
-            description: dto.description,
-            language: dto.language,
-            isFeatured: dto.isFeatured
-        )
-    }
-    
-    static func map(_ dto: QuizListItemDTO) -> QuizListItem {
-        QuizListItem(
-            id: dto.id,
-            topicID: dto.topicID,
-            type: dto.type,
-            title: dto.title,
-            subtitle: dto.subtitle,
-            description: dto.description,
-            difficulty: dto.difficulty,
-            estimatedTimeSeconds: dto.estimatedTimeSeconds,
-            questionCount: dto.questionCount,
-            isDaily: dto.isDaily
-        )
     }
 }

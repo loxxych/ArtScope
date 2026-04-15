@@ -16,7 +16,6 @@ final class MainPageViewController: UIViewController {
         static let contentSideInset: CGFloat = 10
         static let artistsSectionHeight: CGFloat = 200
         static let stylesSectionHeight: CGFloat = 260
-        static let scrollViewBottom: CGFloat = -200
         
         // Colors
         static let backgroundColor: UIColor = UIColor(named: "ArtScopeGreen") ?? .green
@@ -102,7 +101,7 @@ final class MainPageViewController: UIViewController {
         scrollView.showsVerticalScrollIndicator = false
         scrollView.backgroundColor = .clear
         scrollView.pinTop(to: view.safeAreaLayoutGuide.topAnchor)
-        scrollView.pinBottom(to: view.safeAreaLayoutGuide.bottomAnchor, Constants.scrollViewBottom)
+        scrollView.pinBottom(to: view.safeAreaLayoutGuide.bottomAnchor)
         scrollView.pinLeft(to: view.safeAreaLayoutGuide.leadingAnchor)
         scrollView.pinRight(to: view.safeAreaLayoutGuide.trailingAnchor)
 

@@ -54,6 +54,7 @@ final class WorkDetailsViewController: UIViewController {
     private let artistName: String
     private let artistImageURL: URL?
     private let viewModel: WorkDetailsViewModel
+    private let studiedArtworkStore: StudiedArtworkStore
     
     private let scrollView = UIScrollView()
     private let contentView = UIView()
@@ -82,6 +83,7 @@ final class WorkDetailsViewController: UIViewController {
         self.work = work
         self.artistName = artistName
         self.artistImageURL = artistImageURL
+        self.studiedArtworkStore = QuizServiceFactory.makeStudiedArtworkStore()
         self.viewModel = WorkDetailsViewModel(
             work: work,
             artistName: artistName,
@@ -111,6 +113,7 @@ final class WorkDetailsViewController: UIViewController {
         bindViewModel()
         configureUI()
         applyInitialState()
+        recordStudiedArtwork(title: work.title)
         viewModel.load()
     }
     
@@ -308,6 +311,7 @@ final class WorkDetailsViewController: UIViewController {
     }
     
     private func apply(details: WorkDetailsContent) {
+        recordStudiedArtwork(title: details.title)
         titleLabel.text = details.title
         workTitleLabel.text = details.title
         metadataLabel.text = details.metadataLine
@@ -325,6 +329,18 @@ final class WorkDetailsViewController: UIViewController {
         contentStack.addArrangedSubview(relatedView)
         loadHeroImage(from: details.imageURL)
         loadArtistImage(from: artistImageURL)
+    }
+
+    private func recordStudiedArtwork(title: String) {
+        studiedArtworkStore.markArtworkStudied(
+            StudiedArtwork(
+                workID: work.id,
+                title: title,
+                artistName: artistName,
+                imageURL: work.imageURL,
+                lastViewedAt: Date()
+            )
+        )
     }
     
     private func loadHeroImage(from imageURL: URL?) {

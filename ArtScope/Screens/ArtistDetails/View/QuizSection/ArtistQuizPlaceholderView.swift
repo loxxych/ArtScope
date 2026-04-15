@@ -12,25 +12,25 @@ final class ArtistQuizPlaceholderView: UIView {
     private enum Constants {
         static let titleText: String = "Quiz"
         static let subtitleText: String = "Complete a short quiz to test your knowledge!"
-        static let unavailableSubtitleText: String = "Quiz content for this artist will be added next."
+        static let loadingSubtitleText: String = "Generating a quiz based on this artist's life and works."
+        static let unavailableSubtitleText: String = "We couldn't generate a quiz for this artist right now."
         static let titleBottomSpacing: CGFloat = 6
         static let cardTopSpacing: CGFloat = 12
         static let titleFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 27) ?? .boldSystemFont(ofSize: 27)
         static let subtitleFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 15) ?? .systemFont(ofSize: 15)
         static let bodyLinesCount: Int = 0
-        static let unavailableCardColor: UIColor = UIColor(named: "ArtScopePink") ?? .systemPink
-        static let unavailableCardCornerRadius: CGFloat = 18
-        static let unavailableCardInset: CGFloat = 18
-        static let unavailableCardHeight: CGFloat = 190
+        static let statusCardHeight: CGFloat = 190
         static let readyCardHeight: CGFloat = 190
         static let resultCardHeight: CGFloat = 300
-        static let unavailableTitleFont: UIFont = UIFont(name: "ByteBounce", size: 30) ?? .boldSystemFont(ofSize: 30)
-        static let unavailableBodyFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 15) ?? .systemFont(ofSize: 15)
-        static let unavailableTitleText: String = "Test yourself!"
-        static let unavailableBodyText: String = "We will add questions, answers and scoring here later."
+        static let loadingTitleText: String = "Preparing quiz..."
+        static let loadingBodyText: String = "Creating a short English quiz from the artist biography and artworks."
+        static let unavailableTitleText: String = "Quiz unavailable"
+        static let unavailableBodyText: String = "The quiz couldn't be generated. Try requesting it again."
+        static let retryButtonTitle: String = "Try again"
     }
     
     private enum State {
+        case loading
         case unavailable
         case ready
         case question
@@ -41,9 +41,7 @@ final class ArtistQuizPlaceholderView: UIView {
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
     private let contentContainer = UIView()
-    private let unavailableCard = UIView()
-    private let unavailableTitleLabel = UILabel()
-    private let unavailableBodyLabel = UILabel()
+    private let statusCardView = ArtistQuizStatusCardView()
     private let startCardView = ArtistQuizStartCardView()
     private let readyOverlayButton = UIButton(type: .custom)
     private let questionCardView = ArtistQuizQuestionCardView()
@@ -55,6 +53,8 @@ final class ArtistQuizPlaceholderView: UIView {
     private var currentQuestionIndex = 0
     private var correctAnswersCount = 0
     private var didCountCurrentAnswer = false
+
+    var onRetryTapped: (() -> Void)?
     
     // MARK: - Lifecycle
     override init(frame: CGRect) {
@@ -71,9 +71,9 @@ final class ArtistQuizPlaceholderView: UIView {
         configureTitle()
         configureSubtitle()
         configureContentContainer()
-        configureUnavailableCard()
+        configureStatusCard()
         configureInteractiveCards()
-        show(state: .unavailable)
+        show(state: .loading)
     }
     
     private func configureTitle() {
@@ -98,29 +98,15 @@ final class ArtistQuizPlaceholderView: UIView {
         contentContainer.pinTop(to: subtitleLabel.bottomAnchor, Constants.cardTopSpacing)
         contentContainer.pinHorizontal(to: self)
         contentContainerBottomConstraint = contentContainer.pinBottom(to: bottomAnchor)
-        contentContainerHeightConstraint = contentContainer.setHeight(Constants.unavailableCardHeight)
+        contentContainerHeightConstraint = contentContainer.setHeight(Constants.statusCardHeight)
     }
     
-    private func configureUnavailableCard() {
-        contentContainer.addSubview(unavailableCard)
-        unavailableCard.backgroundColor = Constants.unavailableCardColor
-        unavailableCard.layer.cornerRadius = Constants.unavailableCardCornerRadius
-        unavailableCard.pin(to: contentContainer)
-        
-        unavailableCard.addSubview(unavailableTitleLabel)
-        unavailableCard.addSubview(unavailableBodyLabel)
-        
-        unavailableTitleLabel.text = Constants.unavailableTitleText
-        unavailableTitleLabel.font = Constants.unavailableTitleFont
-        unavailableTitleLabel.pinTop(to: unavailableCard.topAnchor, Constants.unavailableCardInset)
-        unavailableTitleLabel.pinHorizontal(to: unavailableCard, Constants.unavailableCardInset)
-        
-        unavailableBodyLabel.text = Constants.unavailableBodyText
-        unavailableBodyLabel.font = Constants.unavailableBodyFont
-        unavailableBodyLabel.numberOfLines = 0
-        unavailableBodyLabel.pinTop(to: unavailableTitleLabel.bottomAnchor, 10)
-        unavailableBodyLabel.pinHorizontal(to: unavailableCard, Constants.unavailableCardInset)
-        unavailableBodyLabel.pinBottom(to: unavailableCard.bottomAnchor, Constants.unavailableCardInset)
+    private func configureStatusCard() {
+        contentContainer.addSubview(statusCardView)
+        statusCardView.pin(to: contentContainer)
+        statusCardView.onActionTapped = { [weak self] in
+            self?.onRetryTapped?()
+        }
     }
     
     private func configureInteractiveCards() {
@@ -150,7 +136,7 @@ final class ArtistQuizPlaceholderView: UIView {
     }
     
     private func show(state: State) {
-        unavailableCard.isHidden = state != .unavailable
+        statusCardView.isHidden = !(state == .loading || state == .unavailable)
         startCardView.isHidden = state != .ready
         readyOverlayButton.isHidden = state != .ready
         questionCardView.isHidden = state != .question
@@ -158,8 +144,11 @@ final class ArtistQuizPlaceholderView: UIView {
         contentContainerBottomConstraint?.isActive = true
         
         switch state {
+        case .loading:
+            contentContainerHeightConstraint?.constant = Constants.statusCardHeight
+            contentContainerHeightConstraint?.isActive = true
         case .unavailable:
-            contentContainerHeightConstraint?.constant = Constants.unavailableCardHeight
+            contentContainerHeightConstraint?.constant = Constants.statusCardHeight
             contentContainerHeightConstraint?.isActive = true
         case .ready:
             contentContainerHeightConstraint?.constant = Constants.readyCardHeight
@@ -239,10 +228,24 @@ final class ArtistQuizPlaceholderView: UIView {
         subtitleLabel.text = Constants.subtitleText
         resetQuizFlow()
     }
+
+    func configureLoadingState() {
+        subtitleLabel.text = Constants.loadingSubtitleText
+        statusCardView.configureLoading(
+            title: Constants.loadingTitleText,
+            body: Constants.loadingBodyText
+        )
+        show(state: .loading)
+    }
     
     func configureUnavailableState() {
         quiz = nil
         subtitleLabel.text = Constants.unavailableSubtitleText
+        statusCardView.configureFailure(
+            title: Constants.unavailableTitleText,
+            body: Constants.unavailableBodyText,
+            actionTitle: Constants.retryButtonTitle
+        )
         show(state: .unavailable)
     }
 }
