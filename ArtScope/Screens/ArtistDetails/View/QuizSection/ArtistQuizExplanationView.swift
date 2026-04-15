@@ -2,7 +2,7 @@
 //  ArtistQuizExplanationView.swift
 //  ArtScope
 //
-//  Created by Codex on 14.04.2026.
+//  Created by loxxy on 14.04.2026.
 //
 
 import UIKit

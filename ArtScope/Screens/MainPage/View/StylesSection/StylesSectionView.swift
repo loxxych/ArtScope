@@ -24,6 +24,7 @@ final class StylesSectionView: UIView {
     private var artistsSectionTitle: SectionTitleView = .init(title: Constants.stylesSectionTitle)
     private lazy var artistsPreviewCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: makeLayout())
     private var styles: [StylePreview] = []
+    var onStyleSelected: ((StylePreview) -> Void)?
     
     // MARK: - Lifecycle
     init() {
@@ -93,6 +94,10 @@ final class StylesSectionView: UIView {
 
 // MARK: - UICollectionViewDelegate
 extension StylesSectionView: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard styles.indices.contains(indexPath.item) else { return }
+        onStyleSelected?(styles[indexPath.item])
+    }
 }
 
 // MARK: - UICollectionViewDataSource

@@ -2,7 +2,7 @@
 //  WikipediaPageExtractDTO.swift
 //  ArtScope
 //
-//  Created by Codex on 13.04.2026.
+//  Created by loxxy on 13.04.2026.
 //
 
 struct WikipediaPageExtractDTO: Decodable {
