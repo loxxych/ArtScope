@@ -35,6 +35,7 @@ enum StyleDetailMapper {
             guard
                 let id = binding.work?.value,
                 let title = binding.workLabel?.value,
+                let artistName = binding.creatorLabel?.value,
                 !title.isEmpty
             else {
                 return nil
@@ -43,7 +44,9 @@ enum StyleDetailMapper {
             return StyleWorkItem(
                 id: id,
                 title: title,
-                imageURL: URL(string: binding.image?.value ?? "")
+                imageURL: URL(string: binding.image?.value ?? ""),
+                artistName: artistName,
+                artistImageURL: URL(string: binding.creatorImage?.value ?? "")
             )
         } ?? []
 

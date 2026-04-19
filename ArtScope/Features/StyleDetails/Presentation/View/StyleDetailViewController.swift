@@ -115,7 +115,37 @@ final class StyleDetailViewController: UIViewController {
             },
             onBeginQuiz: { [style] in
                 print("[StyleDetail] quiz teaser tapped: style=\(style.name)")
+            }, onArtistSelected: { [weak self] artist in
+                self?.showArtistDetails(for: artist)
+            },
+            onWorkSelected: { [weak self] work in
+                self?.showWorkDetails(for: work)
             }
         )
+    }
+
+    private func showArtistDetails(for artist: StyleArtistItem) {
+        let preview = ArtistPreview(
+            id: artist.id,
+            name: artist.name,
+            summary: "",
+            imageURL: artist.imageURL
+        )
+        let vc = ArtistDetailsViewController(artist: preview)
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    private func showWorkDetails(for work: StyleWorkItem) {
+        let artistWork = ArtistWork(
+            id: work.id,
+            title: work.title,
+            imageURL: work.imageURL
+        )
+        let vc = WorkDetailsViewController(
+            work: artistWork,
+            artistName: work.artistName,
+            artistImageURL: work.artistImageURL
+        )
+        navigationController?.pushViewController(vc, animated: true)
     }
 }

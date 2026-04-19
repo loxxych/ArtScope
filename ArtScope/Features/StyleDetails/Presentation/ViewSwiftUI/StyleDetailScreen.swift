@@ -15,6 +15,8 @@ struct StyleDetailScreen: View {
     var onBack: (() -> Void)?
     var onRetry: (() -> Void)?
     var onBeginQuiz: (() -> Void)?
+    var onArtistSelected: ((StyleArtistItem) -> Void)?
+    var onWorkSelected: ((StyleWorkItem) -> Void)?
     @State private var isDescriptionExpanded = false
 
     private let headerHeight: CGFloat = 84
@@ -165,7 +167,10 @@ struct StyleDetailScreen: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(alignment: .top, spacing: 12) {
                         ForEach(content.artists) { artist in
-                            StyleArtistAvatarView(artist: artist)
+                            StyleArtistAvatarView(
+                                artist: artist,
+                                onTap: { onArtistSelected?(artist) }
+                            )
                         }
                     }
                     .padding(.top, 4)
@@ -189,7 +194,10 @@ struct StyleDetailScreen: View {
 
                 LazyVGrid(columns: workColumns, alignment: .leading, spacing: 16) {
                     ForEach(content.works) { work in
-                        StyleWorkCardView(work: work)
+                        StyleWorkCardView(
+                            work: work,
+                            onTap: { onWorkSelected?(work) }
+                        )
                     }
                 }
             }

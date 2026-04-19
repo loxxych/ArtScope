@@ -137,13 +137,14 @@ enum WikidataEndpoint {
         PREFIX wd: <http://www.wikidata.org/entity/>
         PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 
-        SELECT DISTINCT ?work ?workLabel ?image WHERE {
+        SELECT DISTINCT ?work ?workLabel ?image ?creatorLabel ?creatorImage WHERE {
           ?work wdt:P135 wd:\(entityID);
                 wdt:P170 ?creator;
                 wdt:P18 ?image;
                 wdt:P31 ?instanceOf.
 
           FILTER(?instanceOf != wd:Q5)
+          OPTIONAL { ?creator wdt:P18 ?creatorImage. }
 
           SERVICE wikibase:label {
             bd:serviceParam wikibase:language "en".

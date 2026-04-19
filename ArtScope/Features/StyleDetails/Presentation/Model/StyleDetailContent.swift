@@ -26,6 +26,8 @@ struct StyleWorkItem: Identifiable {
     let id: String
     let title: String
     let imageURL: URL?
+    let artistName: String
+    let artistImageURL: URL?
 }
 
 enum StyleDetailSampleData {
@@ -60,17 +62,23 @@ enum StyleDetailSampleData {
             StyleWorkItem(
                 id: "great-masturbator",
                 title: "The great masturbator",
-                imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/en/b/b5/The_Great_Masturbator.jpg")
+                imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/en/b/b5/The_Great_Masturbator.jpg"),
+                artistName: "Salvador Dali",
+                artistImageURL: URL(string: "https://upload.wikimedia.org/wikipedia/commons/2/24/Salvador_Dal%C3%AD_1939.jpg")
             ),
             StyleWorkItem(
                 id: "persistence-of-memory",
                 title: "The Persistence of Memory",
-                imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg")
+                imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg"),
+                artistName: "Salvador Dali",
+                artistImageURL: URL(string: "https://upload.wikimedia.org/wikipedia/commons/2/24/Salvador_Dal%C3%AD_1939.jpg")
             ),
             StyleWorkItem(
                 id: "metamorphosis-of-narcissus",
                 title: "Metamorphosis of Narcissus",
-                imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/en/8/8b/MetamorphosisOfNarcissus.jpg")
+                imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/en/8/8b/MetamorphosisOfNarcissus.jpg"),
+                artistName: "Salvador Dali",
+                artistImageURL: URL(string: "https://upload.wikimedia.org/wikipedia/commons/2/24/Salvador_Dal%C3%AD_1939.jpg")
             )
         ]
     )
