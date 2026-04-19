@@ -5,18 +5,14 @@
 //  Created by loxxy on 22.01.2026.
 //
 
+import SwiftUI
 import UIKit
 
 final class SearchViewController: UIViewController {
-    // MARK: - Constants
-    private enum Constants {
-        // Colors
-        static let backgroundColor: UIColor = UIColor(named: "ArtScopeGreen") ?? .green
-    }
+    private let hostingController = UIHostingController(
+        rootView: SearchScreen(content: SearchSampleData.content)
+    )
     
-    // MARK: - Fields
-    
-    // MARK: - Lifecycle
     init() {
         super.init(nibName: nil, bundle: nil)
     }
@@ -27,13 +23,21 @@ final class SearchViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
+        embedHostingController()
     }
 
-    // MARK: - UI Configuration
-    private func configureUI() {
-        view.backgroundColor = Constants.backgroundColor
-    }
+    private func embedHostingController() {
+        addChild(hostingController)
+        view.addSubview(hostingController.view)
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
 
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
+        hostingController.didMove(toParent: self)
+    }
 }
-
