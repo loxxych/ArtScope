@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDetailsService {
+final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDetailsService, StyleDetailsService {
     private struct StyleSeed {
         let id: String
         let name: String
@@ -88,6 +88,80 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
                 }
                 completion(.success(ordered))
             }
+        }
+    }
+
+    func fetchStyleDetails(
+        style: StylePreview,
+        completion: @escaping (Result<StyleDetailContent, Error>) -> Void
+    ) {
+        let seed = styleSeed(for: style)
+        let wikipediaTitle = seed?.wikipediaTitle ?? style.name
+
+        let lock = NSLock()
+        let group = DispatchGroup()
+        var summary: WikipediaStyleSummaryDTO?
+        var summaryError: Error?
+        var entityID: String?
+        var entityError: Error?
+
+        group.enter()
+        client.request(WikidataEndpoint.wikipediaStyleSummary(title: wikipediaTitle)) { (result: Result<WikipediaStyleSummaryDTO, Error>) in
+            lock.lock()
+            defer {
+                lock.unlock()
+                group.leave()
+            }
+
+            switch result {
+            case let .success(dto):
+                summary = dto
+            case let .failure(error):
+                summaryError = error
+            }
+        }
+
+        group.enter()
+        client.request(WikidataEndpoint.styleEntity(wikipediaTitle: wikipediaTitle)) { (result: Result<WikiDataStyleEntityDTO, Error>) in
+            lock.lock()
+            defer {
+                lock.unlock()
+                group.leave()
+            }
+
+            switch result {
+            case let .success(dto):
+                entityID = Self.entityID(from: dto.results.bindings.first?.style?.value)
+            case let .failure(error):
+                entityError = error
+            }
+        }
+
+        group.notify(queue: .global()) {
+            guard let entityID else {
+                if let summary {
+                    completion(.success(
+                        StyleDetailMapper.map(
+                            style: style,
+                            description: summary.extract,
+                            fallbackImageURL: URL(string: summary.thumbnail?.source ?? "") ?? style.imageURL,
+                            artistsDTO: nil,
+                            worksDTO: nil
+                        )
+                    ))
+                } else {
+                    completion(.failure(entityError ?? summaryError ?? NetworkError.noData))
+                }
+                return
+            }
+
+            self.fetchStyleRelations(
+                style: style,
+                entityID: entityID,
+                summary: summary,
+                summaryError: summaryError,
+                completion: completion
+            )
         }
     }
     
@@ -237,5 +311,82 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
                 )
             }
         }
+    }
+
+    private func fetchStyleRelations(
+        style: StylePreview,
+        entityID: String,
+        summary: WikipediaStyleSummaryDTO?,
+        summaryError: Error?,
+        completion: @escaping (Result<StyleDetailContent, Error>) -> Void
+    ) {
+        let group = DispatchGroup()
+        let lock = NSLock()
+        var artistsDTO: WikiDataStyleArtistsDTO?
+        var worksDTO: WikiDataStyleWorksDTO?
+        var capturedError: Error?
+
+        group.enter()
+        client.request(WikidataEndpoint.styleArtists(entityID: entityID, limit: 8)) { (result: Result<WikiDataStyleArtistsDTO, Error>) in
+            lock.lock()
+            defer {
+                lock.unlock()
+                group.leave()
+            }
+
+            switch result {
+            case let .success(dto):
+                artistsDTO = dto
+            case let .failure(error):
+                if capturedError == nil {
+                    capturedError = error
+                }
+            }
+        }
+
+        group.enter()
+        client.request(WikidataEndpoint.styleWorks(entityID: entityID, limit: 8)) { (result: Result<WikiDataStyleWorksDTO, Error>) in
+            lock.lock()
+            defer {
+                lock.unlock()
+                group.leave()
+            }
+
+            switch result {
+            case let .success(dto):
+                worksDTO = dto
+            case let .failure(error):
+                if capturedError == nil {
+                    capturedError = error
+                }
+            }
+        }
+
+        group.notify(queue: .global()) {
+            let content = StyleDetailMapper.map(
+                style: style,
+                description: summary?.extract,
+                fallbackImageURL: URL(string: summary?.thumbnail?.source ?? "") ?? style.imageURL,
+                artistsDTO: artistsDTO,
+                worksDTO: worksDTO
+            )
+
+            if summary == nil, artistsDTO == nil, worksDTO == nil, let capturedError {
+                completion(.failure(summaryError ?? capturedError))
+            } else {
+                completion(.success(content))
+            }
+        }
+    }
+
+    private func styleSeed(for style: StylePreview) -> StyleSeed? {
+        StyleConstants.seeds.first { seed in
+            seed.id == style.id || seed.name.caseInsensitiveCompare(style.name) == .orderedSame
+        }
+    }
+
+    private static func entityID(from entityValue: String?) -> String? {
+        guard let entityValue else { return nil }
+        return URL(string: entityValue)?.lastPathComponent ?? entityValue.components(separatedBy: "/").last
     }
 }

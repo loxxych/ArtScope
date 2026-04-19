@@ -27,15 +27,15 @@ struct StyleArtistAvatarView: View {
                         )
                 }
             }
-            .frame(width: 62, height: 62)
+            .frame(width: 82, height: 82)
             .clipShape(Circle())
 
             Text(artist.name)
-                .font(StyleTheme.bodyFont(size: 11))
+                .font(StyleTheme.bodyFont(size: 15))
                 .foregroundStyle(StyleTheme.darkText)
                 .multilineTextAlignment(.center)
-                .frame(width: 72)
-                .lineLimit(2)
+                .frame(width: 110)
+                .lineLimit(3)
         }
     }
 }

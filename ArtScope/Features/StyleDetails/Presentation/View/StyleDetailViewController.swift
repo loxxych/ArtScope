@@ -10,27 +10,26 @@ import UIKit
 
 final class StyleDetailViewController: UIViewController {
     private let style: StylePreview
+    private let viewModel: StyleDetailViewModel
     private let hostingController: UIHostingController<StyleDetailScreen>
+    private var currentState: StyleDetailViewModel.State = .loading
 
-    init(style: StylePreview) {
+    init(
+        style: StylePreview,
+        service: StyleDetailsService = WikiDataArtistService(client: URLSessionNetworkClient())
+    ) {
         self.style = style
-
-        let content = StyleDetailViewController.makeContent(from: style)
+        self.viewModel = StyleDetailViewModel(service: service)
         self.hostingController = UIHostingController(
-            rootView: StyleDetailScreen(content: content)
+            rootView: StyleDetailScreen(
+                screenTitle: style.name,
+                content: nil,
+                isLoading: true,
+                errorMessage: nil
+            )
         )
 
         super.init(nibName: nil, bundle: nil)
-
-        hostingController.rootView = StyleDetailScreen(
-            content: content,
-            onBack: { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
-            },
-            onBeginQuiz: {
-                print("[StyleDetail] quiz teaser tapped: style=\(style.name)")
-            }
-        )
     }
 
     required init?(coder: NSCoder) {
@@ -52,7 +51,9 @@ final class StyleDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "ArtScopeGreen") ?? .systemYellow
+        bindViewModel()
         embedHostingController()
+        loadStyleDetails()
     }
 
     private func embedHostingController() {
@@ -70,15 +71,51 @@ final class StyleDetailViewController: UIViewController {
         hostingController.didMove(toParent: self)
     }
 
-    private static func makeContent(from style: StylePreview) -> StyleDetailContent {
-        let sample = StyleDetailSampleData.impressionism
-        return StyleDetailContent(
-            id: style.id,
-            title: style.name,
-            description: sample.description,
-            heroImageURL: style.imageURL ?? sample.heroImageURL,
-            artists: sample.artists,
-            works: sample.works
+    private func bindViewModel() {
+        viewModel.onStateChanged = { [weak self] state in
+            self?.currentState = state
+            self?.render()
+        }
+    }
+
+    private func loadStyleDetails() {
+        viewModel.load(style: style)
+    }
+
+    private func render() {
+        let content: StyleDetailContent?
+        let isLoading: Bool
+        let errorMessage: String?
+
+        switch currentState {
+        case .loading:
+            content = nil
+            isLoading = true
+            errorMessage = nil
+        case let .loaded(loadedContent):
+            content = loadedContent
+            isLoading = false
+            errorMessage = nil
+        case let .failed(message):
+            content = nil
+            isLoading = false
+            errorMessage = message
+        }
+
+        hostingController.rootView = StyleDetailScreen(
+            screenTitle: style.name,
+            content: content,
+            isLoading: isLoading,
+            errorMessage: errorMessage,
+            onBack: { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+            },
+            onRetry: { [weak self] in
+                self?.loadStyleDetails()
+            },
+            onBeginQuiz: { [style] in
+                print("[StyleDetail] quiz teaser tapped: style=\(style.name)")
+            }
         )
     }
 }

@@ -74,6 +74,86 @@ enum WikidataEndpoint {
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         return request
     }
+
+    static func styleEntity(wikipediaTitle: String) -> URLRequest {
+        let components = URLComponents(
+            url: baseURL.appendingPathComponent("sparql"),
+            resolvingAgainstBaseURL: false
+        )!
+
+        let query = """
+        PREFIX schema: <http://schema.org/>
+
+        SELECT DISTINCT ?style WHERE {
+          ?article schema:about ?style;
+                   schema:isPartOf <https://en.wikipedia.org/>;
+                   schema:name "\(wikipediaTitle)"@en.
+        }
+        LIMIT 1
+        """
+
+        return makeRequest(components: components, query: query)
+    }
+
+    static func styleArtists(entityID: String, limit: Int) -> URLRequest {
+        let components = URLComponents(
+            url: baseURL.appendingPathComponent("sparql"),
+            resolvingAgainstBaseURL: false
+        )!
+
+        let query = """
+        PREFIX bd: <http://www.bigdata.com/rdf#>
+        PREFIX wikibase: <http://wikiba.se/ontology#>
+        PREFIX wd: <http://www.wikidata.org/entity/>
+        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+
+        SELECT DISTINCT ?artist ?artistLabel ?image WHERE {
+          ?artist wdt:P31 wd:Q5;
+                  wdt:P106 ?occupation;
+                  wdt:P135 wd:\(entityID);
+                  wdt:P18 ?image.
+
+          ?occupation wdt:P279* wd:Q1028181.
+
+          SERVICE wikibase:label {
+            bd:serviceParam wikibase:language "en".
+          }
+        }
+        LIMIT \(limit)
+        """
+
+        return makeRequest(components: components, query: query)
+    }
+
+    static func styleWorks(entityID: String, limit: Int) -> URLRequest {
+        let components = URLComponents(
+            url: baseURL.appendingPathComponent("sparql"),
+            resolvingAgainstBaseURL: false
+        )!
+
+        let query = """
+        PREFIX bd: <http://www.bigdata.com/rdf#>
+        PREFIX wikibase: <http://wikiba.se/ontology#>
+        PREFIX wd: <http://www.wikidata.org/entity/>
+        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+
+        SELECT DISTINCT ?work ?workLabel ?image WHERE {
+          ?work wdt:P135 wd:\(entityID);
+                wdt:P170 ?creator;
+                wdt:P18 ?image;
+                wdt:P31 ?instanceOf.
+
+          FILTER(?instanceOf != wd:Q5)
+
+          SERVICE wikibase:label {
+            bd:serviceParam wikibase:language "en".
+          }
+        }
+        LIMIT \(limit)
+        """
+
+        return makeRequest(components: components, query: query)
+    }
     
     static func artistDetails(entityID: String) -> URLRequest {
         let components = URLComponents(
