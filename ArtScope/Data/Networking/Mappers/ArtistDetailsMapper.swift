@@ -11,7 +11,8 @@ enum ArtistDetailsMapper {
     static func map(
         details dto: WikiDataArtistDetailsDTO,
         preview: ArtistPreview,
-        wikipediaSummary: String?
+        wikipediaSummary: String?,
+        relatedStyles: [String]
     ) -> ArtistDetailsContent {
         let binding = dto.results.bindings.first
         let realName = binding?.birthName?.value ?? preview.name
@@ -29,7 +30,8 @@ enum ArtistDetailsMapper {
             realName: realName,
             biography: biography,
             lifeSpan: lifeSpan,
-            imageURL: preview.imageURL
+            imageURL: preview.imageURL,
+            relatedStyles: relatedStyles
         )
     }
     

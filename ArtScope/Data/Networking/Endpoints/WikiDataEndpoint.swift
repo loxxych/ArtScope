@@ -197,6 +197,39 @@ enum WikidataEndpoint {
         
         return makeRequest(components: components, query: query)
     }
+
+    static func artistRelatedStyles(entityID: String, limit: Int) -> URLRequest {
+        let components = URLComponents(
+            url: baseURL.appendingPathComponent("sparql"),
+            resolvingAgainstBaseURL: false
+        )!
+
+        let query = """
+        PREFIX bd: <http://www.bigdata.com/rdf#>
+        PREFIX wikibase: <http://wikiba.se/ontology#>
+        PREFIX wd: <http://www.wikidata.org/entity/>
+        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+
+        SELECT DISTINCT ?movement ?movementLabel WHERE {
+          BIND(wd:\(entityID) AS ?artist)
+          {
+            ?artist wdt:P135 ?movement.
+          }
+          UNION
+          {
+            ?work wdt:P170 ?artist;
+                  wdt:P135 ?movement.
+          }
+
+          SERVICE wikibase:label {
+            bd:serviceParam wikibase:language "en".
+          }
+        }
+        LIMIT \(limit)
+        """
+
+        return makeRequest(components: components, query: query)
+    }
     
     static func artistWorks(entityID: String, limit: Int) -> URLRequest {
         let components = URLComponents(

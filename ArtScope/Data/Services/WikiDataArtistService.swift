@@ -182,12 +182,34 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
                     binding?.birthName?.value,
                     preview.name
                 ]
-                self.fetchWikipediaExtract(from: candidateTitles) { summary in
+                let group = DispatchGroup()
+                let lock = NSLock()
+                var summary: String?
+                var relatedStyles: [String] = []
+
+                group.enter()
+                self.fetchWikipediaExtract(from: candidateTitles) { extract in
+                    lock.lock()
+                    summary = extract
+                    lock.unlock()
+                    group.leave()
+                }
+
+                group.enter()
+                self.fetchArtistRelatedStyles(entityID: entityID) { styles in
+                    lock.lock()
+                    relatedStyles = styles
+                    lock.unlock()
+                    group.leave()
+                }
+
+                group.notify(queue: .global()) {
                     completion(.success(
                         ArtistDetailsMapper.map(
                             details: dto,
                             preview: preview,
-                            wikipediaSummary: summary
+                            wikipediaSummary: summary,
+                            relatedStyles: relatedStyles
                         )
                     ))
                 }
@@ -388,5 +410,27 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
     private static func entityID(from entityValue: String?) -> String? {
         guard let entityValue else { return nil }
         return URL(string: entityValue)?.lastPathComponent ?? entityValue.components(separatedBy: "/").last
+    }
+
+    private func fetchArtistRelatedStyles(
+        entityID: String,
+        completion: @escaping ([String]) -> Void
+    ) {
+        let request = WikidataEndpoint.artistRelatedStyles(entityID: entityID, limit: 24)
+
+        client.request(request) { (result: Result<WikiDataArtistRelatedStylesDTO, Error>) in
+            switch result {
+            case let .success(dto):
+                let styles = Array(
+                    NSOrderedSet(array: dto.results.bindings.compactMap { binding in
+                        let label = binding.movementLabel?.value.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                        return label.isEmpty ? nil : label
+                    })
+                ) as? [String] ?? []
+                completion(styles)
+            case .failure:
+                completion([])
+            }
+        }
     }
 }

@@ -13,6 +13,7 @@ struct ArtistDetailsContent {
     let biography: String
     let lifeSpan: String
     let imageURL: URL?
+    let relatedStyles: [String]
 }
 
 struct ArtistWork {

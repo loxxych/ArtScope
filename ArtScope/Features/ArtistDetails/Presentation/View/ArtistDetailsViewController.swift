@@ -55,10 +55,7 @@ final class ArtistDetailsViewController: UIViewController {
     private let biographySectionView = ArtistTextSectionView(title: "Biography")
     private let worksSectionView = ArtistWorksSectionView()
     private let relatedSectionView = ArtistRelatedSectionView(
-        items: [
-            .init(title: "Modern Art", subtitle: "A movement of experimentation and new visual language."),
-            .init(title: "Portraiture", subtitle: "Artists and eras focused on character, likeness and identity.")
-        ]
+        items: []
     )
     private let quizSectionView = ArtistQuizPlaceholderView()
     private var portraitImageURL: URL?
@@ -288,7 +285,8 @@ final class ArtistDetailsViewController: UIViewController {
             realName: artist.name,
             biography: artist.summary,
             lifeSpan: "Life dates unavailable",
-            imageURL: artist.imageURL
+            imageURL: artist.imageURL,
+            relatedStyles: []
         )
         
         apply(details: initial)
@@ -303,6 +301,15 @@ final class ArtistDetailsViewController: UIViewController {
         identitySectionView.configure(name: details.displayName, lifeSpan: details.lifeSpan)
         realNameSectionView.updateBody(details.realName)
         biographySectionView.updateBody(details.biography)
+        relatedSectionView.update(
+            with: details.relatedStyles.map {
+                ArtistRelatedSectionView.Item(
+                    title: $0,
+                    subtitle: "An artistic movement associated with \(details.displayName)."
+                )
+            }
+        )
+        relatedSectionView.isHidden = details.relatedStyles.isEmpty
         loadPortraitImage(from: details.imageURL)
     }
 

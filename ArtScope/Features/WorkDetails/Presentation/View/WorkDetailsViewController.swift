@@ -74,7 +74,6 @@ final class WorkDetailsViewController: UIViewController {
     private let dividerView = UIView()
     private let infoLabel = UILabel()
     private let infoActionButton = UIButton(type: .system)
-    private var relatedSectionView = ArtistRelatedSectionView(items: [])
     private var isInfoExpanded = false
     private var currentInfoText: String?
     
@@ -287,7 +286,6 @@ final class WorkDetailsViewController: UIViewController {
         infoActionButton.pinBottom(to: infoContainer.bottomAnchor)
         infoActionButton.isHidden = true
         
-        contentStack.addArrangedSubview(relatedSectionView)
     }
     
     // MARK: - Data
@@ -317,16 +315,6 @@ final class WorkDetailsViewController: UIViewController {
         metadataLabel.text = details.metadataLine
         authorNameLabel.text = details.artistName
         updateInfoText(details.infoText)
-        contentStack.removeArrangedSubview(relatedSectionView)
-        relatedSectionView.removeFromSuperview()
-        
-        let relatedView = ArtistRelatedSectionView(
-            items: details.relatedItems.map {
-                ArtistRelatedSectionView.Item(title: $0.title, subtitle: $0.subtitle)
-            }
-        )
-        relatedSectionView = relatedView
-        contentStack.addArrangedSubview(relatedView)
         loadHeroImage(from: details.imageURL)
         loadArtistImage(from: artistImageURL)
     }
