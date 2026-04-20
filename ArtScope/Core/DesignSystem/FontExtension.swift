@@ -45,15 +45,21 @@ extension Font {
     static let ByteBounce28 = Font.custom("ByteBounce", size: 28)
     static let ByteBounce34 = Font.custom("ByteBounce", size: 34)
     static let ByteBounce41 = Font.custom("ByteBounce", size: 41)
+    static let ByteBounce48 = Font.custom("ByteBounce", size: 48)
     static let ByteBounce52 = Font.custom("ByteBounce", size: 52)
 
     static let InstrumentSansRegular11 = Font.custom("InstrumentSans-Regular", size: 11)
+    static let InstrumentSansRegular13 = Font.custom("InstrumentSans-Regular", size: 13)
     static let InstrumentSansRegular15 = Font.custom("InstrumentSans-Regular", size: 15)
+    static let InstrumentSansRegular16 = Font.custom("InstrumentSans-Regular", size: 16)
 
     static let InstrumentSansBold16 = Font.custom("InstrumentSans-Bold", size: 16)
+    static let InstrumentSansBold24 = Font.custom("InstrumentSans-Bold", size: 24)
+    static let InstrumentSansBold27 = Font.custom("InstrumentSans-Bold", size: 27)
     static let InstrumentSansBold29 = Font.custom("InstrumentSans-Bold", size: 29)
     static let InstrumentSansBold31 = Font.custom("InstrumentSans-Bold", size: 31)
 
+    static let InstrumentSansSemiBold15 = Font.custom("InstrumentSans-SemiBold", size: 15)
     static let InstrumentSansSemiBold16 = Font.custom("InstrumentSans-SemiBold", size: 16)
     static let InstrumentSansSemiBold18 = Font.custom("InstrumentSans-SemiBold", size: 18)
     static let InstrumentSansSemiBold26 = Font.custom("InstrumentSans-SemiBold", size: 26)
