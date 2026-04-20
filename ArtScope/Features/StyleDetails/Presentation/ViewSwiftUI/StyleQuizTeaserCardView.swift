@@ -13,11 +13,11 @@ struct StyleQuizTeaserCardView: View {
     var body: some View {
         VStack(spacing: 18) {
             Text("Test yourself!")
-                .font(StyleTheme.titleFont(size: 28))
+                .font(.ByteBounce28)
                 .foregroundStyle(StyleTheme.darkText)
 
             HStack {
-                Image(uiImage: AppImages.paintbrush ?? UIImage())
+                Image(uiImage: UIImage.artScopePaintbrush ?? UIImage())
                     .renderingMode(.template)
                     .resizable()
                     .scaledToFit()
@@ -28,7 +28,7 @@ struct StyleQuizTeaserCardView: View {
 
                 Button(action: { onBegin?() }) {
                     Text("Begin")
-                        .font(StyleTheme.bodyFont(size: 16, weight: .bold))
+                        .font(.InstrumentSansBold16)
                         .foregroundStyle(StyleTheme.lightText)
                         .frame(width: 118, height: 54)
                         .background(Color.black)
@@ -37,7 +37,7 @@ struct StyleQuizTeaserCardView: View {
 
                 Spacer()
 
-                Image(uiImage: AppImages.palette ?? UIImage())
+                Image(uiImage: UIImage.artScopePalette ?? UIImage())
                     .renderingMode(.template)
                     .resizable()
                     .scaledToFit()

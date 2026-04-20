@@ -15,12 +15,12 @@ final class SettingsItem : UIView {
         static let descriptionText: String = "Change your name and profile picture"
         
         // Images
-        static let userIcon: UIImage? = UIImage(named: "user-icon")
-        static let buttonImage: UIImage? = UIImage(named: "hand-point")
+        static let userIcon: UIImage? = UIImage.artScopeUserIcon
+        static let buttonImage: UIImage? = UIImage.artScopeHandPoint
         
         // Fonts
-        static let titleFont: UIFont? = UIFont(name: "InstrumentSans-SemiBold", size: 17)
-        static let descriptionFont: UIFont? = UIFont(name: "InstrumentSans-Regular", size: 13)
+        static let titleFont: UIFont? = UIFont.InstrumentSansSemiBold17
+        static let descriptionFont: UIFont? = UIFont.InstrumentSansRegular13
         
         // UI Constraint properties
         static let titleDescriptionLeft: CGFloat = 18

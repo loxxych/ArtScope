@@ -50,7 +50,7 @@ final class StyleDetailViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(named: "ArtScopeGreen") ?? .systemYellow
+        view.backgroundColor = .artScopeGreen
         bindViewModel()
         embedHostingController()
         loadStyleDetails()

@@ -12,7 +12,7 @@ final class ArtistQuizExplanationView: UIView {
         static let cornerRadius: CGFloat = 8
         static let inset: CGFloat = 14
         static let backgroundColor: UIColor = .white
-        static let font: UIFont = UIFont(name: "InstrumentSans-Regular", size: 13) ?? .systemFont(ofSize: 13)
+        static let font: UIFont = .InstrumentSansRegular13
         static let textColor: UIColor = .black
     }
     
@@ -49,7 +49,7 @@ final class ArtistQuizExplanationView: UIView {
         textLabel.pinLeft(to: leadingAnchor, Constants.inset)
         textLabel.pinRight(to: trailingAnchor, 44, .lsOE)
         
-        iconView.image = AppImages.info
+        iconView.image = UIImage.artScopeInfo
         iconView.tintColor = .black
         iconView.contentMode = .scaleAspectFit
         iconView.setWidth(22)

@@ -10,7 +10,7 @@ import UIKit
 final class ArtistDetailsViewController: UIViewController {
     // MARK: - Constants
     private enum Constants {
-        static let backgroundColor: UIColor = UIColor(named: "ArtScopeGreen") ?? .systemYellow
+        static let backgroundColor: UIColor = .artScopeGreen
         static let headerBackgroundColor: UIColor = .black
         static let headerTextColor: UIColor = .white
         static let backButtonTintColor: UIColor = .white
@@ -31,7 +31,7 @@ final class ArtistDetailsViewController: UIViewController {
         static let contentBottom: CGFloat = 300
         static let portraitBorderWidth: CGFloat = 5
         static let gradientLocations: [NSNumber] = [0.0, 0.55, 0.82, 1.0]
-        static let headerTitleFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 18) ?? .boldSystemFont(ofSize: 18)
+        static let headerTitleFont: UIFont = .InstrumentSansBold18
         static let headerTitleLinesCount: Int = 1
     }
     
@@ -147,7 +147,7 @@ final class ArtistDetailsViewController: UIViewController {
         heroImageView.backgroundColor = Constants.heroPlaceholderColor
         heroImageView.contentMode = .scaleAspectFill
         heroImageView.clipsToBounds = true
-        heroImageView.image = AppImages.defaultArtistPreview
+        heroImageView.image = UIImage.artScopeDefaultArtistPreview
         heroImageView.pinTop(to: contentView.topAnchor)
         heroImageView.pinHorizontal(to: contentView)
         heroImageView.setHeight(Constants.heroHeight)
@@ -174,7 +174,7 @@ final class ArtistDetailsViewController: UIViewController {
         portraitImageView.clipsToBounds = true
         portraitImageView.layer.borderWidth = Constants.portraitBorderWidth
         portraitImageView.layer.borderColor = Constants.portraitBorderColor
-        portraitImageView.image = AppImages.defaultArtistPreview
+        portraitImageView.image = UIImage.artScopeDefaultArtistPreview
         portraitImageView.setWidth(Constants.portraitSize)
         portraitImageView.setHeight(Constants.portraitSize)
         portraitImageView.pinTop(to: heroImageView.bottomAnchor, -Constants.portraitOverlap)
@@ -338,7 +338,7 @@ final class ArtistDetailsViewController: UIViewController {
     private func loadPortraitImage(from imageURL: URL?) {
         RemoteImageLoader.shared.loadImage(from: imageURL) { [weak self] image in
             DispatchQueue.main.async {
-                self?.portraitImageView.image = image ?? AppImages.defaultArtistPreview
+                self?.portraitImageView.image = image ?? UIImage.artScopeDefaultArtistPreview
             }
         }
     }
@@ -348,7 +348,7 @@ final class ArtistDetailsViewController: UIViewController {
         
         RemoteImageLoader.shared.loadImage(from: fallbackURL) { [weak self] image in
             DispatchQueue.main.async {
-                self?.heroImageView.image = image ?? AppImages.defaultArtistPreview
+                self?.heroImageView.image = image ?? UIImage.artScopeDefaultArtistPreview
             }
         }
     }

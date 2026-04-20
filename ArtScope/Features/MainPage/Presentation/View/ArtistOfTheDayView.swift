@@ -43,10 +43,10 @@ final class ArtistOfTheDayView : UIView {
         static let learnMoreButtonText: String = "Learn more"
         
         // Fonts
-        static let titleFont: UIFont? = UIFont(name: "ByteBounce", size: 41)
-        static let artistNameFont: UIFont? = UIFont(name: "InstrumentSans-Bold", size: 20)
-        static let descriptionFont: UIFont? = UIFont(name: "InstrumentSans-Regular", size: 11)
-        static let buttonFont: UIFont? = UIFont(name: "InstrumentSans-SemiBold", size: 15)
+        static let titleFont: UIFont? = UIFont.ByteBounce41
+        static let artistNameFont: UIFont? = UIFont.InstrumentSansBold20
+        static let descriptionFont: UIFont? = UIFont.InstrumentSansRegular11
+        static let buttonFont: UIFont? = UIFont.InstrumentSansSemiBold15
         
         // Colors
         static let wrapColor: UIColor = .artScopePink
@@ -57,7 +57,7 @@ final class ArtistOfTheDayView : UIView {
         static let titleBorderColor: CGColor = CGColor(red: 55/255, green: 113/255, blue: 255/255, alpha: 1)
         
         // Images
-        static let paletteImage: UIImage = .palette
+        static let paletteImage: UIImage = .paletteIcon
     }
     
     // MARK: - Fields
@@ -195,7 +195,7 @@ final class ArtistOfTheDayView : UIView {
     private func configureArtistImageView() {
         addSubview(artistImageView)
         
-        artistImageView.image = AppImages.defaultArtistPreview
+        artistImageView.image = UIImage.artScopeDefaultArtistPreview
         artistImageView.clipsToBounds = true
         artistImageView.contentMode = .scaleAspectFill
         
@@ -209,13 +209,13 @@ final class ArtistOfTheDayView : UIView {
         currentImageURL = artist.imageURL
         artistNameLabel.text = artist.name
         descirptionLabel.text = artist.summary
-        artistImageView.image = AppImages.defaultArtistPreview
+        artistImageView.image = UIImage.artScopeDefaultArtistPreview
         
         RemoteImageLoader.shared.loadImage(from: artist.imageURL) { [weak self] image in
             guard let self, self.currentImageURL == artist.imageURL else { return }
             
             DispatchQueue.main.async {
-                self.artistImageView.image = image ?? AppImages.defaultArtistPreview
+                self.artistImageView.image = image ?? UIImage.artScopeDefaultArtistPreview
             }
         }
     }

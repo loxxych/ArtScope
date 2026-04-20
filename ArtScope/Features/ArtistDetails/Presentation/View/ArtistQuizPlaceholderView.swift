@@ -16,8 +16,8 @@ final class ArtistQuizPlaceholderView: UIView {
         static let unavailableSubtitleText: String = "We couldn't generate a quiz for this artist right now."
         static let titleBottomSpacing: CGFloat = 6
         static let cardTopSpacing: CGFloat = 12
-        static let titleFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 27) ?? .boldSystemFont(ofSize: 27)
-        static let subtitleFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 15) ?? .systemFont(ofSize: 15)
+        static let titleFont: UIFont = .InstrumentSansBold27
+        static let subtitleFont: UIFont = .InstrumentSansRegular15
         static let bodyLinesCount: Int = 0
         static let statusCardHeight: CGFloat = 190
         static let readyCardHeight: CGFloat = 190

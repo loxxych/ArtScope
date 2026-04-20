@@ -29,12 +29,12 @@ final class EditProfileViewController: UIViewController {
         static let nameFieldTitle: String = "Name"
 
         // Fonts
-        static let titleFont: UIFont = UIFont(name: "ByteBounce", size: 49) ?? .systemFont(ofSize: 49)
-        static let saveButtonFont: UIFont = UIFont(name: "InstrumentSans-SemiBold", size: 20) ?? .systemFont(ofSize: 20, weight: .semibold)
+        static let titleFont: UIFont = .ByteBounce49
+        static let saveButtonFont: UIFont = .InstrumentSansSemiBold20
 
         // Colors
-        static let backgroundColor: UIColor = UIColor(named: "ArtScopeGreen") ?? .green
-        static let saveButtonColor: UIColor = UIColor(named: "ArtScopeBlue") ?? .systemBlue
+        static let backgroundColor: UIColor = .artScopeGreen
+        static let saveButtonColor: UIColor = .artScopeBlue
         static let saveButtonTextColor: UIColor = .white
         static let accentColor: UIColor = .black
 

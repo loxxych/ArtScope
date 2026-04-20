@@ -18,7 +18,7 @@ final class SettingsView : UIView {
         static let titleText: String = "Settings"
         
         // Fonts
-        static let titleFont: UIFont? = UIFont(name: "InstrumentSans-Bold", size: 27)
+        static let titleFont: UIFont? = UIFont.InstrumentSansBold27
     }
     
     // MARK: - Fields

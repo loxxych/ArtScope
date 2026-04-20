@@ -17,7 +17,7 @@ final class ArtistPreviewViewCell : UICollectionViewCell {
         static let reuseId: String = "ArtistPreviewViewCell"
         
         // Fonts
-        static let font: UIFont? = UIFont(name: "InstrumentSans-Regular", size: 15)
+        static let font: UIFont? = UIFont.InstrumentSansRegular15
     }
     
     // MARK: - Fields
@@ -48,19 +48,19 @@ final class ArtistPreviewViewCell : UICollectionViewCell {
         super.prepareForReuse()
         currentImageURL = nil
         nameLabel.text = nil
-        imageView.image = AppImages.defaultArtistPreview
+        imageView.image = UIImage.artScopeDefaultArtistPreview
     }
     
     func configure(with artist: ArtistPreview) {
         currentImageURL = artist.imageURL
         nameLabel.text = artist.name
-        imageView.image = AppImages.defaultArtistPreview
+        imageView.image = UIImage.artScopeDefaultArtistPreview
         
         RemoteImageLoader.shared.loadImage(from: artist.imageURL) { [weak self] image in
             guard let self, self.currentImageURL == artist.imageURL else { return }
             
             DispatchQueue.main.async {
-                self.imageView.image = image ?? AppImages.defaultArtistPreview
+                self.imageView.image = image ?? UIImage.artScopeDefaultArtistPreview
             }
         }
     }

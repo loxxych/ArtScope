@@ -23,7 +23,7 @@ final class ProfileViewController: UIViewController {
         static let strapHeight: CGFloat = 1
 
         // Fonts
-        static let titleFont: UIFont = UIFont(name: "ByteBounce", size: 49) ?? .systemFont(ofSize: 49)
+        static let titleFont: UIFont = .ByteBounce49
 
         // Strings
         static let titleText: String = "My profile"

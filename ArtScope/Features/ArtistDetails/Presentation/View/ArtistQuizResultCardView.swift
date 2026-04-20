@@ -9,7 +9,7 @@ import UIKit
 
 final class ArtistQuizResultCardView: UIView {
     private enum Constants {
-        static let backgroundColor: UIColor = UIColor(named: "ArtScopePink") ?? .systemPink
+        static let backgroundColor: UIColor = .artScopePink
         static let cornerRadius: CGFloat = 18
         static let inset: CGFloat = 20
         static let iconTopSpacing: CGFloat = 4
@@ -20,14 +20,14 @@ final class ArtistQuizResultCardView: UIView {
         static let buttonTopSpacing: CGFloat = 26
         static let iconSize: CGFloat = 80
         static let progressHeight: CGFloat = 10
-        static let titleFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 27) ?? .boldSystemFont(ofSize: 27)
-        static let subtitleFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 15) ?? .systemFont(ofSize: 15)
-        static let scoreFont: UIFont = UIFont(name: "ByteBounce", size: 48) ?? .boldSystemFont(ofSize: 48)
+        static let titleFont: UIFont = .InstrumentSansBold27
+        static let subtitleFont: UIFont = .InstrumentSansRegular15
+        static let scoreFont: UIFont = .ByteBounce48
         static let titleText: String = "Congratulations!"
         static let subtitleText: String = "You did great! Keep going at it."
         static let retryTitle: String = "Retry"
-        static let progressTrackColor: UIColor = UIColor(named: "ArtScopeBlue")?.withAlphaComponent(0.3) ?? .systemBlue.withAlphaComponent(0.3)
-        static let progressFillColor: UIColor = UIColor(named: "ArtScopeBlue") ?? .systemBlue
+        static let progressTrackColor: UIColor = UIColor.artScopeBlue.withAlphaComponent(0.3)
+        static let progressFillColor: UIColor = .artScopeBlue
     }
     
     private let iconView = UIImageView()
@@ -66,7 +66,7 @@ final class ArtistQuizResultCardView: UIView {
         addSubview(progressView)
         addSubview(retryButton)
         
-        iconView.image = AppImages.leaderboard?.withRenderingMode(.alwaysTemplate)
+        iconView.image = UIImage.artScopeLeaderboard?.withRenderingMode(.alwaysTemplate)
         iconView.tintColor = UIColor(red: 236/255, green: 244/255, blue: 87/255, alpha: 1)
         iconView.contentMode = .scaleAspectFit
         iconView.setWidth(Constants.iconSize)
@@ -90,7 +90,7 @@ final class ArtistQuizResultCardView: UIView {
         subtitleLabel.pinHorizontal(to: self, Constants.inset)
         
         scoreLabel.font = Constants.scoreFont
-        scoreLabel.textColor = UIColor(named: "ArtScopeBlue") ?? .systemBlue
+        scoreLabel.textColor = .artScopeBlue
         scoreLabel.textAlignment = .center
         scoreLabel.pinTop(to: subtitleLabel.bottomAnchor, Constants.scoreTopSpacing)
         scoreLabel.pinHorizontal(to: self, Constants.inset)
@@ -106,7 +106,7 @@ final class ArtistQuizResultCardView: UIView {
         retryButton.setTitle(Constants.retryTitle, for: .normal)
         retryButton.setImage(UIImage(systemName: "arrow.clockwise"), for: .normal)
         retryButton.semanticContentAttribute = .forceRightToLeft
-        retryButton.titleLabel?.font = UIFont(name: "InstrumentSans-SemiBold", size: 15) ?? .systemFont(ofSize: 15, weight: .semibold)
+        retryButton.titleLabel?.font = .InstrumentSansSemiBold15
         retryButton.tintColor = .white
         retryButton.backgroundColor = .black
         retryButton.layer.cornerRadius = 20

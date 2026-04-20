@@ -18,7 +18,7 @@ final class MainPageViewController: UIViewController {
         static let stylesSectionHeight: CGFloat = 260
         
         // Colors
-        static let backgroundColor: UIColor = UIColor(named: "ArtScopeGreen") ?? .green
+        static let backgroundColor: UIColor = .artScopeGreen
     }
     
     // MARK: - Fields

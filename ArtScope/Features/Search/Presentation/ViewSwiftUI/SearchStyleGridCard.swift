@@ -9,34 +9,57 @@ import SwiftUI
 
 struct SearchStyleGridCard: View {
     let item: SearchStyleItem
+    let onTap: () -> Void
 
     var body: some View {
-        ZStack(alignment: .bottomLeading) {
-            AsyncImage(url: item.imageURL) { phase in
-                switch phase {
-                case let .success(image):
-                    image
-                        .resizable()
-                        .scaledToFill()
-                default:
-                    Rectangle()
-                        .fill(Color.white.opacity(0.35))
+        Button(action: onTap) {
+            ZStack(alignment: .bottom) {
+                AsyncImage(url: item.imageURL) { phase in
+                    switch phase {
+                    case let .success(image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                    default:
+                        Rectangle()
+                            .fill(Color.white.opacity(0.35))
+                    }
                 }
-            }
+                .frame(maxWidth: .infinity)
+                .frame(height: 140)
 
-            LinearGradient(
-                colors: [.clear, Color.black.opacity(0.62)],
-                startPoint: .center,
-                endPoint: .bottom
-            )
+                LinearGradient(
+                    colors: [.clear, Color.black.opacity(0.14), Color.black.opacity(0.72)],
+                    startPoint: .center,
+                    endPoint: .bottom
+                )
+                .frame(maxWidth: .infinity)
+                .frame(height: 140)
 
-            Text(item.title)
-                .font(SearchTheme.semiBoldFont(size: 16))
-                .foregroundStyle(.white)
+                HStack {
+                    Text(item.title)
+                        .font(.InstrumentSansSemiBold16)
+                        .foregroundStyle(.white)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 .padding(.horizontal, 12)
-                .padding(.bottom, 10)
+                .padding(.vertical, 10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    LinearGradient(
+                        colors: [Color.black.opacity(0.05), Color.black.opacity(0.42)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+            }
+            .frame(width: 165, height: 140)
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .clipped()
         }
-        .frame(height: 140)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .buttonStyle(.plain)
     }
 }

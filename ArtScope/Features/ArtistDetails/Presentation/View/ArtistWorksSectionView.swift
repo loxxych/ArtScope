@@ -14,7 +14,7 @@ final class ArtistWorksSectionView: UIView {
         static let titleText: String = "Works"
         static let scrollTopSpacing: CGFloat = 12
         static let stackSpacing: CGFloat = 12
-        static let titleFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 27) ?? .boldSystemFont(ofSize: 27)
+        static let titleFont: UIFont = .InstrumentSansBold27
     }
     
     // MARK: - Properties
@@ -84,7 +84,7 @@ private final class ArtistWorkCardView: UIView {
         static let imageHeight: CGFloat = 104
         static let imageCornerRadius: CGFloat = 16
         static let titleTopSpacing: CGFloat = 8
-        static let titleFont: UIFont = UIFont(name: "InstrumentSans-SemiBold", size: 18) ?? .systemFont(ofSize: 18)
+        static let titleFont: UIFont = .InstrumentSansSemiBold18
         static let titleLinesCount: Int = 3
     }
     
@@ -121,7 +121,7 @@ private final class ArtistWorkCardView: UIView {
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = Constants.imageCornerRadius
-        imageView.image = AppImages.defaultArtistPreview
+        imageView.image = UIImage.artScopeDefaultArtistPreview
         imageView.pinTop(to: topAnchor)
         imageView.pinHorizontal(to: self)
         imageView.setHeight(Constants.imageHeight)
@@ -138,7 +138,7 @@ private final class ArtistWorkCardView: UIView {
     private func loadImage() {
         RemoteImageLoader.shared.loadImage(from: work.imageURL) { [weak self] image in
             DispatchQueue.main.async {
-                self?.imageView.image = image ?? AppImages.defaultArtistPreview
+                self?.imageView.image = image ?? UIImage.artScopeDefaultArtistPreview
             }
         }
     }

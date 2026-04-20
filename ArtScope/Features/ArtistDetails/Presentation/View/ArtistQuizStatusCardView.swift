@@ -9,14 +9,14 @@ import UIKit
 
 final class ArtistQuizStatusCardView: UIView {
     private enum Constants {
-        static let backgroundColor: UIColor = UIColor(named: "ArtScopePink") ?? .systemPink
+        static let backgroundColor: UIColor = .artScopePink
         static let cornerRadius: CGFloat = 18
         static let inset: CGFloat = 20
         static let titleTopSpacing: CGFloat = 12
         static let bodyTopSpacing: CGFloat = 10
         static let buttonTopSpacing: CGFloat = 18
-        static let titleFont: UIFont = UIFont(name: "ByteBounce", size: 28) ?? .boldSystemFont(ofSize: 28)
-        static let bodyFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 15) ?? .systemFont(ofSize: 15)
+        static let titleFont: UIFont = .ByteBounce28
+        static let bodyFont: UIFont = .InstrumentSansRegular15
         static let spinnerScale: CGFloat = 1.15
     }
 

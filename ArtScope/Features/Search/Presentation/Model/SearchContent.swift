@@ -17,7 +17,7 @@ struct SearchContent {
 struct SearchFeaturedCategory: Identifiable {
     let id: String
     let title: String
-    let imageURL: URL?
+    let imageName: String
 }
 
 struct SearchStyleItem: Identifiable {
@@ -32,7 +32,7 @@ enum SearchSampleData {
         featuredCategory: SearchFeaturedCategory(
             id: "artists",
             title: "Artists",
-            imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/en/8/8b/MetamorphosisOfNarcissus.jpg")
+            imageName: "artist"
         ),
         styleSectionTitle: "Art styles and\nmovements",
         styles: [

@@ -15,12 +15,12 @@ final class ProfilePictureView: UIView {
         static let buttonBorderWidth: CGFloat = 2
 
         // Images
-        static let cameraImage: UIImage? = UIImage(named: "camera")
+        static let cameraImage: UIImage? = UIImage.artScopeCamera
 
         // Colors
         static let buttonColor: UIColor = .black
         static let buttonTintColor: UIColor = .white
-        static let buttonBorderColor: UIColor = UIColor(named: "ArtScopeGreen") ?? .systemYellow
+        static let buttonBorderColor: UIColor = .artScopeGreen
     }
 
     // MARK: - Fields

@@ -32,7 +32,7 @@ final class EditProfileViewModel {
         let name = UserDefaults.standard.string(forKey: Constants.usernameKey) ?? Constants.defaultUserName
         
         // Extract profile picture from file manager
-        var profilePicture: UIImage? = AppImages.defaultProfile
+        var profilePicture: UIImage? = UIImage.artScopeDefaultProfilePicture
         let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent(Constants.profilePictureName)
         
         if (FileManager.default.fileExists(atPath: url.path)) {

@@ -12,11 +12,11 @@ final class ArtistTextSectionView: UIView {
     private enum Constants {
         static let titleBottomSpacing: CGFloat = 8
         static let buttonTopSpacing: CGFloat = 10
-        static let titleFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 27) ?? .boldSystemFont(ofSize: 27)
-        static let bodyFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 15) ?? .systemFont(ofSize: 15)
+        static let titleFont: UIFont = .InstrumentSansBold27
+        static let bodyFont: UIFont = .InstrumentSansRegular15
         static let bodyLinesCount: Int = 0
         static let collapsedBodyLinesCount: Int = 4
-        static let actionFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 15) ?? .systemFont(ofSize: 15)
+        static let actionFont: UIFont = .InstrumentSansRegular15
         static let actionTitleExpanded: String = "Hide >"
         static let actionTitleCollapsed: String = "Learn more >"
         static let actionTintColor: UIColor = .artScopeBlue

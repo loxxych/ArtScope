@@ -34,7 +34,7 @@ struct StyleWorkCardView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
 
                 Text(work.title)
-                    .font(StyleTheme.mediumFont(size: 18))
+                    .font(.InstrumentSansSemiBold18)
                     .foregroundStyle(StyleTheme.darkText)
                     .lineLimit(2)
             }

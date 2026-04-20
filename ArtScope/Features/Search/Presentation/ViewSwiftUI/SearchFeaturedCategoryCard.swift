@@ -12,22 +12,14 @@ struct SearchFeaturedCategoryCard: View {
 
     var body: some View {
         ZStack(alignment: .center) {
-            AsyncImage(url: category.imageURL) { phase in
-                switch phase {
-                case let .success(image):
-                    image
-                        .resizable()
-                        .scaledToFill()
-                default:
-                    Rectangle()
-                        .fill(Color.white.opacity(0.35))
-                }
-            }
+            Image(uiImage: UIImage(named: category.imageName) ?? UIImage.artScopeArtist)
+                .resizable()
+                .scaledToFill()
 
             SearchTheme.cardOverlay
 
             Text(category.title)
-                .font(SearchTheme.pixelFont(size: 34))
+                .font(.ByteBounce34)
                 .foregroundStyle(.white)
                 .shadow(color: .black.opacity(0.65), radius: 0, x: 2, y: 2)
         }

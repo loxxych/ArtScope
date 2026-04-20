@@ -26,12 +26,12 @@ final class QuizzesViewController: UIViewController {
         static let quizzesTitleText: String = "All quizzes"
         
         // Colors
-        static let backgroundColor: UIColor = UIColor(named: "ArtScopeGreen") ?? .green
+        static let backgroundColor: UIColor = .artScopeGreen
         static let strapColor: UIColor = .black
         
         // Fonts
-        static let titleFont: UIFont = UIFont(name: "ByteBounce", size: 49) ?? .systemFont(ofSize: 49)
-        static let quizzesTitleFont: UIFont = UIFont(name: "ByteBounce", size: 35) ?? .systemFont(ofSize: 35)
+        static let titleFont: UIFont = .ByteBounce49
+        static let quizzesTitleFont: UIFont = .ByteBounce35
     }
     
     // MARK: - Fields

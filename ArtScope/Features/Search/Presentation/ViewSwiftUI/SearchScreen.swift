@@ -9,7 +9,9 @@ import SwiftUI
 
 struct SearchScreen: View {
     let content: SearchContent
-    @State private var query = ""
+    @ObservedObject var viewModel: SearchViewModel
+    let onArtistSelected: (ArtistPreview) -> Void
+    let onStyleSelected: (StylePreview) -> Void
 
     private let columns = [
         GridItem(.flexible(), spacing: 18),
@@ -20,39 +22,93 @@ struct SearchScreen: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 18) {
                 Color.clear
-                    .frame(height: 10)
+                    .frame(height: 0)
 
                 searchField
 
-                SearchFeaturedCategoryCard(category: content.featuredCategory)
+                if !viewModel.shouldShowArtistsSection {
+                    SearchFeaturedCategoryCard(category: content.featuredCategory)
 
-                Divider()
-                    .overlay(Color.black.opacity(0.12))
-                    .padding(.horizontal, -24)
-
-                Text(content.styleSectionTitle)
-                    .font(SearchTheme.pixelFont(size: 28))
-                    .foregroundStyle(SearchTheme.text)
-                    .multilineTextAlignment(.leading)
-
-                LazyVGrid(columns: columns, spacing: 18) {
-                    ForEach(content.styles) { style in
-                        SearchStyleGridCard(item: style)
-                    }
+                    Divider()
+                        .overlay(Color.black.opacity(0.12))
+                        .padding(.horizontal, -24)
                 }
-                .padding(.bottom, 96)
+
+                if viewModel.shouldShowArtistsSection {
+                    artistsSection
+                }
+
+                stylesSection
+
+                if viewModel.hasNoResults {
+                    Text("No results found")
+                        .font(.InstrumentSansSemiBold18)
+                        .foregroundStyle(SearchTheme.text.opacity(0.72))
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.top, 20)
+                }
+
+                if viewModel.isLoading {
+                    ProgressView()
+                        .tint(SearchTheme.text)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 8)
+                }
+                
+                if !viewModel.isLoading {
+                    Color.clear
+                        .frame(height: 96)
+                } else {
+                    Color.clear
+                        .frame(height: 32)
+                }
             }
             .padding(.horizontal, 22)
-            .padding(.top, 18)
+            .padding(.top, -8)
         }
         .background(SearchTheme.background.ignoresSafeArea())
     }
 
+    private var artistsSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Artists")
+                .font(.ByteBounce28)
+                .foregroundStyle(SearchTheme.text)
+
+            ForEach(viewModel.filteredArtists, id: \.id) { artist in
+                SearchArtistRow(artist: artist) {
+                    onArtistSelected(artist)
+                }
+            }
+        }
+    }
+
+    private var stylesSection: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Text(content.styleSectionTitle)
+                .font(.ByteBounce28)
+                .foregroundStyle(SearchTheme.text)
+                .multilineTextAlignment(.leading)
+
+            LazyVGrid(columns: columns, spacing: 18) {
+                ForEach(viewModel.filteredStyles, id: \.id) { style in
+                    SearchStyleGridCard(item: SearchStyleItem(style: style)) {
+                        onStyleSelected(style)
+                    }
+                }
+            }
+        }
+    }
+
     private var searchField: some View {
         HStack(spacing: 12) {
-            TextField("", text: $query, prompt: Text(content.searchPlaceholder).foregroundStyle(SearchTheme.placeholder))
-                .font(SearchTheme.regularFont(size: 15))
-                .foregroundStyle(SearchTheme.text)
+            TextField(
+                "",
+                text: $viewModel.query,
+                prompt: Text(content.searchPlaceholder).foregroundStyle(SearchTheme.placeholder)
+            )
+            .font(.InstrumentSansRegular15)
+            .foregroundStyle(SearchTheme.text)
 
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 26, weight: .medium))
@@ -67,6 +123,21 @@ struct SearchScreen: View {
     }
 }
 
+private extension SearchStyleItem {
+    init(style: StylePreview) {
+        self.init(
+            id: style.id,
+            title: style.name,
+            imageURL: style.imageURL
+        )
+    }
+}
+
 #Preview {
-    SearchScreen(content: SearchSampleData.content)
+    SearchScreen(
+        content: SearchSampleData.content,
+        viewModel: SearchViewModel(artistService: WikiDataArtistService(client: URLSessionNetworkClient())),
+        onArtistSelected: { _ in },
+        onStyleSelected: { _ in }
+    )
 }

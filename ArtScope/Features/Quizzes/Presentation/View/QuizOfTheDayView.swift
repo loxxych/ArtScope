@@ -30,8 +30,8 @@ final class QuizOfTheDayView : UIView {
         static let fallbackThemeText: String = "Loading..."
         
         // Fonts
-        static let titleFont: UIFont? = UIFont(name: "ByteBounce", size: 41)
-        static let themeFont: UIFont? = UIFont(name: "InstrumentSans-SemiBold", size: 17)
+        static let titleFont: UIFont? = UIFont.ByteBounce41
+        static let themeFont: UIFont? = UIFont.InstrumentSansSemiBold17
         
         // Colors
         static let wrapColor: UIColor = .artScopePink
@@ -41,7 +41,7 @@ final class QuizOfTheDayView : UIView {
         static let imageColor: UIColor = .white
         
         // Images
-        static let image: UIImage = UIImage(named: "drawing-board-icon") ?? UIImage()
+        static let image: UIImage = UIImage.artScopeDrawingBoard
     }
     
     // MARK: - Fields

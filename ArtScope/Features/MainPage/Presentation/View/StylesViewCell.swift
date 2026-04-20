@@ -14,7 +14,7 @@ final class StylesViewCell : UICollectionViewCell {
         static let imageHeight: CGFloat = 156
         static let imageCornerRadius: CGFloat = 24
         static let titleTopSpacing: CGFloat = 10
-        static let titleFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 15) ?? .systemFont(ofSize: 15)
+        static let titleFont: UIFont = .InstrumentSansRegular15
         static let titleLinesCount: Int = 2
     }
     
@@ -41,19 +41,19 @@ final class StylesViewCell : UICollectionViewCell {
         super.prepareForReuse()
         currentImageURL = nil
         nameLabel.text = nil
-        imageView.image = AppImages.defaultArtistPreview
+        imageView.image = UIImage.artScopeDefaultArtistPreview
     }
     
     func configure(with style: StylePreview) {
         currentImageURL = style.imageURL
         nameLabel.text = style.name
-        imageView.image = AppImages.defaultArtistPreview
+        imageView.image = UIImage.artScopeDefaultArtistPreview
         
         RemoteImageLoader.shared.loadImage(from: style.imageURL) { [weak self] image in
             guard let self, self.currentImageURL == style.imageURL else { return }
             
             DispatchQueue.main.async {
-                self.imageView.image = image ?? AppImages.defaultArtistPreview
+                self.imageView.image = image ?? UIImage.artScopeDefaultArtistPreview
             }
         }
     }

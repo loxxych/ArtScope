@@ -9,12 +9,12 @@ import UIKit
 
 final class ArtistQuizStartCardView: UIView {
     private enum Constants {
-        static let backgroundColor: UIColor = UIColor(named: "ArtScopePink") ?? .systemPink
+        static let backgroundColor: UIColor = .artScopePink
         static let cornerRadius: CGFloat = 18
         static let contentInset: CGFloat = 22
         static let iconSize: CGFloat = 56
         static let buttonTopSpacing: CGFloat = 22
-        static let titleFont: UIFont = UIFont(name: "ByteBounce", size: 30) ?? .boldSystemFont(ofSize: 30)
+        static let titleFont: UIFont = .ByteBounce30
         static let titleText: String = "Test yourself!"
         static let buttonTitle: String = "Begin"
     }
@@ -53,7 +53,7 @@ final class ArtistQuizStartCardView: UIView {
         titleLabel.pinTop(to: topAnchor, Constants.contentInset)
         titleLabel.pinHorizontal(to: self, Constants.contentInset)
         
-        leftIcon.image = AppImages.paintbrush?.withRenderingMode(.alwaysTemplate)
+        leftIcon.image = UIImage.artScopePaintbrush?.withRenderingMode(.alwaysTemplate)
         leftIcon.tintColor = .white
         leftIcon.contentMode = .scaleAspectFit
         leftIcon.setWidth(Constants.iconSize)
@@ -61,7 +61,7 @@ final class ArtistQuizStartCardView: UIView {
         leftIcon.pinLeft(to: leadingAnchor, Constants.contentInset)
         leftIcon.pinBottom(to: bottomAnchor, Constants.contentInset)
         
-        rightIcon.image = AppImages.palette?.withRenderingMode(.alwaysTemplate)
+        rightIcon.image = UIImage.artScopePalette?.withRenderingMode(.alwaysTemplate)
         rightIcon.tintColor = .white
         rightIcon.contentMode = .scaleAspectFit
         rightIcon.setWidth(Constants.iconSize)

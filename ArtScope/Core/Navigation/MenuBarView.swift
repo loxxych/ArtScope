@@ -23,7 +23,7 @@ final class MenuBarView: UIView {
         static let backgroundColor: UIColor = .black
         static let shadowColor: CGColor = UIColor.black.cgColor
         static let unpickedColor: UIColor = .white
-        static let pickedColor: UIColor = UIColor(named: "ArtScopePink") ?? .systemPink
+        static let pickedColor: UIColor = .artScopePink
     }
     
     // MARK: - Fields
@@ -65,9 +65,7 @@ final class MenuBarView: UIView {
             let button = UIButton(type: .system)
             button.tag = item.rawValue
 
-            let image = UIImage(named: item.iconName)
-
-            button.setImage(image, for: .normal)
+            button.setImage(item.icon, for: .normal)
             button.tintColor = Constants.unpickedColor
 
             button.addTarget(self,

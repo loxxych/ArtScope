@@ -17,7 +17,7 @@ final class MiniProfileView: UIView {
         static let labelLeftInset: CGFloat = 14
 
         // Fonts
-        static let font: UIFont = UIFont(name: "InstrumentSans-SemiBold", size: 17) ?? .systemFont(ofSize: 17, weight: .semibold)
+        static let font: UIFont = .InstrumentSansSemiBold17
 
         // Colors
         static let textColor: UIColor = .black

@@ -22,7 +22,7 @@ final class ArtistQuizOptionView: UIControl {
         static let horizontalInset: CGFloat = 18
         static let iconRightInset: CGFloat = 14
         static let borderWidth: CGFloat = 2
-        static let font: UIFont = UIFont(name: "InstrumentSans-Regular", size: 14) ?? .systemFont(ofSize: 14)
+        static let font: UIFont = .InstrumentSansRegular14
         static let textColorLight: UIColor = .black
         static let textColorDark: UIColor = .white
         static let normalColor: UIColor = .black
@@ -64,13 +64,13 @@ final class ArtistQuizOptionView: UIControl {
         case .correct:
             backgroundColor = Constants.correctColor
             titleLabel.textColor = Constants.textColorLight
-            iconView.image = AppImages.checkmark
+            iconView.image = UIImage.artScopeCheckmark
             iconView.tintColor = UIColor(red: 160/255, green: 125/255, blue: 25/255, alpha: 1)
             iconView.isHidden = false
         case .incorrect:
             backgroundColor = Constants.incorrectColor
             titleLabel.textColor = Constants.textColorLight
-            iconView.image = AppImages.dislike
+            iconView.image = UIImage.artScopeDislike
             iconView.tintColor = .black
             iconView.isHidden = false
         case .subdued:

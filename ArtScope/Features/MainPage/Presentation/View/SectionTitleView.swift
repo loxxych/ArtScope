@@ -11,7 +11,7 @@ final class SectionTitleView : UIView {
     // MARK: - Constants
     private enum Constants {
         // Text
-        static let font: UIFont = UIFont(name: "ByteBounce", size: 41) ?? .systemFont(ofSize: 41)
+        static let font: UIFont = .ByteBounce41
         
         // UI Constraint properties
         static let buttonLeft: CGFloat = 6
@@ -22,7 +22,7 @@ final class SectionTitleView : UIView {
         static let textColor: UIColor = .black
         
         // Images
-        static let buttonImage: UIImage? = UIImage(named: "hand-point")
+        static let buttonImage: UIImage? = UIImage.artScopeHandPoint
     }
     
     // MARK: - Fields

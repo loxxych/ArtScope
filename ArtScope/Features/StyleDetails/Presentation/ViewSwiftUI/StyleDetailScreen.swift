@@ -67,7 +67,7 @@ struct StyleDetailScreen: View {
 
             ZStack {
                 Text(screenTitle)
-                    .font(StyleTheme.semiBoldFont(size: 26))
+                    .font(.InstrumentSansSemiBold26)
                     .foregroundStyle(StyleTheme.lightText)
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -98,20 +98,20 @@ struct StyleDetailScreen: View {
                     .scaleEffect(1.2)
 
                 Text("Loading style details...")
-                    .font(StyleTheme.bodyFont(size: 16, weight: .semibold))
+                    .font(.InstrumentSansSemiBold16)
                     .foregroundStyle(StyleTheme.darkText)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         } else {
             VStack(spacing: 16) {
                 Text(errorMessage ?? "Failed to load style details.")
-                    .font(StyleTheme.bodyFont(size: 15))
+                    .font(.InstrumentSansRegular15)
                     .foregroundStyle(StyleTheme.darkText)
                     .multilineTextAlignment(.center)
 
                 Button(action: { onRetry?() }) {
                     Text("Retry")
-                        .font(StyleTheme.semiBoldFont(size: 16))
+                        .font(.InstrumentSansSemiBold16)
                         .foregroundStyle(StyleTheme.lightText)
                         .padding(.horizontal, 22)
                         .padding(.vertical, 12)
@@ -125,7 +125,7 @@ struct StyleDetailScreen: View {
 
     private func titleBlock(content: StyleDetailContent) -> some View {
         Text(content.title)
-            .font(StyleTheme.titleFont(size: 52))
+            .font(.ByteBounce52)
             .foregroundStyle(StyleTheme.darkText)
             .frame(maxWidth: .infinity, alignment: .center)
     }
@@ -133,11 +133,11 @@ struct StyleDetailScreen: View {
     private func descriptionBlock(content: StyleDetailContent) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Description")
-                .font(StyleTheme.bodyFont(size: 29, weight: .bold))
+                .font(.InstrumentSansBold29)
                 .foregroundStyle(StyleTheme.darkText)
 
             Text(content.description)
-                .font(StyleTheme.bodyFont(size: 15))
+                .font(.InstrumentSansRegular15)
                 .foregroundStyle(StyleTheme.darkText)
                 .lineSpacing(2)
                 .lineLimit(isDescriptionExpanded ? nil : 4)
@@ -146,7 +146,7 @@ struct StyleDetailScreen: View {
                 isDescriptionExpanded.toggle()
             }) {
                 Text(isDescriptionExpanded ? "Show less" : "Read more")
-                    .font(StyleTheme.bodyFont(size: 15))
+                    .font(.InstrumentSansRegular15)
                     .foregroundStyle(StyleTheme.actionBlue)
             }
         }
@@ -157,11 +157,11 @@ struct StyleDetailScreen: View {
         if !content.artists.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
                 Text("Artists")
-                    .font(StyleTheme.bodyFont(size: 31, weight: .bold))
+                    .font(.InstrumentSansBold31)
                     .foregroundStyle(StyleTheme.darkText)
 
                 Text("Artists related to this style")
-                    .font(StyleTheme.bodyFont(size: 15))
+                    .font(.InstrumentSansRegular15)
                     .foregroundStyle(StyleTheme.darkText.opacity(0.85))
 
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -185,11 +185,11 @@ struct StyleDetailScreen: View {
         if !content.works.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
                 Text("Works")
-                    .font(StyleTheme.bodyFont(size: 31, weight: .bold))
+                    .font(.InstrumentSansBold31)
                     .foregroundStyle(StyleTheme.darkText)
 
                 Text("Examples of artworks related to this style")
-                    .font(StyleTheme.bodyFont(size: 15))
+                    .font(.InstrumentSansRegular15)
                     .foregroundStyle(StyleTheme.darkText.opacity(0.85))
 
                 LazyVGrid(columns: workColumns, alignment: .leading, spacing: 16) {
@@ -207,11 +207,11 @@ struct StyleDetailScreen: View {
     private var quizBlock: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Quiz")
-                .font(StyleTheme.bodyFont(size: 31, weight: .bold))
+                .font(.InstrumentSansBold31)
                 .foregroundStyle(StyleTheme.darkText)
 
             Text("Complete a short quiz to test your knowledge!")
-                .font(StyleTheme.bodyFont(size: 15))
+                .font(.InstrumentSansRegular15)
                 .foregroundStyle(StyleTheme.darkText.opacity(0.85))
 
             StyleQuizTeaserCardView(onBegin: onBeginQuiz)

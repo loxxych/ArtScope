@@ -11,8 +11,8 @@ final class ArtistIdentitySectionView: UIView {
     // MARK: - Constants
     private enum Constants {
         static let stackSpacing: CGFloat = 6
-        static let nameFont: UIFont = UIFont(name: "ByteBounce", size: 52) ?? .boldSystemFont(ofSize: 52)
-        static let lifeSpanFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 16) ?? .systemFont(ofSize: 16)
+        static let nameFont: UIFont = .ByteBounce52
+        static let lifeSpanFont: UIFont = .InstrumentSansRegular16
         static let textAlignment: NSTextAlignment = .center
         static let linesCount: Int = 0
     }

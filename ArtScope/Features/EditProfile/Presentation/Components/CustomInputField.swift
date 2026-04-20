@@ -22,8 +22,8 @@ final class CustomInputField: UIView {
         static let placeholderPrefix: String = "Enter your "
 
         // Fonts
-        static let titleFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 18) ?? .systemFont(ofSize: 18, weight: .bold)
-        static let textFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 18) ?? .systemFont(ofSize: 18)
+        static let titleFont: UIFont = .InstrumentSansBold18
+        static let textFont: UIFont = .InstrumentSansRegular18
 
         // Colors
         static let textColor: UIColor = .black

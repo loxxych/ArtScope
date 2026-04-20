@@ -5,18 +5,20 @@
 //  Created by loxxy on 22.01.2026.
 //
 
+import UIKit
+
 enum MenuItem: Int, CaseIterable {
     case home
     case search
     case quiz
     case profile
     
-    var iconName: String {
+    var icon: UIImage? {
         switch self {
-        case .home: return "home-icon"
-        case .search: return "search-icon"
-        case .quiz: return "quizzes-icon"
-        case .profile: return "user-icon"
+        case .home: return .artScopeHomeIcon
+        case .search: return .artScopeSearchIcon
+        case .quiz: return .artScopeQuizzesIcon
+        case .profile: return .artScopeUserIcon
         }
     }
 }

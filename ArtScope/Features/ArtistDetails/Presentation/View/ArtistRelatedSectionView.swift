@@ -25,9 +25,9 @@ final class ArtistRelatedSectionView: UIView {
         static let imageHeight: CGFloat = 104
         static let imageCornerRadius: CGFloat = 16
         static let titleTopSpacing: CGFloat = 8
-        static let titleFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 27) ?? .boldSystemFont(ofSize: 27)
-        static let subtitleFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 15) ?? .systemFont(ofSize: 15)
-        static let cardTitleFont: UIFont = UIFont(name: "InstrumentSans-SemiBold", size: 18) ?? .systemFont(ofSize: 18)
+        static let titleFont: UIFont = .InstrumentSansBold27
+        static let subtitleFont: UIFont = .InstrumentSansRegular15
+        static let cardTitleFont: UIFont = .InstrumentSansSemiBold18
         static let descriptionLines: Int = 0
         static let cardTitleLines: Int = 3
     }
@@ -119,7 +119,7 @@ private final class ArtistRelatedCardView: UIView {
         static let imageHeight: CGFloat = 104
         static let imageCornerRadius: CGFloat = 16
         static let titleTopSpacing: CGFloat = 8
-        static let titleFont: UIFont = UIFont(name: "InstrumentSans-SemiBold", size: 18) ?? .systemFont(ofSize: 18)
+        static let titleFont: UIFont = .InstrumentSansSemiBold18
         static let titleLinesCount: Int = 3
         static let iconSize: CGFloat = 34
     }
@@ -152,7 +152,7 @@ private final class ArtistRelatedCardView: UIView {
         imageView.setHeight(Constants.imageHeight)
 
         imageView.addSubview(iconView)
-        iconView.image = UIImage(named: "palette")?.withRenderingMode(.alwaysTemplate)
+        iconView.image = UIImage.artScopePalette?.withRenderingMode(.alwaysTemplate)
         iconView.tintColor = .black.withAlphaComponent(0.7)
         iconView.contentMode = .scaleAspectFit
         iconView.pinCenterX(to: imageView)

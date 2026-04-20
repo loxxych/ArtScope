@@ -13,9 +13,9 @@ final class ArtistQuizActionButton: UIButton {
         static let horizontalInset: CGFloat = 20
         static let spacing: CGFloat = 10
         static let cornerRadius: CGFloat = 20
-        static let font: UIFont = UIFont(name: "InstrumentSans-SemiBold", size: 15) ?? .systemFont(ofSize: 15, weight: .semibold)
-        static let backgroundColor: UIColor = UIColor(named: "ArtScopeBlue") ?? .systemBlue
-        static let disabledBackgroundColor: UIColor = UIColor(named: "ArtScopeBlue")?.withAlphaComponent(0.45) ?? .systemBlue.withAlphaComponent(0.45)
+        static let font: UIFont = .InstrumentSansSemiBold15
+        static let backgroundColor: UIColor = .artScopeBlue
+        static let disabledBackgroundColor: UIColor = UIColor.artScopeBlue.withAlphaComponent(0.45)
         static let titleColor: UIColor = .white
         static let iconName: String = "arrow.right"
     }

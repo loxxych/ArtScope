@@ -10,7 +10,7 @@ import UIKit
 final class WorkDetailsViewController: UIViewController {
     // MARK: - Constants
     private enum Constants {
-        static let backgroundColor: UIColor = UIColor(named: "ArtScopeGreen") ?? .systemYellow
+        static let backgroundColor: UIColor = .artScopeGreen
         static let headerBackgroundColor: UIColor = .black
         static let headerTextColor: UIColor = .white
         static let backButtonTintColor: UIColor = .white
@@ -36,11 +36,11 @@ final class WorkDetailsViewController: UIViewController {
         static let expandButtonTop: CGFloat = 12
         static let expandButtonRight: CGFloat = 12
         static let expandButtonTintColor: UIColor = .white
-        static let headerTitleFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 18) ?? .boldSystemFont(ofSize: 18)
-        static let titleFont: UIFont = UIFont(name: "ByteBounce", size: 36) ?? .boldSystemFont(ofSize: 36)
-        static let metadataFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 16) ?? .systemFont(ofSize: 16)
-        static let authorFont: UIFont = UIFont(name: "InstrumentSans-SemiBold", size: 18) ?? .systemFont(ofSize: 18)
-        static let infoFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 16) ?? .systemFont(ofSize: 16)
+        static let headerTitleFont: UIFont = .InstrumentSansBold18
+        static let titleFont: UIFont = .ByteBounce36
+        static let metadataFont: UIFont = .InstrumentSansRegular16
+        static let authorFont: UIFont = .InstrumentSansSemiBold18
+        static let infoFont: UIFont = .InstrumentSansRegular16
         static let linesCount: Int = 0
         static let collapsedInfoLinesCount: Int = 4
         static let gradientLocations: [NSNumber] = [0.0, 0.65, 0.86, 1.0]
@@ -182,7 +182,7 @@ final class WorkDetailsViewController: UIViewController {
         heroImageView.backgroundColor = Constants.heroPlaceholderColor
         heroImageView.contentMode = .scaleAspectFill
         heroImageView.clipsToBounds = true
-        heroImageView.image = AppImages.defaultArtistPreview
+        heroImageView.image = UIImage.artScopeDefaultArtistPreview
         heroImageView.pinTop(to: contentView.topAnchor)
         heroImageView.pinHorizontal(to: contentView)
         heroImageView.setHeight(Constants.heroHeight)
@@ -251,7 +251,7 @@ final class WorkDetailsViewController: UIViewController {
         authorRow.addSubview(authorImageView)
         authorImageView.clipsToBounds = true
         authorImageView.contentMode = .scaleAspectFill
-        authorImageView.image = AppImages.defaultArtistPreview
+        authorImageView.image = UIImage.artScopeDefaultArtistPreview
         authorImageView.pinLeft(to: authorRow.leadingAnchor)
         authorImageView.pinTop(to: authorRow.topAnchor)
         authorImageView.pinBottom(to: authorRow.bottomAnchor)
@@ -334,7 +334,7 @@ final class WorkDetailsViewController: UIViewController {
     private func loadHeroImage(from imageURL: URL?) {
         RemoteImageLoader.shared.loadImage(from: imageURL) { [weak self] image in
             DispatchQueue.main.async {
-                self?.heroImageView.image = image ?? AppImages.defaultArtistPreview
+                self?.heroImageView.image = image ?? UIImage.artScopeDefaultArtistPreview
             }
         }
     }
@@ -342,7 +342,7 @@ final class WorkDetailsViewController: UIViewController {
     private func loadArtistImage(from imageURL: URL?) {
         RemoteImageLoader.shared.loadImage(from: imageURL) { [weak self] image in
             DispatchQueue.main.async {
-                self?.authorImageView.image = image ?? AppImages.defaultArtistPreview
+                self?.authorImageView.image = image ?? UIImage.artScopeDefaultArtistPreview
             }
         }
     }

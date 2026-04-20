@@ -33,7 +33,7 @@ struct StyleArtistAvatarView: View {
                 .clipShape(Circle())
 
                 Text(artist.name)
-                    .font(StyleTheme.bodyFont(size: 15))
+                    .font(.InstrumentSansRegular15)
                     .foregroundStyle(StyleTheme.darkText)
                     .multilineTextAlignment(.center)
                     .frame(width: 110)

@@ -16,8 +16,8 @@ final class SectionView : UIView {
         static let descriptionRightInset: CGFloat = 20
 
         // Fonts
-        static let titleFont: UIFont? = UIFont(name: "InstrumentSans-Bold", size: 27)
-        static let descriptionFont: UIFont? = UIFont(name: "InstrumentSans-Regular", size: 13)
+        static let titleFont: UIFont? = UIFont.InstrumentSansBold27
+        static let descriptionFont: UIFont? = UIFont.InstrumentSansRegular13
     }
     
     // MARK: - Fields
