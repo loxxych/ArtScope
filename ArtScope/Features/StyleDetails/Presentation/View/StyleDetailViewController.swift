@@ -12,6 +12,7 @@ final class StyleDetailViewController: UIViewController {
     private let style: StylePreview
     private let viewModel: StyleDetailViewModel
     private let hostingController: UIHostingController<StyleDetailScreen>
+    private let viewedCollectionHistoryStore: ViewedCollectionHistoryStore
     private var currentState: StyleDetailViewModel.State = .loading
 
     init(
@@ -20,6 +21,7 @@ final class StyleDetailViewController: UIViewController {
     ) {
         self.style = style
         self.viewModel = StyleDetailViewModel(service: service)
+        self.viewedCollectionHistoryStore = ProfileHistoryFactory.makeViewedCollectionHistoryStore()
         self.hostingController = UIHostingController(
             rootView: StyleDetailScreen(
                 screenTitle: style.name,
@@ -53,6 +55,7 @@ final class StyleDetailViewController: UIViewController {
         view.backgroundColor = .artScopeGreen
         bindViewModel()
         embedHostingController()
+        recordStyleView()
         loadStyleDetails()
     }
 
@@ -80,6 +83,18 @@ final class StyleDetailViewController: UIViewController {
 
     private func loadStyleDetails() {
         viewModel.load(style: style)
+    }
+
+    private func recordStyleView() {
+        viewedCollectionHistoryStore.save(
+            ViewedCollectionHistoryItem(
+                id: style.id,
+                title: style.name,
+                kind: .style,
+                imageURLString: style.imageURL?.absoluteString,
+                viewedAt: Date()
+            )
+        )
     }
 
     private func render() {

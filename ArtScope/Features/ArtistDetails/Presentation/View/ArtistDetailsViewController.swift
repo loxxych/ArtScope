@@ -39,6 +39,8 @@ final class ArtistDetailsViewController: UIViewController {
     private let artist: ArtistPreview
     private let viewModel: ArtistDetailsViewModel
     private let artistQuizViewModel: ArtistQuizViewModel
+    private let viewedCollectionHistoryStore: ViewedCollectionHistoryStore
+    private let completedQuizHistoryStore: CompletedQuizHistoryStore
     
     private let scrollView = UIScrollView()
     private let contentView = UIView()
@@ -71,6 +73,8 @@ final class ArtistDetailsViewController: UIViewController {
             preview: artist,
             service: WikiDataArtistService(client: URLSessionNetworkClient())
         )
+        self.viewedCollectionHistoryStore = ProfileHistoryFactory.makeViewedCollectionHistoryStore()
+        self.completedQuizHistoryStore = ProfileHistoryFactory.makeCompletedQuizHistoryStore()
         self.artistQuizViewModel = ArtistQuizViewModel(
             artistID: artist.id,
             artistName: artist.name,
@@ -102,6 +106,7 @@ final class ArtistDetailsViewController: UIViewController {
         configureUI()
         applyInitialState()
         bindQuizSectionActions()
+        recordArtistView()
         viewModel.load()
     }
     
@@ -235,6 +240,13 @@ final class ArtistDetailsViewController: UIViewController {
         quizSectionView.onRetryTapped = { [weak self] in
             self?.requestArtistQuiz(force: true)
         }
+        quizSectionView.onQuizCompleted = { [weak self] quiz, correctAnswers, totalQuestions in
+            self?.recordQuizCompletion(
+                quiz: quiz,
+                correctAnswers: correctAnswers,
+                totalQuestions: totalQuestions
+            )
+        }
     }
     
     // MARK: - Data
@@ -333,6 +345,43 @@ final class ArtistDetailsViewController: UIViewController {
         didRequestArtistQuiz = true
         artistQuizViewModel.updateContext(biography: currentBiography, works: works)
         artistQuizViewModel.load(force: force)
+    }
+
+    private func recordArtistView() {
+        viewedCollectionHistoryStore.save(
+            ViewedCollectionHistoryItem(
+                id: artist.id,
+                title: artist.name,
+                kind: .artist,
+                imageURLString: artist.imageURL?.absoluteString,
+                viewedAt: Date()
+            )
+        )
+    }
+
+    private func recordQuizCompletion(quiz: Quiz, correctAnswers: Int, totalQuestions: Int) {
+        let total = max(totalQuestions, 1)
+        let scorePercent = Int((Double(correctAnswers) / Double(total)) * 100)
+        let title = quiz.isDaily ? quiz.title : "\(artist.name) quiz"
+
+        completedQuizHistoryStore.save(
+            CompletedQuizHistoryItem(
+                id: "\(quiz.id)-\(artist.id)",
+                sourceQuizID: quiz.id,
+                title: title,
+                scorePercent: scorePercent,
+                imageURLString: portraitImageURL?.absoluteString ?? artist.imageURL?.absoluteString,
+                elapsedTimeText: formatElapsedTime(seconds: quiz.estimatedTimeSeconds),
+                completedAt: Date()
+            )
+        )
+    }
+
+    private func formatElapsedTime(seconds: Int) -> String {
+        let safeSeconds = max(seconds, 0)
+        let minutes = safeSeconds / 60
+        let remainder = safeSeconds % 60
+        return String(format: "%d:%02d", minutes, remainder)
     }
     
     private func loadPortraitImage(from imageURL: URL?) {

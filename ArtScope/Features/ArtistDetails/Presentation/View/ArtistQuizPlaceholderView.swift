@@ -55,6 +55,7 @@ final class ArtistQuizPlaceholderView: UIView {
     private var didCountCurrentAnswer = false
 
     var onRetryTapped: (() -> Void)?
+    var onQuizCompleted: ((Quiz, Int, Int) -> Void)?
     
     // MARK: - Lifecycle
     override init(frame: CGRect) {
@@ -213,6 +214,9 @@ final class ArtistQuizPlaceholderView: UIView {
     private func showResult() {
         let totalQuestions = quiz?.payload.questions.count ?? 0
         resultCardView.configure(correctAnswers: correctAnswersCount, totalQuestions: totalQuestions)
+        if let quiz {
+            onQuizCompleted?(quiz, correctAnswersCount, totalQuestions)
+        }
         show(state: .result)
     }
     

@@ -14,11 +14,9 @@ final class ProfileViewController: UIViewController {
         static let titleTopInset: CGFloat = 16
         static let titleLeftInset: CGFloat = 24
         static let scrollTopInset: CGFloat = 18
-        static let sectionSpacing: CGFloat = 28
+        static let sectionSpacing: CGFloat = 18
         static let contentBottomInset: CGFloat = 120
         static let settingsHeight: CGFloat = 108
-        static let quizzesHeight: CGFloat = 230
-        static let completedHeight: CGFloat = 230
         static let strapAlpha: CGFloat = 0.22
         static let strapHeight: CGFloat = 1
 
@@ -47,14 +45,17 @@ final class ProfileViewController: UIViewController {
     private var miniProfileView: MiniProfileView?
     private let strap: UIView = .init()
     private let settingsView = SettingsView()
-    private let quizzesSectionView = SectionView(
+    private let quizzesSectionView = ProfileHistorySectionView(
         title: Constants.quizzesSectionViewTitleText,
         description: Constants.quizzesSectionViewDescriptionText
     )
-    private let completedSectionView = SectionView(
+    private let completedSectionView = ProfileHistorySectionView(
         title: Constants.completedSectionViewTitleText,
         description: Constants.completedSectionViewDescriptionText
     )
+    private let quizService: QuizService = QuizServiceFactory.makeQuizService()
+    private var quizzesSectionHeightConstraint: NSLayoutConstraint?
+    private var completedSectionHeightConstraint: NSLayoutConstraint?
 
     // MARK: - Lifecycle
     init() {
@@ -73,6 +74,17 @@ final class ProfileViewController: UIViewController {
         viewModel.loadUserProfile()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+        viewModel.loadUserProfile()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+
     // MARK: - View model configuration
     private func configureViewModel() {
         viewModel.onProfileUpdated = { [weak self] profile in
@@ -87,6 +99,24 @@ final class ProfileViewController: UIViewController {
             let profileView = MiniProfileView(title: profile.name, image: profile.profilePicture)
             miniProfileView = profileView
             contentStack.insertArrangedSubview(profileView, at: 0)
+        }
+
+        viewModel.onCompletedQuizHistoryUpdated = { [weak self] items in
+            self?.quizzesSectionView.updateQuizItems(items)
+            self?.quizzesSectionHeightConstraint?.constant = items.isEmpty ? 122 : 300
+        }
+
+        viewModel.onViewedCollectionHistoryUpdated = { [weak self] items in
+            self?.completedSectionView.updateCollectionItems(items)
+            self?.completedSectionHeightConstraint?.constant = items.isEmpty ? 122 : 286
+        }
+
+        quizzesSectionView.onQuizSelected = { [weak self] item in
+            self?.showQuizHistory(for: item)
+        }
+
+        completedSectionView.onCollectionSelected = { [weak self] item in
+            self?.showCollectionHistory(for: item)
         }
     }
 
@@ -129,11 +159,11 @@ final class ProfileViewController: UIViewController {
     }
 
     private func configureQuizzesSection() {
-        quizzesSectionView.setHeight(Constants.quizzesHeight)
+        quizzesSectionHeightConstraint = quizzesSectionView.setHeight(122)
     }
 
     private func configureCompletedSection() {
-        completedSectionView.setHeight(Constants.completedHeight)
+        completedSectionHeightConstraint = completedSectionView.setHeight(122)
     }
 
     private func configureScrollView() {
@@ -182,5 +212,40 @@ final class ProfileViewController: UIViewController {
     private func showEditProfileScreen() {
         let vc = EditProfileViewController()
         navigationController?.pushViewController(vc, animated: true)
+    }
+
+    private func showQuizHistory(for item: CompletedQuizHistoryItem) {
+        guard
+            let sourceQuizID = item.sourceQuizID,
+            let quiz = quizService.fetchStoredQuizzes().first(where: { $0.id == sourceQuizID })
+        else {
+            print("[Profile] quiz history item is missing source quiz: \(item.id)")
+            return
+        }
+
+        let vc = QuizHistoryResultViewController(quiz: quiz, historyItem: item)
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    private func showCollectionHistory(for item: ViewedCollectionHistoryItem) {
+        switch item.kind {
+        case .artist:
+            let preview = ArtistPreview(
+                id: item.id,
+                name: item.title,
+                summary: "",
+                imageURL: item.imageURL
+            )
+            let vc = ArtistDetailsViewController(artist: preview)
+            navigationController?.pushViewController(vc, animated: true)
+        case .style:
+            let preview = StylePreview(
+                id: item.id,
+                name: item.title,
+                imageURL: item.imageURL
+            )
+            let vc = StyleDetailViewController(style: preview)
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 }
