@@ -6,6 +6,7 @@
 //
 
 protocol QuizService {
+    func fetchStoredQuizzes() -> [Quiz]
     func fetchDailyQuiz(completion: @escaping (Result<Quiz, Error>) -> Void)
     func fetchArtistQuiz(
         artistID: String,

@@ -21,7 +21,7 @@ final class QuizzesViewModel {
     
     func load() {
         onTopicsLoaded?(Self.defaultTopics)
-        onQuizzesLoaded?(Self.defaultQuizzes)
+        publishStoredQuizzes()
         loadDailyQuiz()
     }
     
@@ -31,11 +31,21 @@ final class QuizzesViewModel {
                 switch result {
                 case let .success(quiz):
                     self?.onDailyQuizLoaded?(quiz)
+                    self?.publishStoredQuizzes()
                 case let .failure(error):
                     self?.onLoadingFailed?(error)
                 }
             }
         }
+    }
+
+    private func publishStoredQuizzes() {
+        let quizzes = quizService
+            .fetchStoredQuizzes()
+            .filter { !$0.isDaily }
+            .map(Self.makeListItem(from:))
+
+        onQuizzesLoaded?(quizzes)
     }
 
     private static let defaultTopics: [QuizTopic] = [
@@ -68,30 +78,48 @@ final class QuizzesViewModel {
         )
     ]
 
-    private static let defaultQuizzes: [QuizListItem] = [
+    private static func makeListItem(from quiz: Quiz) -> QuizListItem {
         QuizListItem(
-            id: "quiz-daily",
-            topicID: "topic-daily",
-            type: "daily",
-            title: "Quiz of the Day",
-            subtitle: "Recently viewed artworks",
-            description: "A fresh quiz generated from the works the user studied most recently.",
-            difficulty: "easy",
-            estimatedTimeSeconds: 120,
-            questionCount: 5,
-            isDaily: true
-        ),
-        QuizListItem(
-            id: "quiz-artist-template",
-            topicID: "topic-artist",
-            type: "artist",
-            title: "Artist Card Quiz",
-            subtitle: "Per-artist section",
-            description: "Each artist screen can request a dedicated Gemini-generated quiz.",
-            difficulty: "easy",
-            estimatedTimeSeconds: 90,
-            questionCount: 5,
-            isDaily: false
+            id: quiz.id,
+            topicID: quiz.topicID,
+            type: quiz.type,
+            title: listTitle(for: quiz),
+            subtitle: quiz.subtitle,
+            description: listDescription(for: quiz),
+            difficulty: quiz.difficulty,
+            estimatedTimeSeconds: quiz.estimatedTimeSeconds,
+            questionCount: quiz.questionCount,
+            isDaily: quiz.isDaily
         )
-    ]
+    }
+
+    private static func listTitle(for quiz: Quiz) -> String {
+        let candidates = [
+            quiz.payload.title,
+            quiz.title,
+            quiz.subtitle,
+            quiz.payload.subtitle
+        ]
+
+        return candidates
+            .map { $0?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "" }
+            .first(where: { !$0.isEmpty && $0.lowercased() != "quiz of the day" }) ?? quiz.title
+    }
+
+    private static func listDescription(for quiz: Quiz) -> String {
+        let candidates = [
+            quiz.description,
+            quiz.payload.description,
+            quiz.subtitle,
+            quiz.payload.subtitle
+        ]
+
+        if let text = candidates
+            .compactMap({ $0?.trimmingCharacters(in: .whitespacesAndNewlines) })
+            .first(where: { !$0.isEmpty && $0.lowercased() != "quiz of the day" }) {
+            return text
+        }
+
+        return "Test your \(listTitle(for: quiz).lowercased()) knowledge!"
+    }
 }

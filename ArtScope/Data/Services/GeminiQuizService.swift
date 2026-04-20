@@ -17,6 +17,7 @@ final class GeminiQuizService: QuizService {
     private let client: NetworkClient
     private let configuration: GeminiConfiguration?
     private let cacheStore: QuizCacheStore
+    private let storedQuizStore: StoredQuizStore
     private let studiedArtworkStore: StudiedArtworkStore
     private let calendar: Calendar
 
@@ -24,14 +25,20 @@ final class GeminiQuizService: QuizService {
         client: NetworkClient,
         configuration: GeminiConfiguration? = GeminiConfiguration.fromBundle(),
         cacheStore: QuizCacheStore,
+        storedQuizStore: StoredQuizStore,
         studiedArtworkStore: StudiedArtworkStore,
         calendar: Calendar = .current
     ) {
         self.client = client
         self.configuration = configuration
         self.cacheStore = cacheStore
+        self.storedQuizStore = storedQuizStore
         self.studiedArtworkStore = studiedArtworkStore
         self.calendar = calendar
+    }
+
+    func fetchStoredQuizzes() -> [Quiz] {
+        storedQuizStore.fetchQuizzes()
     }
 
     func fetchDailyQuiz(completion: @escaping (Result<Quiz, Error>) -> Void) {
@@ -39,6 +46,7 @@ final class GeminiQuizService: QuizService {
         let cacheKey = QuizPromptFactory.dailyQuizCacheKey(for: studiedArtworks, calendar: calendar)
 
         if let cachedQuiz = cacheStore.quiz(forKey: cacheKey) {
+            storedQuizStore.save(cachedQuiz)
             completion(.success(cachedQuiz))
             return
         }
@@ -64,6 +72,7 @@ final class GeminiQuizService: QuizService {
         let cacheKey = QuizPromptFactory.artistQuizCacheKey(artistID: artistID)
 
         if let cachedQuiz = cacheStore.quiz(forKey: cacheKey) {
+            storedQuizStore.save(cachedQuiz)
             completion(.success(cachedQuiz))
             return
         }
@@ -97,6 +106,7 @@ final class GeminiQuizService: QuizService {
             switch result {
             case let .success(quiz):
                 self?.cacheStore.save(quiz, forKey: cacheKey, expirationDate: expirationDate)
+                self?.storedQuizStore.save(quiz)
                 completion(.success(quiz))
             case let .failure(error):
                 completion(.failure(error))

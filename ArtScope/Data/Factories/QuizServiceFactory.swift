@@ -12,6 +12,7 @@ enum QuizServiceFactory {
         GeminiQuizService(
             client: URLSessionNetworkClient(),
             cacheStore: UserDefaultsQuizCacheStore(),
+            storedQuizStore: UserDefaultsStoredQuizStore(),
             studiedArtworkStore: UserDefaultsStudiedArtworkStore()
         )
     }
