@@ -27,6 +27,7 @@ final class ArtistsSectionView: UIView {
     private var artists: [ArtistPreview] = []
     
     var onArtistSelected: ((ArtistPreview) -> Void)?
+    var onShowAllArtistsTapped: (() -> Void)?
     
     // MARK: - Lifecycle
     init() {
@@ -48,6 +49,9 @@ final class ArtistsSectionView: UIView {
     // MARK: - Artist section title configuration
     private func configureArtistsSectionTitle() {
         artistsSectionTitle = SectionTitleView(title: Constants.artistsSectionTitle)
+        artistsSectionTitle.onButtonPressed = { [weak self] in
+            self?.onShowAllArtistsTapped?()
+        }
         
         addSubview(artistsSectionTitle)
         

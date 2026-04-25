@@ -21,6 +21,9 @@ final class SearchViewController: UIViewController {
             },
             onStyleSelected: { [weak self] style in
                 self?.showStyleDetails(for: style)
+            },
+            onArtistsCategorySelected: { [weak self] in
+                self?.showAllArtists()
             }
         )
     )
@@ -71,6 +74,11 @@ final class SearchViewController: UIViewController {
 
     private func showStyleDetails(for style: StylePreview) {
         let vc = StyleDetailViewController(style: style)
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    private func showAllArtists() {
+        let vc = AllArtistsViewController(artists: viewModel.artists)
         navigationController?.pushViewController(vc, animated: true)
     }
 }

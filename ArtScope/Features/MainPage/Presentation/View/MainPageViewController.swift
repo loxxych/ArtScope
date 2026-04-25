@@ -69,6 +69,10 @@ final class MainPageViewController: UIViewController {
         artistsSectionView.onArtistSelected = { [weak self] artist in
             self?.showArtistDetails(for: artist)
         }
+        
+        artistsSectionView.onShowAllArtistsTapped = { [weak self] in
+            self?.showAllArtists()
+        }
 
         stylesSectionView.onStyleSelected = { [weak self] style in
             self?.showStyleDetails(for: style)
@@ -158,6 +162,11 @@ final class MainPageViewController: UIViewController {
 
     private func showStyleDetails(for style: StylePreview) {
         let vc = StyleDetailViewController(style: style)
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    private func showAllArtists() {
+        let vc = AllArtistsViewController(artists: artists)
         navigationController?.pushViewController(vc, animated: true)
     }
 

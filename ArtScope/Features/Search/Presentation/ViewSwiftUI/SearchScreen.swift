@@ -12,6 +12,7 @@ struct SearchScreen: View {
     @ObservedObject var viewModel: SearchViewModel
     let onArtistSelected: (ArtistPreview) -> Void
     let onStyleSelected: (StylePreview) -> Void
+    let onArtistsCategorySelected: () -> Void
 
     private let columns = [
         GridItem(.flexible(), spacing: 18),
@@ -27,7 +28,10 @@ struct SearchScreen: View {
                 searchField
 
                 if !viewModel.shouldShowArtistsSection {
-                    SearchFeaturedCategoryCard(category: content.featuredCategory)
+                    SearchFeaturedCategoryCard(
+                        category: content.featuredCategory,
+                        onTap: onArtistsCategorySelected
+                    )
 
                     Divider()
                         .overlay(Color.black.opacity(0.12))
@@ -138,6 +142,7 @@ private extension SearchStyleItem {
         content: SearchSampleData.content,
         viewModel: SearchViewModel(artistService: WikiDataArtistService(client: URLSessionNetworkClient())),
         onArtistSelected: { _ in },
-        onStyleSelected: { _ in }
+        onStyleSelected: { _ in },
+        onArtistsCategorySelected: { }
     )
 }
