@@ -5,6 +5,7 @@
 //  Created by loxxy on 28.01.2026.
 //
 
+import PhotosUI
 import UIKit
 
 final class EditProfileViewController: UIViewController {
@@ -133,6 +134,9 @@ final class EditProfileViewController: UIViewController {
         profilePictureView.pinCenterX(to: view)
         profilePictureView.setWidth(Constants.pictureSize)
         profilePictureView.setHeight(Constants.pictureSize)
+        profilePictureView.onButtonPressed = { [weak self] in
+            self?.presentPhotoPicker()
+        }
     }
 
     private func configureCustomTextField() {
@@ -165,9 +169,36 @@ final class EditProfileViewController: UIViewController {
     }
 
     @objc private func saveButtonPressed() {
+        view.endEditing(true)
         let name = nameInputField.getTextInput()
         let picture = profilePictureView.getPicture()
         viewModel.saveUserProfile(name: name, profilePicture: picture)
         navigationController?.popViewController(animated: true)
+    }
+
+    private func presentPhotoPicker() {
+        var configuration = PHPickerConfiguration(photoLibrary: .shared())
+        configuration.filter = .images
+        configuration.selectionLimit = 1
+
+        let picker = PHPickerViewController(configuration: configuration)
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+}
+
+extension EditProfileViewController: PHPickerViewControllerDelegate {
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+
+        guard let result = results.first else { return }
+
+        result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] image, _ in
+            guard let image = image as? UIImage else { return }
+
+            DispatchQueue.main.async {
+                self?.profilePictureView.updatePicture(with: image)
+            }
+        }
     }
 }
