@@ -23,4 +23,17 @@ enum QuizTheme {
     static let subduedOption = Color.black.opacity(0.82)
     static let resultTrack = Color.artScopeBlue.opacity(0.35)
     static let iconYellow = Color(red: 237 / 255, green: 244 / 255, blue: 88 / 255)
+    static let warningOrange = Color(red: 255 / 255, green: 181 / 255, blue: 59 / 255)
+
+    static func performanceColor(for percentage: Int) -> Color {
+        if percentage < 50 {
+            return warningOrange
+        }
+
+        if percentage > 90 {
+            return progressFill
+        }
+
+        return primaryAction
+    }
 }

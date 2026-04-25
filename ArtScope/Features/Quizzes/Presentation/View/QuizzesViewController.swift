@@ -209,7 +209,13 @@ final class QuizzesViewController: UIViewController {
 
     @objc private func quizItemTapped(_ sender: QuizListItemView) {
         guard let quizID = sender.accessibilityIdentifier else { return }
-        print("[Quizzes] selected stored quiz: \(quizID)")
+        guard let quiz = viewModel.fetchStoredQuiz(id: quizID) else {
+            print("[Quizzes] stored quiz not found: \(quizID)")
+            return
+        }
+
+        let vc = QuizPlayViewController(quiz: quiz)
+        navigationController?.pushViewController(vc, animated: true)
     }
 
     private func startDailyQuiz() {
@@ -218,6 +224,7 @@ final class QuizzesViewController: UIViewController {
             return
         }
 
-        print("[Quizzes] start daily quiz: \(dailyQuiz.id)")
+        let vc = QuizPlayViewController(quiz: dailyQuiz)
+        navigationController?.pushViewController(vc, animated: true)
     }
 }

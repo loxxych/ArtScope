@@ -27,7 +27,6 @@ final class ArtistQuizResultCardView: UIView {
         static let subtitleText: String = "You did great! Keep going at it."
         static let retryTitle: String = "Retry"
         static let progressTrackColor: UIColor = UIColor.artScopeBlue.withAlphaComponent(0.3)
-        static let progressFillColor: UIColor = .artScopeBlue
     }
     
     private let iconView = UIImageView()
@@ -53,6 +52,9 @@ final class ArtistQuizResultCardView: UIView {
         let percentage = Int((Double(correctAnswers) / Double(total)) * 100)
         scoreLabel.text = "\(percentage) %"
         progressView.progress = Float(percentage) / 100
+        let performanceColor = Self.performanceColor(for: percentage)
+        scoreLabel.textColor = performanceColor
+        progressView.progressTintColor = performanceColor
     }
     
     private func configureUI() {
@@ -96,7 +98,7 @@ final class ArtistQuizResultCardView: UIView {
         scoreLabel.pinHorizontal(to: self, Constants.inset)
         
         progressView.trackTintColor = Constants.progressTrackColor
-        progressView.progressTintColor = Constants.progressFillColor
+        progressView.progressTintColor = .artScopeBlue
         progressView.layer.cornerRadius = Constants.progressHeight / 2
         progressView.clipsToBounds = true
         progressView.pinTop(to: scoreLabel.bottomAnchor, Constants.progressTopSpacing)
@@ -119,5 +121,17 @@ final class ArtistQuizResultCardView: UIView {
     
     @objc private func retryTapped() {
         onRetryTapped?()
+    }
+
+    private static func performanceColor(for percentage: Int) -> UIColor {
+        if percentage < 50 {
+            return UIColor(red: 255/255, green: 181/255, blue: 59/255, alpha: 1)
+        }
+
+        if percentage > 90 {
+            return UIColor(red: 237/255, green: 244/255, blue: 88/255, alpha: 1)
+        }
+
+        return .artScopeBlue
     }
 }

@@ -18,6 +18,10 @@ final class QuizzesViewModel {
     init(quizService: QuizService) {
         self.quizService = quizService
     }
+
+    func fetchStoredQuiz(id: String) -> Quiz? {
+        quizService.fetchStoredQuizzes().first(where: { $0.id == id })
+    }
     
     func load() {
         onTopicsLoaded?(Self.defaultTopics)

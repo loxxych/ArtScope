@@ -28,7 +28,7 @@ final class ArtistQuizOptionView: UIControl {
         static let normalColor: UIColor = .black
         static let selectedColor: UIColor = .white
         static let correctColor: UIColor = UIColor(red: 145/255, green: 240/255, blue: 104/255, alpha: 1)
-        static let incorrectColor: UIColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.96)
+        static let incorrectColor: UIColor = UIColor(red: 192/255, green: 18/255, blue: 31/255, alpha: 1)
         static let subduedAlpha: CGFloat = 0.72
     }
     
@@ -69,9 +69,9 @@ final class ArtistQuizOptionView: UIControl {
             iconView.isHidden = false
         case .incorrect:
             backgroundColor = Constants.incorrectColor
-            titleLabel.textColor = Constants.textColorLight
+            titleLabel.textColor = Constants.textColorDark
             iconView.image = UIImage.artScopeDislike
-            iconView.tintColor = .black
+            iconView.tintColor = .white
             iconView.isHidden = false
         case .subdued:
             backgroundColor = Constants.normalColor
@@ -96,8 +96,8 @@ final class ArtistQuizOptionView: UIControl {
         titleLabel.pinRight(to: trailingAnchor, 52, .lsOE)
         
         iconView.contentMode = .scaleAspectFit
-        iconView.setWidth(22)
-        iconView.setHeight(22)
+        iconView.setWidth(24)
+        iconView.setHeight(24)
         iconView.pinRight(to: trailingAnchor, Constants.iconRightInset)
         iconView.pinCenterY(to: self)
     }

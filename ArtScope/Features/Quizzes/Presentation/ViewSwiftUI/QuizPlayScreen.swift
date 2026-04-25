@@ -11,6 +11,7 @@ struct QuizPlayScreen: View {
     enum Mode {
         case question(
             questionIndex: Int,
+            timeText: String,
             selectedOptionID: String?,
             revealed: Bool,
             imageURL: URL?,
@@ -60,9 +61,10 @@ struct QuizPlayScreen: View {
     @ViewBuilder
     private var content: some View {
         switch mode {
-        case let .question(questionIndex, selectedOptionID, revealed, imageURL, explanationText):
+        case let .question(questionIndex, timeText, selectedOptionID, revealed, imageURL, explanationText):
             questionContent(
                 questionIndex: questionIndex,
+                timeText: timeText,
                 selectedOptionID: selectedOptionID,
                 revealed: revealed,
                 imageURL: imageURL,
@@ -78,6 +80,7 @@ struct QuizPlayScreen: View {
 
     private func questionContent(
         questionIndex: Int,
+        timeText: String,
         selectedOptionID: String?,
         revealed: Bool,
         imageURL: URL?,
@@ -97,7 +100,7 @@ struct QuizPlayScreen: View {
             QuizProgressHeaderView(
                 currentQuestion: safeIndex + 1,
                 totalQuestions: max(quiz.payload.questions.count, 1),
-                timeText: formattedRemainingTime
+                timeText: timeText
             )
 
             QuizQuestionCardView(
@@ -115,25 +118,12 @@ struct QuizPlayScreen: View {
         elapsedTimeText: String,
         scorePercent: Int
     ) -> some View {
-        VStack(alignment: .leading, spacing: 26) {
-            Text("Test yourself!")
-                .font(.ByteBounce41)
-                .foregroundStyle(QuizTheme.darkText)
-
-            QuizResultCardView(
-                elapsedTimeText: elapsedTimeText,
-                scorePercent: scorePercent,
-                onRetry: onRetry
-            )
-        }
+        QuizResultCardView(
+            elapsedTimeText: elapsedTimeText,
+            scorePercent: scorePercent,
+            onRetry: onRetry
+        )
         .padding(.top, 24)
-    }
-
-    private var formattedRemainingTime: String {
-        let totalSeconds = max(quiz.estimatedTimeSeconds, 0)
-        let minutes = totalSeconds / 60
-        let seconds = totalSeconds % 60
-        return String(format: "%d:%02d", minutes, seconds)
     }
 }
 
@@ -144,6 +134,7 @@ struct QuizPlayScreen: View {
         quiz: QuizPlayScreenPreviewData.sampleQuiz,
         mode: .question(
             questionIndex: 0,
+            timeText: "0:15",
             selectedOptionID: "salvador",
             revealed: false,
             imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/en/9/90/Portrait_de_Picasso%2C_1909-10%2C_Juan_Gris.jpg"),
@@ -159,6 +150,7 @@ struct QuizPlayScreen: View {
         quiz: QuizPlayScreenPreviewData.sampleQuiz,
         mode: .question(
             questionIndex: 1,
+            timeText: "0:15",
             selectedOptionID: "impressionism",
             revealed: true,
             imageURL: nil,

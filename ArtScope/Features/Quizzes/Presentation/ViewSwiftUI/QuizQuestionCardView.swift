@@ -189,7 +189,7 @@ private struct QuizAnswerOptionButton: View {
                         .renderingMode(.template)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 18, height: 18)
+                        .frame(width: state == .incorrect ? 24 : 18, height: state == .incorrect ? 24 : 18)
                         .foregroundStyle(trailingIconColor)
                 }
             }

@@ -12,6 +12,10 @@ struct QuizResultCardView: View {
     let scorePercent: Int
     var onRetry: (() -> Void)?
 
+    private var performanceColor: Color {
+        QuizTheme.performanceColor(for: scorePercent)
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             Image(uiImage: UIImage.artScopeLeaderboard ?? UIImage())
@@ -39,7 +43,7 @@ struct QuizResultCardView: View {
 
             Text("\(scorePercent) %")
                 .font(.ByteBounce48)
-                .foregroundStyle(QuizTheme.primaryAction)
+                .foregroundStyle(performanceColor)
                 .padding(.top, 20)
 
             ZStack(alignment: .leading) {
@@ -48,7 +52,7 @@ struct QuizResultCardView: View {
 
                 GeometryReader { proxy in
                     Capsule()
-                        .fill(QuizTheme.primaryAction)
+                        .fill(performanceColor)
                         .frame(width: proxy.size.width * CGFloat(min(max(Double(scorePercent) / 100, 0), 1)))
                 }
             }
