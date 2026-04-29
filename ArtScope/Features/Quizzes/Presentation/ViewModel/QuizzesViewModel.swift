@@ -25,13 +25,12 @@ final class QuizzesViewModel {
     }
 
     func fetchStoredQuiz(id: String) -> Quiz? {
-        quizService.fetchStoredQuizzes().first(where: { $0.id == id })
+        quizService.fetchStoredQuizzes().first(where: { $0.id == id || $0.topicID == id })
     }
     
     func load() {
         onTopicsLoaded?(Self.defaultTopics)
         publishCuratedQuizzes()
-        prefetchCuratedQuizzes()
         loadDailyQuiz()
     }
 
@@ -83,25 +82,6 @@ final class QuizzesViewModel {
         }
 
         onQuizzesLoaded?(quizzes)
-    }
-
-    private func prefetchCuratedQuizzes(index: Int = 0) {
-        guard curatedTopics.indices.contains(index) else { return }
-
-        let topic = curatedTopics[index]
-        if fetchStoredQuiz(id: topic.id) != nil {
-            prefetchCuratedQuizzes(index: index + 1)
-            return
-        }
-
-        quizService.fetchCuratedQuiz(topic: topic) { [weak self] result in
-            DispatchQueue.main.async {
-                if case let .failure(error) = result {
-                    print("[Quizzes] curated prefetch failed for \(topic.id): \(error)")
-                }
-                self?.prefetchCuratedQuizzes(index: index + 1)
-            }
-        }
     }
 
     private static let curatedTopicCatalog: [QuizGenerationTopic] = [
