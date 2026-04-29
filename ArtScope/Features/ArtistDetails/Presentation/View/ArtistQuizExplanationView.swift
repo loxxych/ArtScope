@@ -12,7 +12,7 @@ final class ArtistQuizExplanationView: UIView {
         static let cornerRadius: CGFloat = 8
         static let inset: CGFloat = 14
         static let backgroundColor: UIColor = .white
-        static let font: UIFont = .InstrumentSansRegular13
+        static let font: UIFont = .InstrumentSansRegular14
         static let textColor: UIColor = .black
     }
     

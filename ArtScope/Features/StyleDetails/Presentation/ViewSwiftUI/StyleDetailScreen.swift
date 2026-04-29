@@ -12,9 +12,9 @@ struct StyleDetailScreen: View {
     let content: StyleDetailContent?
     let isLoading: Bool
     let errorMessage: String?
+    @ObservedObject var quizViewModel: StyleQuizViewModel
     var onBack: (() -> Void)?
     var onRetry: (() -> Void)?
-    var onBeginQuiz: (() -> Void)?
     var onArtistSelected: ((StyleArtistItem) -> Void)?
     var onWorkSelected: ((StyleWorkItem) -> Void)?
     @State private var isDescriptionExpanded = false
@@ -42,7 +42,7 @@ struct StyleDetailScreen: View {
                             worksBlock(content: content)
                             Divider()
                                 .overlay(StyleTheme.divider)
-                            quizBlock
+                            StyleQuizSectionView(viewModel: quizViewModel)
                         }
                         .padding(.horizontal, 12)
                         .padding(.top, 18)
@@ -204,19 +204,6 @@ struct StyleDetailScreen: View {
         }
     }
 
-    private var quizBlock: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Quiz")
-                .font(.InstrumentSansBold31)
-                .foregroundStyle(StyleTheme.darkText)
-
-            Text("Complete a short quiz to test your knowledge!")
-                .font(.InstrumentSansRegular15)
-                .foregroundStyle(StyleTheme.darkText.opacity(0.85))
-
-            StyleQuizTeaserCardView(onBegin: onBeginQuiz)
-        }
-    }
 }
 
 #Preview {
@@ -224,6 +211,12 @@ struct StyleDetailScreen: View {
         screenTitle: StyleDetailSampleData.impressionism.title,
         content: StyleDetailSampleData.impressionism,
         isLoading: false,
-        errorMessage: nil
+        errorMessage: nil,
+        quizViewModel: StyleQuizViewModel(
+            styleID: StyleDetailSampleData.impressionism.id,
+            styleName: StyleDetailSampleData.impressionism.title,
+            styleImageURL: StyleDetailSampleData.impressionism.heroImageURL,
+            quizService: QuizServiceFactory.makeQuizService()
+        )
     )
 }

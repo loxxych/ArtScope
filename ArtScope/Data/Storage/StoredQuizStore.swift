@@ -20,7 +20,7 @@ final class UserDefaultsStoredQuizStore: StoredQuizStore {
 
     private enum Constants {
         static let storageKey = "stored_generated_quizzes"
-        static let maxStoredQuizzes = 10
+        static let maxStoredQuizzes = 25
     }
 
     private let defaults: UserDefaults

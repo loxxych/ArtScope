@@ -13,14 +13,12 @@ final class ArtistOfTheDayView : UIView {
         // UI Constraint properties
         static let textLeft: CGFloat = 25
         static let textTop: CGFloat = 20
-        static let textStackLeft: CGFloat = 148
+        static let textStackLeftFromPortrait: CGFloat = 18
         
-        static let buttonLeft: CGFloat = 25
-        static let buttonTop: CGFloat = 60
+        static let buttonTop: CGFloat = 26
         static let buttonHeight: CGFloat = 31
         static let buttonWidth: CGFloat = 133
         static let cornerRadius: CGFloat = buttonHeight / 2
-        static let buttonRight: CGFloat = stackRight
 
         static let wrapCornerRadius: CGFloat = 10
         static let wrapCutoutInset: CGFloat = 6
@@ -96,12 +94,12 @@ final class ArtistOfTheDayView : UIView {
 
         configureWrap()
         configureTitle()
+        configureArtistImageView()
         configureArtistName()
         configureDescription()
         configureTextStack()
         configureLearnMoreButton()
         configurePaletteImageView()
-        configureArtistImageView()
     }
     
     // MARK: - Wrap configuration
@@ -156,7 +154,7 @@ final class ArtistOfTheDayView : UIView {
         textStack.addArrangedSubview(artistNameLabel)
         textStack.addArrangedSubview(descirptionLabel)
         
-        textStack.pinLeft(to: wrap.leadingAnchor, Constants.textStackLeft)
+        textStack.pinLeft(to: artistImageView.trailingAnchor, Constants.textStackLeftFromPortrait)
         textStack.pinRight(to: wrap.trailingAnchor, Constants.stackRight)
         textStack.pinTop(to: titleLabel.bottomAnchor, Constants.stackTop)
     }
@@ -173,7 +171,7 @@ final class ArtistOfTheDayView : UIView {
         learnMoreButton.addTarget(self, action: #selector(learnMoreButtonPressed), for: .touchUpInside)
         
         learnMoreButton.pinTop(to: textStack.bottomAnchor, Constants.buttonTop)
-        learnMoreButton.pinRight(to: wrap.trailingAnchor, Constants.buttonRight)
+        learnMoreButton.pinLeft(to: textStack.leadingAnchor)
         learnMoreButton.setWidth(Constants.buttonWidth)
         learnMoreButton.setHeight(Constants.buttonHeight)
     }

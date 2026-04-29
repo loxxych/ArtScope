@@ -10,24 +10,33 @@ import UIKit
 
 final class QuizPlayViewController: UIViewController {
     private let quiz: Quiz
+    private let completedQuizHistoryStore: CompletedQuizHistoryStore
 
     private var currentQuestionIndex = 0
     private var selectedOptionID: String?
     private var isAnswerRevealed = false
     private var correctAnswersCount = 0
     private var didCountCurrentQuestion = false
+    private var didPersistCompletion = false
     private var startedAt = Date()
+    private var questionStartedAt = Date()
     private var timer: Timer?
+    private let questionTimeLimitSeconds = 20
 
     private lazy var hostingController = UIHostingController(rootView: makeRootView())
 
     init(quiz: Quiz) {
         self.quiz = quiz
+        self.completedQuizHistoryStore = ProfileHistoryFactory.makeCompletedQuizHistoryStore()
         super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        stopTimer()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -121,6 +130,11 @@ final class QuizPlayViewController: UIViewController {
             selectedOptionID = nil
             isAnswerRevealed = false
             didCountCurrentQuestion = false
+            questionStartedAt = Date()
+            if isFinished {
+                persistCompletionIfNeeded()
+                stopTimer()
+            }
             refresh()
             return
         }
@@ -136,7 +150,9 @@ final class QuizPlayViewController: UIViewController {
         isAnswerRevealed = false
         correctAnswersCount = 0
         didCountCurrentQuestion = false
+        didPersistCompletion = false
         startedAt = Date()
+        questionStartedAt = Date()
         startTimerIfNeeded()
         refresh()
     }
@@ -162,7 +178,8 @@ final class QuizPlayViewController: UIViewController {
     }
 
     private var remainingTimeText: String {
-        let remainingSeconds = max(quiz.estimatedTimeSeconds - Int(Date().timeIntervalSince(startedAt)), 0)
+        let elapsedSeconds = Int(Date().timeIntervalSince(questionStartedAt))
+        let remainingSeconds = max(questionTimeLimitSeconds - elapsedSeconds, 0)
         let minutes = remainingSeconds / 60
         let remainder = remainingSeconds % 60
         return String(format: "%d:%02d", minutes, remainder)
@@ -184,6 +201,10 @@ final class QuizPlayViewController: UIViewController {
                 self.stopTimer()
                 return
             }
+            if !self.isAnswerRevealed, Int(Date().timeIntervalSince(self.questionStartedAt)) >= self.questionTimeLimitSeconds {
+                self.isAnswerRevealed = true
+                self.selectedOptionID = nil
+            }
             self.refresh()
         }
     }
@@ -191,5 +212,25 @@ final class QuizPlayViewController: UIViewController {
     private func stopTimer() {
         timer?.invalidate()
         timer = nil
+    }
+
+    private func persistCompletionIfNeeded() {
+        guard !didPersistCompletion else { return }
+        didPersistCompletion = true
+
+        let total = max(quiz.payload.questions.count, 1)
+        let percentage = Int((Double(correctAnswersCount) / Double(total)) * 100)
+
+        completedQuizHistoryStore.save(
+            CompletedQuizHistoryItem(
+                id: "\(quiz.id)-\(UUID().uuidString)",
+                sourceQuizID: quiz.id,
+                title: quiz.subtitle ?? quiz.title,
+                scorePercent: percentage,
+                imageURLString: nil,
+                elapsedTimeText: elapsedTimeText,
+                completedAt: Date()
+            )
+        )
     }
 }

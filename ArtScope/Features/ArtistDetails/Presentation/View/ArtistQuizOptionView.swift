@@ -64,13 +64,13 @@ final class ArtistQuizOptionView: UIControl {
         case .correct:
             backgroundColor = Constants.correctColor
             titleLabel.textColor = Constants.textColorLight
-            iconView.image = UIImage.artScopeCheckmark
+            iconView.image = UIImage.artScopeCheckmark?.withRenderingMode(.alwaysTemplate)
             iconView.tintColor = UIColor(red: 160/255, green: 125/255, blue: 25/255, alpha: 1)
             iconView.isHidden = false
         case .incorrect:
             backgroundColor = Constants.incorrectColor
             titleLabel.textColor = Constants.textColorDark
-            iconView.image = UIImage.artScopeDislike
+            iconView.image = UIImage.artScopeDislike?.withRenderingMode(.alwaysTemplate)
             iconView.tintColor = .white
             iconView.isHidden = false
         case .subdued:

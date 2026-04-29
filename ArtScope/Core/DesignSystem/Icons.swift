@@ -11,7 +11,7 @@ extension UIImage {
     static let artScopeArtist = UIImage(named: "artist") ?? UIImage()
     static let artScopeDefaultProfilePicture = UIImage(named: "defaultProfilePicture")
     static let artScopeDefaultArtistPreview = UIImage(named: "defaultProfilePicture") ?? UIImage(systemName: "person.crop.circle.fill")
-    static let artScopePalette = UIImage(named: "palette") ?? UIImage(systemName: "paintpalette.fill")
+    static let artScopePalette = UIImage(named: "palette-icon") ?? UIImage(systemName: "paintpalette.fill")
     static let artScopePaintbrush = UIImage(named: "paintbrush-icon") ?? UIImage(systemName: "paintbrush.pointed.fill")
     static let artScopeInfo = UIImage(named: "info-icon") ?? UIImage(systemName: "info.circle.fill")
     static let artScopeCheckmark = UIImage(named: "checkmark-icon") ?? UIImage(systemName: "checkmark.seal.fill")

@@ -67,10 +67,10 @@ struct QuizQuestionCardView: View {
                 .frame(maxWidth: .infinity, alignment: .center)
             }
 
-            Text(question.prompt)
-                .font(.InstrumentSansBold24)
-                .foregroundStyle(QuizTheme.darkText)
-                .multilineTextAlignment(.leading)
+                Text(question.prompt)
+                    .font(.InstrumentSansBold24)
+                    .foregroundStyle(QuizTheme.darkText)
+                    .multilineTextAlignment(.leading)
 
             if let explanationText, !explanationText.isEmpty {
                 QuizExplanationBanner(text: explanationText)
@@ -145,7 +145,7 @@ private struct QuizExplanationBanner: View {
     var body: some View {
         HStack(spacing: 10) {
             Text(text)
-                .font(.InstrumentSansRegular13)
+                .font(.InstrumentSansRegular16)
                 .foregroundStyle(QuizTheme.darkText)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -189,7 +189,7 @@ private struct QuizAnswerOptionButton: View {
                         .renderingMode(.template)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: state == .incorrect ? 24 : 18, height: state == .incorrect ? 24 : 18)
+                        .frame(width: 24, height: 24)
                         .foregroundStyle(trailingIconColor)
                 }
             }

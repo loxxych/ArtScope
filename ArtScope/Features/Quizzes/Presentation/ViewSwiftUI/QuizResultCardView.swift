@@ -10,6 +10,7 @@ import SwiftUI
 struct QuizResultCardView: View {
     let elapsedTimeText: String
     let scorePercent: Int
+    var showsTime: Bool = true
     var onRetry: (() -> Void)?
 
     private var performanceColor: Color {
@@ -36,15 +37,17 @@ struct QuizResultCardView: View {
                 .foregroundStyle(QuizTheme.lightText)
                 .padding(.top, 6)
 
-            Text("Time: \(elapsedTimeText)")
-                .font(.InstrumentSansSemiBold18)
-                .foregroundStyle(QuizTheme.lightText)
-                .padding(.top, 24)
+            if showsTime {
+                Text("Time: \(elapsedTimeText)")
+                    .font(.InstrumentSansSemiBold18)
+                    .foregroundStyle(QuizTheme.lightText)
+                    .padding(.top, 24)
+            }
 
             Text("\(scorePercent) %")
                 .font(.ByteBounce48)
                 .foregroundStyle(performanceColor)
-                .padding(.top, 20)
+                .padding(.top, showsTime ? 20 : 24)
 
             ZStack(alignment: .leading) {
                 Capsule()

@@ -172,7 +172,7 @@ final class QuizzesViewController: UIViewController {
         emptyStateLabel.textColor = .black
         emptyStateLabel.numberOfLines = 0
         emptyStateLabel.textAlignment = .left
-        emptyStateLabel.text = "No generated quizzes yet. Open artists and let Gemini create quizzes, then they will appear here."
+        emptyStateLabel.text = "No quizzes available yet."
         emptyStateLabel.isHidden = true
         emptyStateLabel.pinTop(to: quizzesTitleLabel.bottomAnchor, 10)
         emptyStateLabel.pinLeft(to: contentView.leadingAnchor, Constants.sideInset)
@@ -209,13 +209,19 @@ final class QuizzesViewController: UIViewController {
 
     @objc private func quizItemTapped(_ sender: QuizListItemView) {
         guard let quizID = sender.accessibilityIdentifier else { return }
-        guard let quiz = viewModel.fetchStoredQuiz(id: quizID) else {
-            print("[Quizzes] stored quiz not found: \(quizID)")
-            return
-        }
+        viewModel.loadCuratedQuiz(id: quizID) { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self else { return }
 
-        let vc = QuizPlayViewController(quiz: quiz)
-        navigationController?.pushViewController(vc, animated: true)
+                switch result {
+                case let .success(quiz):
+                    let vc = QuizPlayViewController(quiz: quiz)
+                    self.navigationController?.pushViewController(vc, animated: true)
+                case let .failure(error):
+                    print("[Quizzes] curated quiz failed: \(error)")
+                }
+            }
+        }
     }
 
     private func startDailyQuiz() {

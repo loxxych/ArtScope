@@ -13,7 +13,9 @@ final class StyleDetailViewController: UIViewController {
     private let viewModel: StyleDetailViewModel
     private let hostingController: UIHostingController<StyleDetailScreen>
     private let viewedCollectionHistoryStore: ViewedCollectionHistoryStore
+    private let styleQuizViewModel: StyleQuizViewModel
     private var currentState: StyleDetailViewModel.State = .loading
+    private var preparedQuizContentID: String?
 
     init(
         style: StylePreview,
@@ -22,12 +24,19 @@ final class StyleDetailViewController: UIViewController {
         self.style = style
         self.viewModel = StyleDetailViewModel(service: service)
         self.viewedCollectionHistoryStore = ProfileHistoryFactory.makeViewedCollectionHistoryStore()
+        self.styleQuizViewModel = StyleQuizViewModel(
+            styleID: style.id,
+            styleName: style.name,
+            styleImageURL: style.imageURL,
+            quizService: QuizServiceFactory.makeQuizService()
+        )
         self.hostingController = UIHostingController(
             rootView: StyleDetailScreen(
                 screenTitle: style.name,
                 content: nil,
                 isLoading: true,
-                errorMessage: nil
+                errorMessage: nil,
+                quizViewModel: styleQuizViewModel
             )
         )
 
@@ -82,6 +91,7 @@ final class StyleDetailViewController: UIViewController {
     }
 
     private func loadStyleDetails() {
+        preparedQuizContentID = nil
         viewModel.load(style: style)
     }
 
@@ -122,21 +132,24 @@ final class StyleDetailViewController: UIViewController {
             content: content,
             isLoading: isLoading,
             errorMessage: errorMessage,
+            quizViewModel: styleQuizViewModel,
             onBack: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             },
             onRetry: { [weak self] in
                 self?.loadStyleDetails()
             },
-            onBeginQuiz: { [style] in
-                print("[StyleDetail] quiz teaser tapped: style=\(style.name)")
-            }, onArtistSelected: { [weak self] artist in
+            onArtistSelected: { [weak self] artist in
                 self?.showArtistDetails(for: artist)
             },
             onWorkSelected: { [weak self] work in
                 self?.showWorkDetails(for: work)
             }
         )
+
+        if let content {
+            prepareStyleQuizIfNeeded(content: content)
+        }
     }
 
     private func showArtistDetails(for artist: StyleArtistItem) {
@@ -162,5 +175,16 @@ final class StyleDetailViewController: UIViewController {
             artistImageURL: work.artistImageURL
         )
         navigationController?.pushViewController(vc, animated: true)
+    }
+
+    private func prepareStyleQuizIfNeeded(content: StyleDetailContent) {
+        guard preparedQuizContentID != content.id else { return }
+        preparedQuizContentID = content.id
+        styleQuizViewModel.updateContext(
+            description: content.description,
+            artists: content.artists,
+            works: content.works
+        )
+        styleQuizViewModel.load()
     }
 }

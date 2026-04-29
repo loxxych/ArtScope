@@ -10,8 +10,10 @@ import Foundation
 final class GeminiQuizService: QuizService {
     private enum Constants {
         static let artistQuestionCount = 5
+        static let styleQuestionCount = 5
         static let dailyQuestionCount = 5
         static let artistCacheLifetime: TimeInterval = 60 * 60 * 12
+        static let styleCacheLifetime: TimeInterval = 60 * 60 * 12
     }
 
     private let client: NetworkClient
@@ -87,6 +89,57 @@ final class GeminiQuizService: QuizService {
                 works: works,
                 questionCount: Constants.artistQuestionCount
             ),
+            completion: completion
+        )
+    }
+
+    func fetchStyleQuiz(
+        styleID: String,
+        styleName: String,
+        description: String?,
+        artists: [StyleArtistItem],
+        works: [StyleWorkItem],
+        completion: @escaping (Result<Quiz, Error>) -> Void
+    ) {
+        let cacheKey = QuizPromptFactory.styleQuizCacheKey(styleID: styleID)
+
+        if let cachedQuiz = cacheStore.quiz(forKey: cacheKey) {
+            storedQuizStore.save(cachedQuiz)
+            completion(.success(cachedQuiz))
+            return
+        }
+
+        generateQuiz(
+            cacheKey: cacheKey,
+            expirationDate: Date().addingTimeInterval(Constants.styleCacheLifetime),
+            prompt: QuizPromptFactory.styleQuizPrompt(
+                styleID: styleID,
+                styleName: styleName,
+                description: description,
+                artists: artists,
+                works: works,
+                questionCount: Constants.styleQuestionCount
+            ),
+            completion: completion
+        )
+    }
+
+    func fetchCuratedQuiz(
+        topic: QuizGenerationTopic,
+        completion: @escaping (Result<Quiz, Error>) -> Void
+    ) {
+        let cacheKey = "curated-quiz::\(topic.id)"
+
+        if let cachedQuiz = cacheStore.quiz(forKey: cacheKey) {
+            storedQuizStore.save(cachedQuiz)
+            completion(.success(cachedQuiz))
+            return
+        }
+
+        generateQuiz(
+            cacheKey: cacheKey,
+            expirationDate: Date().addingTimeInterval(60 * 60 * 24 * 365),
+            prompt: QuizPromptFactory.curatedQuizPrompt(topic: topic),
             completion: completion
         )
     }

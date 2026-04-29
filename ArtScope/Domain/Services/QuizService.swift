@@ -15,4 +15,16 @@ protocol QuizService {
         works: [ArtistWork],
         completion: @escaping (Result<Quiz, Error>) -> Void
     )
+    func fetchStyleQuiz(
+        styleID: String,
+        styleName: String,
+        description: String?,
+        artists: [StyleArtistItem],
+        works: [StyleWorkItem],
+        completion: @escaping (Result<Quiz, Error>) -> Void
+    )
+    func fetchCuratedQuiz(
+        topic: QuizGenerationTopic,
+        completion: @escaping (Result<Quiz, Error>) -> Void
+    )
 }
