@@ -39,6 +39,7 @@ final class QuizOfTheDayView : UIView {
         static let startButtonTintColor: UIColor = .white
         static let textColor: UIColor = .white
         static let imageColor: UIColor = .white
+        static let titleBorderColor: CGColor = CGColor(red: 55/255, green: 113/255, blue: 255/255, alpha: 1)
         
         // Images
         static let image: UIImage = UIImage.artScopeDrawingBoard
@@ -93,6 +94,11 @@ final class QuizOfTheDayView : UIView {
         titleLabel.text = Constants.titleText
         titleLabel.font = Constants.titleFont
         titleLabel.textColor = Constants.textColor
+        
+        titleLabel.layer.shadowColor = Constants.titleBorderColor
+        titleLabel.layer.shadowRadius = 0
+        titleLabel.layer.shadowOpacity = 1
+        titleLabel.layer.shadowOffset = CGSize(width: 2, height: 2)
         
         titleLabel.pinLeft(to: wrap.leadingAnchor, Constants.textLeft)
         titleLabel.pinTop(to: wrap.topAnchor, Constants.textTop)

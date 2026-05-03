@@ -23,7 +23,7 @@ final class MainPageViewController: UIViewController {
     }
     
     // MARK: - Fields
-    private let viewModel = MainPageViewModel(artistService: WikiDataArtistService(client: URLSessionNetworkClient() as NetworkClient))
+    private let viewModel = MainPageViewModel(artistService: WikiDataArtistService(client: URLSessionNetworkClient() as NetworkClient), artistOfTheDayService: ArtistOfTheDayService())
     
     private let scrollView = UIScrollView()
     private let contentView = UIView()
@@ -32,7 +32,7 @@ final class MainPageViewController: UIViewController {
     private let stylesSectionView: StylesSectionView = .init()
     private var artists: [ArtistPreview] = []
     private var featuredArtist: ArtistPreview?
-
+    
     // MARK: - Lifecycle
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -49,11 +49,18 @@ final class MainPageViewController: UIViewController {
         configureUI()
         viewModel.loadArtists()
         viewModel.loadStyles()
+        
+        NotificationService.shared.scheduleDailyArtistNotification()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        NotificationService.shared.requestPermission()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -79,13 +86,13 @@ final class MainPageViewController: UIViewController {
             self?.showStyleDetails(for: style)
         }
         
-        viewModel.onArtistsLoaded = { [weak self] artists in
+        viewModel.onArtistsLoaded = { [weak self] artists, featured in
             guard let self, !artists.isEmpty else { return }
             
-            let featuredArtist = self.makeFeaturedArtist(from: artists)
             self.artists = artists
-            self.featuredArtist = featuredArtist
-            self.artistOfTheDayView.configure(with: featuredArtist)
+            self.featuredArtist = featured
+            
+            self.artistOfTheDayView.configure(with: featured)
             self.artistsSectionView.update(with: artists)
         }
         

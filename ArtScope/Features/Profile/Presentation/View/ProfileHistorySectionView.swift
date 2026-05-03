@@ -20,6 +20,7 @@ final class ProfileHistorySectionView: UIView {
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
     private let emptyLabel = UILabel()
+    var onHeaderIconTapped: (() -> Void)?
     var onQuizSelected: ((CompletedQuizHistoryItem) -> Void)?
     var onCollectionSelected: ((ViewedCollectionHistoryItem) -> Void)?
 
@@ -65,6 +66,10 @@ final class ProfileHistorySectionView: UIView {
         addSubview(headerView)
         addSubview(scrollView)
         addSubview(emptyLabel)
+
+        headerView.onIconTap = { [weak self] in
+            self?.onHeaderIconTapped?()
+        }
 
         headerView.pinTop(to: topAnchor)
         headerView.pinLeft(to: leadingAnchor)

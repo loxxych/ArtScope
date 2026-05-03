@@ -9,13 +9,15 @@ import Foundation
 
 final class MainPageViewModel {
     private let artistService: ArtistService
+    private let artistOfTheDayService: ArtistOfTheDayService
     
-    var onArtistsLoaded: (([ArtistPreview]) -> Void)?
+    var onArtistsLoaded: (([ArtistPreview], ArtistPreview) -> Void)?
     var onStylesLoaded: (([StylePreview]) -> Void)?
     var onLoadingFailed: ((Error) -> Void)?
     
-    init(artistService: ArtistService) {
+    init(artistService: ArtistService, artistOfTheDayService: ArtistOfTheDayService) {
         self.artistService = artistService
+        self.artistOfTheDayService = artistOfTheDayService
     }
     
     func loadArtists() {
@@ -25,7 +27,8 @@ final class MainPageViewModel {
             DispatchQueue.main.async {
                 switch result {
                 case let .success(artists):
-                    self.onArtistsLoaded?(artists)
+                    let featured = self.artistOfTheDayService.getArtist(from: artists)
+                    self.onArtistsLoaded?(artists, featured)
                 case let .failure(error):
                     self.onLoadingFailed?(error)
                 }

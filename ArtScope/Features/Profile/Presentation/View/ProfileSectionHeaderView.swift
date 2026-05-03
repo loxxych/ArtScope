@@ -19,6 +19,7 @@ final class ProfileSectionHeaderView: UIView {
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
     private let iconView = UIImageView()
+    var onIconTap: (() -> Void)?
 
     init(title: String, description: String) {
         super.init(frame: .zero)
@@ -56,5 +57,13 @@ final class ProfileSectionHeaderView: UIView {
         iconView.setHeight(Constants.iconSize)
         iconView.pinCenterY(to: titleLabel)
         iconView.pinRight(to: trailingAnchor, Constants.sideInset)
+        iconView.isUserInteractionEnabled = true
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleIconTap))
+        iconView.addGestureRecognizer(tapGesture)
+    }
+
+    @objc private func handleIconTap() {
+        onIconTap?()
     }
 }

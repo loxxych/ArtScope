@@ -56,6 +56,8 @@ final class ProfileViewController: UIViewController {
     private let quizService: QuizService = QuizServiceFactory.makeQuizService()
     private var quizzesSectionHeightConstraint: NSLayoutConstraint?
     private var completedSectionHeightConstraint: NSLayoutConstraint?
+    private var completedQuizItems: [CompletedQuizHistoryItem] = []
+    private var viewedCollectionItems: [ViewedCollectionHistoryItem] = []
 
     // MARK: - Lifecycle
     init() {
@@ -102,13 +104,23 @@ final class ProfileViewController: UIViewController {
         }
 
         viewModel.onCompletedQuizHistoryUpdated = { [weak self] items in
+            self?.completedQuizItems = items
             self?.quizzesSectionView.updateQuizItems(items)
             self?.quizzesSectionHeightConstraint?.constant = items.isEmpty ? 122 : 300
         }
 
         viewModel.onViewedCollectionHistoryUpdated = { [weak self] items in
+            self?.viewedCollectionItems = items
             self?.completedSectionView.updateCollectionItems(items)
             self?.completedSectionHeightConstraint?.constant = items.isEmpty ? 122 : 286
+        }
+
+        quizzesSectionView.onHeaderIconTapped = { [weak self] in
+            self?.showQuizHistoryList()
+        }
+
+        completedSectionView.onHeaderIconTapped = { [weak self] in
+            self?.showCompletedHistoryList()
         }
 
         quizzesSectionView.onQuizSelected = { [weak self] item in
@@ -211,6 +223,16 @@ final class ProfileViewController: UIViewController {
     // MARK: - Navigation
     private func showEditProfileScreen() {
         let vc = EditProfileViewController()
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    private func showQuizHistoryList() {
+        let vc = CompletedQuizzesListViewController(items: completedQuizItems)
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    private func showCompletedHistoryList() {
+        let vc = ViewedCollectionsListViewController(items: viewedCollectionItems)
         navigationController?.pushViewController(vc, animated: true)
     }
 

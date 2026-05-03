@@ -17,7 +17,7 @@ final class ArtistOfTheDayView : UIView {
         
         static let buttonTop: CGFloat = 26
         static let buttonHeight: CGFloat = 31
-        static let buttonWidth: CGFloat = 133
+        static let buttonWidth: CGFloat = 125
         static let cornerRadius: CGFloat = buttonHeight / 2
 
         static let wrapCornerRadius: CGFloat = 10
@@ -60,6 +60,8 @@ final class ArtistOfTheDayView : UIView {
     
     // MARK: - Fields
     private let wrap: UIView = .init()
+    private let shadowContainer = UIView()
+    private let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
     private let titleLabel: UILabel = .init()
     private let artistNameLabel: UILabel = .init()
     private let descirptionLabel: UILabel = .init()
@@ -83,14 +85,13 @@ final class ArtistOfTheDayView : UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        applyWrapMask()
-        artistImageView.layer.cornerRadius = artistImageView.bounds.width / 2
+        applyPerimeterFade(to: wrap)
     }
 
     // MARK: - UI Configuration
     private func configureUI() {
         self.setWidth(362)
-        self.setHeight(275)
+        self.setHeight(260)
 
         configureWrap()
         configureTitle()
@@ -109,11 +110,8 @@ final class ArtistOfTheDayView : UIView {
         wrap.backgroundColor = Constants.wrapColor
         wrap.layer.cornerRadius = Constants.wrapCornerRadius
         wrap.layer.masksToBounds = true
-        
-        wrap.setWidth(353)
-        wrap.setHeight(254)
-        wrap.pinLeft(to: self.leadingAnchor, 10)
-        wrap.pinTop(to: self.topAnchor, 10)
+
+        wrap.pin(to: self)
     }
     
     // MARK: - Title configuration
@@ -123,6 +121,11 @@ final class ArtistOfTheDayView : UIView {
         titleLabel.text = Constants.titleText
         titleLabel.font = Constants.titleFont
         titleLabel.textColor = Constants.textColor
+        
+        titleLabel.layer.shadowColor = Constants.titleBorderColor
+        titleLabel.layer.shadowRadius = 0
+        titleLabel.layer.shadowOpacity = 1
+        titleLabel.layer.shadowOffset = CGSize(width: 2, height: 2)
         
         titleLabel.pinLeft(to: wrap.leadingAnchor, Constants.textLeft)
         titleLabel.pinTop(to: wrap.topAnchor, Constants.textTop)
@@ -154,9 +157,9 @@ final class ArtistOfTheDayView : UIView {
         textStack.addArrangedSubview(artistNameLabel)
         textStack.addArrangedSubview(descirptionLabel)
         
-        textStack.pinLeft(to: artistImageView.trailingAnchor, Constants.textStackLeftFromPortrait)
+        textStack.pinLeft(to: artistImageView.trailingAnchor, 12)
+        textStack.pinBottom(to: artistImageView.centerYAnchor)
         textStack.pinRight(to: wrap.trailingAnchor, Constants.stackRight)
-        textStack.pinTop(to: titleLabel.bottomAnchor, Constants.stackTop)
     }
     
     // MARK: - Learn more button configuration
@@ -178,29 +181,31 @@ final class ArtistOfTheDayView : UIView {
     
     // MARK: - Palette image view configuration
     private func configurePaletteImageView() {
-        addSubview(paletteImageView)
+        wrap.addSubview(paletteImageView)
         
         paletteImageView.image = Constants.paletteImage
         paletteImageView.tintColor = Constants.imageColor
         
         paletteImageView.setWidth(Constants.imageSize)
         paletteImageView.setHeight(Constants.imageSize)
-        paletteImageView.pinRight(to: self.trailingAnchor)
-        paletteImageView.pinTop(to: self.topAnchor)
+        paletteImageView.pinRight(to: wrap.trailingAnchor, 10)
+        paletteImageView.pinTop(to: wrap.topAnchor, 10)
     }
     
     // MARK: - Artist image view configuration
     private func configureArtistImageView() {
-        addSubview(artistImageView)
+        wrap.addSubview(artistImageView)
         
         artistImageView.image = UIImage.artScopeDefaultArtistPreview
         artistImageView.clipsToBounds = true
         artistImageView.contentMode = .scaleAspectFill
-        
+        artistImageView.layer.cornerRadius = Constants.artistImageCornerRadius
+
         artistImageView.setWidth(Constants.artistImageSize)
         artistImageView.setHeight(Constants.artistImageSize)
-        artistImageView.pinLeft(to: self.leadingAnchor)
-        artistImageView.pinBottom(to: self.bottomAnchor)
+        
+        artistImageView.pinLeft(to: wrap.leadingAnchor, 10)
+        artistImageView.pinBottom(to: wrap.bottomAnchor, 10)
     }
     
     func configure(with artist: ArtistPreview) {
@@ -219,28 +224,19 @@ final class ArtistOfTheDayView : UIView {
     }
 
     // MARK: - UI utilities
+    private func applyPerimeterFade(to view: UIView, fade: CGFloat = 20) {
+        let maskLayer = CAGradientLayer()
+        maskLayer.frame = view.bounds
+        maskLayer.shadowRadius = 5
+        maskLayer.shadowPath = CGPath(roundedRect: view.bounds.insetBy(dx: 5, dy: 5), cornerWidth: 10, cornerHeight: 10, transform: nil)
+        maskLayer.shadowOpacity = 1;
+        maskLayer.shadowOffset = CGSize.zero;
+        maskLayer.shadowColor = UIColor.white.cgColor
+        view.layer.mask = maskLayer;
+    }
+    
+    // MARK: - Actions
     @objc private func learnMoreButtonPressed() {
         onLearnMoreButtonTapped?()
     }
-    
-    private func applyWrapMask() {
-        let maskPath = UIBezierPath(
-            roundedRect: wrap.bounds,
-            byRoundingCorners: [.topLeft, .topRight, .bottomRight],
-            cornerRadii: CGSize(width: Constants.wrapCornerRadius, height: Constants.wrapCornerRadius)
-        )
-        
-        let cutoutFrame = wrap.convert(
-            artistImageView.bounds,
-            from: artistImageView
-        ).insetBy(dx: -Constants.wrapCutoutInset, dy: -Constants.wrapCutoutInset)
-        let cutoutPath = UIBezierPath(ovalIn: cutoutFrame)
-        maskPath.append(cutoutPath)
-        
-        let shapeLayer = CAShapeLayer()
-        shapeLayer.path = maskPath.cgPath
-        shapeLayer.fillRule = .evenOdd
-        wrap.layer.mask = shapeLayer
-    }
-
 }
