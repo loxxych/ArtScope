@@ -8,6 +8,7 @@
 import UIKit
 
 final class QuizzesViewController: UIViewController {
+    // MARK: - Constants
     private enum Constants {
         static let backgroundColor: UIColor = .artScopeGreen
         static let titleTop: CGFloat = 10
@@ -23,7 +24,8 @@ final class QuizzesViewController: UIViewController {
         static let titleFont: UIFont = .ByteBounce49
         static let sectionTitleFont: UIFont = .ByteBounce35
     }
-
+    
+    // MARK: - Fields
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     private let titleLabel = UILabel()
@@ -41,6 +43,7 @@ final class QuizzesViewController: UIViewController {
     private var dailyQuiz: Quiz?
     private var quizzes: [QuizListItem] = []
 
+    // MARK: - Lifecycle
     init() {
         super.init(nibName: nil, bundle: nil)
     }
@@ -60,12 +63,18 @@ final class QuizzesViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        quizOfTheDayView.startAnimation()
+    }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
-
+    
+    // MARK: - Bind logic
     private func bindViewModel() {
         quizOfTheDayView.onStartButtonTapped = { [weak self] in
             self?.startDailyQuiz()
@@ -86,6 +95,7 @@ final class QuizzesViewController: UIViewController {
         }
     }
 
+    // MARK: - UI Configuration
     private func configureUI() {
         view.backgroundColor = Constants.backgroundColor
         configureScrollView()
@@ -98,6 +108,7 @@ final class QuizzesViewController: UIViewController {
         configureFooterSpacer()
     }
 
+    // MARK: - Scroll view configuration
     private func configureScrollView() {
         view.addSubview(scrollView)
 
@@ -116,6 +127,7 @@ final class QuizzesViewController: UIViewController {
         contentView.pinWidth(to: scrollView.frameLayoutGuide.widthAnchor)
     }
 
+    // MARK: - Title configuration
     private func configureTitle() {
         contentView.addSubview(titleLabel)
 
@@ -126,6 +138,7 @@ final class QuizzesViewController: UIViewController {
         titleLabel.pinCenterX(to: contentView)
     }
 
+    // MARK: - Quiz of the day configuration
     private func configureQuizOfTheDay() {
         contentView.addSubview(quizOfTheDayView)
 
@@ -208,6 +221,7 @@ final class QuizzesViewController: UIViewController {
     }
 
     @objc private func quizItemTapped(_ sender: QuizListItemView) {
+        
         guard let quizID = sender.accessibilityIdentifier else { return }
         viewModel.loadCuratedQuiz(id: quizID) { [weak self] result in
             DispatchQueue.main.async {
@@ -216,6 +230,11 @@ final class QuizzesViewController: UIViewController {
                 switch result {
                 case let .success(quiz):
                     let vc = QuizPlayViewController(quiz: quiz)
+
+                    vc.onQuizCompleted = { [weak self] in
+                        self?.viewModel.load()
+                    }
+                    
                     self.navigationController?.pushViewController(vc, animated: true)
                 case let .failure(error):
                     print("[Quizzes] curated quiz failed: \(error)")
@@ -231,6 +250,8 @@ final class QuizzesViewController: UIViewController {
         }
 
         let vc = QuizPlayViewController(quiz: dailyQuiz)
+        
         navigationController?.pushViewController(vc, animated: true)
     }
+    
 }

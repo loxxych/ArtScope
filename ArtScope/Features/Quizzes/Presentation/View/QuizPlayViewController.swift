@@ -22,7 +22,9 @@ final class QuizPlayViewController: UIViewController {
     private var questionStartedAt = Date()
     private var timer: Timer?
     private let questionTimeLimitSeconds = 20
-
+    
+    var onQuizCompleted: (() -> Void)?
+    
     private lazy var hostingController = UIHostingController(rootView: makeRootView())
 
     init(quiz: Quiz) {
@@ -232,5 +234,7 @@ final class QuizPlayViewController: UIViewController {
                 completedAt: Date()
             )
         )
+        
+        onQuizCompleted?()
     }
 }

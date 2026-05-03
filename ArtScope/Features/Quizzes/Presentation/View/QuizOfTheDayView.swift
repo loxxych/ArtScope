@@ -30,7 +30,7 @@ final class QuizOfTheDayView : UIView {
         static let fallbackThemeText: String = "Loading..."
         
         // Fonts
-        static let titleFont: UIFont? = UIFont.ByteBounce41
+        static let titleFont: UIFont = UIFont.ByteBounce41
         static let themeFont: UIFont? = UIFont.InstrumentSansSemiBold17
         
         // Colors
@@ -47,7 +47,7 @@ final class QuizOfTheDayView : UIView {
     
     // MARK: - Fields
     private let wrap: UIView = .init()
-    private let titleLabel: UILabel = .init()
+    private let titleLabel = GradientTextLabel()
     private let themeLabel: UILabel = .init()
     private let imageView: UIImageView = .init()
     private let startButton: UIButton = .init(type: .system)
@@ -93,7 +93,6 @@ final class QuizOfTheDayView : UIView {
         
         titleLabel.text = Constants.titleText
         titleLabel.font = Constants.titleFont
-        titleLabel.textColor = Constants.textColor
         
         titleLabel.layer.shadowColor = Constants.titleBorderColor
         titleLabel.layer.shadowRadius = 0
@@ -102,6 +101,8 @@ final class QuizOfTheDayView : UIView {
         
         titleLabel.pinLeft(to: wrap.leadingAnchor, Constants.textLeft)
         titleLabel.pinTop(to: wrap.topAnchor, Constants.textTop)
+        titleLabel.pinRight(to: wrap.trailingAnchor, Constants.textLeft)
+        titleLabel.setHeight(50)
     }
     
     private func configureTheme() {
@@ -159,8 +160,13 @@ final class QuizOfTheDayView : UIView {
         view.layer.mask = maskLayer;
     }
     
+    // MARK: - Actions
     @objc private func startButtonPressed() {
         onStartButtonTapped?()
     }
-
+    
+    // MARK: - Animations
+    func startAnimation() {
+        titleLabel.startAnimation()
+    }
 }

@@ -22,7 +22,7 @@ final class GeminiQuizService: QuizService {
     private let storedQuizStore: StoredQuizStore
     private let studiedArtworkStore: StudiedArtworkStore
     private let calendar: Calendar
-
+    
     init(
         client: NetworkClient,
         configuration: GeminiConfiguration? = GeminiConfiguration.fromBundle(),

@@ -10,6 +10,13 @@ import Foundation
 final class QuizzesViewModel {
     private let quizService: QuizService
     private let curatedTopics: [QuizGenerationTopic] = curatedTopicCatalog
+    private var completedQuizIDs: Set<String> {
+        let store = UserDefaultsCompletedQuizHistoryStore()
+        return Set(
+            store.fetchResults()
+                .compactMap { $0.sourceQuizID }
+        )
+    }
     
     var onDailyQuizLoaded: ((Quiz) -> Void)?
     var onTopicsLoaded: (([QuizTopic]) -> Void)?
@@ -77,7 +84,8 @@ final class QuizzesViewModel {
                 difficulty: "medium",
                 estimatedTimeSeconds: topic.questionCount * 20,
                 questionCount: topic.questionCount,
-                isDaily: false
+                isDaily: false,
+                isCompleted: completedQuizIDs.contains(topic.id)
             )
         }
 

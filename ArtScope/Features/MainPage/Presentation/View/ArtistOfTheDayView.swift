@@ -41,7 +41,7 @@ final class ArtistOfTheDayView : UIView {
         static let learnMoreButtonText: String = "Learn more"
         
         // Fonts
-        static let titleFont: UIFont? = UIFont.ByteBounce41
+        static let titleFont: UIFont = UIFont.ByteBounce41
         static let artistNameFont: UIFont? = UIFont.InstrumentSansBold20
         static let descriptionFont: UIFont? = UIFont.InstrumentSansRegular11
         static let buttonFont: UIFont? = UIFont.InstrumentSansSemiBold15
@@ -62,7 +62,7 @@ final class ArtistOfTheDayView : UIView {
     private let wrap: UIView = .init()
     private let shadowContainer = UIView()
     private let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
-    private let titleLabel: UILabel = .init()
+    private let titleLabel = GradientTextLabel()
     private let artistNameLabel: UILabel = .init()
     private let descirptionLabel: UILabel = .init()
     private let paletteImageView: UIImageView = .init()
@@ -120,15 +120,17 @@ final class ArtistOfTheDayView : UIView {
         
         titleLabel.text = Constants.titleText
         titleLabel.font = Constants.titleFont
-        titleLabel.textColor = Constants.textColor
         
         titleLabel.layer.shadowColor = Constants.titleBorderColor
         titleLabel.layer.shadowRadius = 0
         titleLabel.layer.shadowOpacity = 1
         titleLabel.layer.shadowOffset = CGSize(width: 2, height: 2)
         
-        titleLabel.pinLeft(to: wrap.leadingAnchor, Constants.textLeft)
+        titleLabel.pinLeft(to: wrap.leadingAnchor, 20)
         titleLabel.pinTop(to: wrap.topAnchor, Constants.textTop)
+
+        titleLabel.setHeight(50)
+        titleLabel.pinRight(to: wrap.trailingAnchor, 20)
     }
     
     // MARK: - Artist name configuration
@@ -238,5 +240,10 @@ final class ArtistOfTheDayView : UIView {
     // MARK: - Actions
     @objc private func learnMoreButtonPressed() {
         onLearnMoreButtonTapped?()
+    }
+    
+    // MARK: - Animations
+    func startAnimation() {
+        titleLabel.startAnimation()
     }
 }

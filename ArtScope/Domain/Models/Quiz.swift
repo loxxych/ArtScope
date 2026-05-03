@@ -99,7 +99,8 @@ struct QuizListItem: Codable {
     let estimatedTimeSeconds: Int
     let questionCount: Int
     let isDaily: Bool
-
+    var isCompleted: Bool = false
+    
     enum CodingKeys: String, CodingKey {
         case id
         case topicID = "topic_id"

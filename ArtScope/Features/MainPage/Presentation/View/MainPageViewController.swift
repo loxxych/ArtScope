@@ -60,6 +60,7 @@ final class MainPageViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        artistOfTheDayView.startAnimation()
         NotificationService.shared.requestPermission()
     }
     
