@@ -82,7 +82,6 @@ final class QuizzesViewController: UIViewController {
 
         viewModel.onDailyQuizLoaded = { [weak self] quiz in
             self?.dailyQuiz = quiz
-            self?.quizOfTheDayView.configure(with: quiz)
         }
 
         viewModel.onQuizzesLoaded = { [weak self] quizzes in

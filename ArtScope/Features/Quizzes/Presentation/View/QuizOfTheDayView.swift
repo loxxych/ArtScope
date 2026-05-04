@@ -12,26 +12,28 @@ final class QuizOfTheDayView : UIView {
     private enum Constants {
         // UI Constraint properties
         static let textLeft: CGFloat = 25
-        static let textTop: CGFloat = 20
+        static let textTop: CGFloat = 0
+        
         static let buttonLeft: CGFloat = 25
         static let buttonBottom: CGFloat = 25
         static let buttonHeight: CGFloat = 38
         static let buttonWidth: CGFloat = 163
         static let cornerRadius: CGFloat = buttonHeight / 2
+        
         static let wrapCornerRadius: CGFloat = 10
+        
         static let imageSize: CGFloat = 88
-        static let imageLeft: CGFloat = 10
-        static let imageBottom: CGFloat = 10
+        static let imageLeft: CGFloat = 20
+        static let imageBottom: CGFloat = 20
 
         // Strings
         static let titleText: String = "Quiz of the day"
-        static let themeText: String = "Theme: "
+        static let themeText: String = "Based on what you explored recently — test your knowledge in a personalized quiz!"
         static let startButtonText: String = "Start"
-        static let fallbackThemeText: String = "Loading..."
         
         // Fonts
         static let titleFont: UIFont = UIFont.ByteBounce41
-        static let themeFont: UIFont? = UIFont.InstrumentSansSemiBold17
+        static let themeFont: UIFont = UIFont.InstrumentSansRegular15
         
         // Colors
         static let wrapColor: UIColor = .artScopePink
@@ -100,9 +102,9 @@ final class QuizOfTheDayView : UIView {
         titleLabel.layer.shadowOffset = CGSize(width: 2, height: 2)
         
         titleLabel.pinLeft(to: wrap.leadingAnchor, Constants.textLeft)
-        titleLabel.pinTop(to: wrap.topAnchor, Constants.textTop)
+        titleLabel.pinTop(to: wrap.topAnchor, 20)
         titleLabel.pinRight(to: wrap.trailingAnchor, Constants.textLeft)
-        titleLabel.setHeight(50)
+        titleLabel.setHeight(45)
     }
     
     private func configureTheme() {
@@ -110,10 +112,13 @@ final class QuizOfTheDayView : UIView {
         
         themeLabel.text = Constants.themeText
         themeLabel.font = Constants.themeFont
+        themeLabel.numberOfLines = 3
+        themeLabel.textAlignment = .left
         themeLabel.textColor = Constants.textColor
 
         themeLabel.pinLeft(to: wrap.leadingAnchor, Constants.textLeft)
         themeLabel.pinTop(to: titleLabel.bottomAnchor, Constants.textTop)
+        themeLabel.pinRight(to: wrap.trailingAnchor, 100)
     }
     
     private func configureStartButton() {
@@ -141,11 +146,6 @@ final class QuizOfTheDayView : UIView {
         imageView.setHeight(Constants.imageSize)
         imageView.pinRight(to: wrap.trailingAnchor, Constants.imageLeft)
         imageView.pinBottom(to: wrap.bottomAnchor, Constants.imageBottom)
-    }
-    
-    func configure(with quiz: Quiz?) {
-        let theme = quiz?.subtitle ?? quiz?.title ?? Constants.fallbackThemeText
-        themeLabel.text = Constants.themeText + theme
     }
     
     // MARK: - UI utilities
