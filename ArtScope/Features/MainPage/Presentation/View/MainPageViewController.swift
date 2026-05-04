@@ -12,10 +12,11 @@ final class MainPageViewController: UIViewController {
     private enum Constants {
         // UI Constraint properties
         static let contentTop: CGFloat = 50
-        static let sectionSpacing: CGFloat = 10
+        static let artistSectionTopSpacing: CGFloat = 16
+        static let sectionSpacing: CGFloat = 6
         static let contentSideInset: CGFloat = 10
-        static let artistsSectionHeight: CGFloat = 200
-        static let stylesSectionHeight: CGFloat = 260
+        static let artistsSectionHeight: CGFloat = 182
+        static let stylesSectionHeight: CGFloat = 240
         static let scrollBottomInset: CGFloat = 110
         
         // Colors
@@ -148,7 +149,7 @@ final class MainPageViewController: UIViewController {
     private func configureArtistsSectionView() {
         contentView.addSubview(artistsSectionView)
         
-        artistsSectionView.pinTop(to: artistOfTheDayView.bottomAnchor, Constants.sectionSpacing)
+        artistsSectionView.pinTop(to: artistOfTheDayView.bottomAnchor, Constants.artistSectionTopSpacing)
         artistsSectionView.pinLeft(to: contentView.leadingAnchor, Constants.contentSideInset)
         artistsSectionView.pinRight(to: contentView.trailingAnchor, Constants.contentSideInset)
         artistsSectionView.setHeight(Constants.artistsSectionHeight)

@@ -11,9 +11,9 @@ final class StylesViewCell : UICollectionViewCell {
     // MARK: - Constants
     private enum Constants {
         static let reuseId: String = "StylesViewCell"
-        static let imageHeight: CGFloat = 156
-        static let imageCornerRadius: CGFloat = 24
-        static let titleTopSpacing: CGFloat = 10
+        static let imageHeight: CGFloat = 138
+        static let imageCornerRadius: CGFloat = 22
+        static let titleTopSpacing: CGFloat = 8
         static let titleFont: UIFont = .InstrumentSansRegular15
         static let titleLinesCount: Int = 2
     }

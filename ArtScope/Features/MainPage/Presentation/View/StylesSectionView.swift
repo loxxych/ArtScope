@@ -12,17 +12,20 @@ final class StylesSectionView: UIView {
     private enum Constants {
         static let stylesSectionTitle: String = "Styles"
         static let artistsTitleLeft: CGFloat = 20
-        static let collectionLeft: CGFloat = 8
-        static let collectionTop: CGFloat = 10
+        static let collectionLeft: CGFloat = 10
+        static let collectionTop: CGFloat = 6
         static let sectionInsetLeft: CGFloat = 12
         static let sectionInsetRight: CGFloat = 20
-        static let itemSize = CGSize(width: 170, height: 210)
-        static let minimumLineSpacing: CGFloat = 16
+        static let itemSize = CGSize(width: 152, height: 188)
+        static let minimumLineSpacing: CGFloat = 12
+        static let fadeWidth: CGFloat = 72
     }
     
     // MARK: - Fields
     private var artistsSectionTitle: SectionTitleView = .init(title: Constants.stylesSectionTitle)
     private lazy var artistsPreviewCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: makeLayout())
+    private let rightFadeView = UIView()
+    private let rightFadeLayer = CAGradientLayer()
     private var styles: [StylePreview] = []
     var onStyleSelected: ((StylePreview) -> Void)?
     var onShowAllStylesTapped: (() -> Void)?
@@ -42,6 +45,7 @@ final class StylesSectionView: UIView {
     private func configureUI() {
         configureArtistsSectionTitle()
         configureArtistsCollectionView()
+        configureRightFade()
     }
     
     // MARK: - Artist section title configuration
@@ -75,10 +79,36 @@ final class StylesSectionView: UIView {
         artistsPreviewCollectionView.pinRight(to: self.trailingAnchor)
         artistsPreviewCollectionView.pinBottom(to: self.bottomAnchor)
     }
+
+    private func configureRightFade() {
+        addSubview(rightFadeView)
+        rightFadeView.isUserInteractionEnabled = false
+        rightFadeView.backgroundColor = .clear
+        rightFadeView.pinTop(to: artistsPreviewCollectionView.topAnchor)
+        rightFadeView.pinRight(to: trailingAnchor)
+        rightFadeView.pinBottom(to: artistsPreviewCollectionView.bottomAnchor)
+        rightFadeView.setWidth(Constants.fadeWidth)
+
+        rightFadeLayer.colors = [
+            UIColor.artScopeGreen.withAlphaComponent(0).cgColor,
+            UIColor.artScopeGreen.withAlphaComponent(0.18).cgColor,
+            UIColor.artScopeGreen.withAlphaComponent(0.72).cgColor,
+            UIColor.artScopeGreen.cgColor
+        ]
+        rightFadeLayer.locations = [0.0, 0.42, 0.78, 1.0]
+        rightFadeLayer.startPoint = CGPoint(x: 0, y: 0.5)
+        rightFadeLayer.endPoint = CGPoint(x: 1, y: 0.5)
+        rightFadeView.layer.addSublayer(rightFadeLayer)
+    }
     
     func update(with styles: [StylePreview]) {
         self.styles = styles
         artistsPreviewCollectionView.reloadData()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        rightFadeLayer.frame = rightFadeView.bounds
     }
     
     // MARK: - Make layout for collection view function

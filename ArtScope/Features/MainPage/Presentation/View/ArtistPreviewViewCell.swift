@@ -11,13 +11,13 @@ final class ArtistPreviewViewCell : UICollectionViewCell {
     // MARK: - Constants
     private enum Constants {
         // UI Constraint properties
-        static let imageSize: CGFloat = 82
+        static let imageSize: CGFloat = 74
         
         // Strings
         static let reuseId: String = "ArtistPreviewViewCell"
         
         // Fonts
-        static let font: UIFont? = UIFont.InstrumentSansRegular15
+        static let font: UIFont? = UIFont.InstrumentSansRegular13
     }
     
     // MARK: - Fields
@@ -88,9 +88,9 @@ final class ArtistPreviewViewCell : UICollectionViewCell {
         
         nameLabel.font = Constants.font
         nameLabel.textAlignment = .center
-        nameLabel.numberOfLines = 3
+        nameLabel.numberOfLines = 2
         
         nameLabel.pinHorizontal(to: self)
-        nameLabel.pinTop(to: imageView.bottomAnchor, 8)
+        nameLabel.pinTop(to: imageView.bottomAnchor, 6)
     }
 }

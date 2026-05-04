@@ -14,12 +14,15 @@ final class ProfileHistorySectionView: UIView {
         static let cardSpacing: CGFloat = 12
         static let sectionBottomInset: CGFloat = 0
         static let emptyFont: UIFont = .InstrumentSansRegular15
+        static let fadeWidth: CGFloat = 72
     }
 
     private let headerView: ProfileSectionHeaderView
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
     private let emptyLabel = UILabel()
+    private let rightFadeView = UIView()
+    private let rightFadeLayer = CAGradientLayer()
     var onHeaderIconTapped: (() -> Void)?
     var onQuizSelected: ((CompletedQuizHistoryItem) -> Void)?
     var onCollectionSelected: ((ViewedCollectionHistoryItem) -> Void)?
@@ -66,6 +69,7 @@ final class ProfileHistorySectionView: UIView {
         addSubview(headerView)
         addSubview(scrollView)
         addSubview(emptyLabel)
+        addSubview(rightFadeView)
 
         headerView.onIconTap = { [weak self] in
             self?.onHeaderIconTapped?()
@@ -100,6 +104,24 @@ final class ProfileHistorySectionView: UIView {
         emptyLabel.pinLeft(to: leadingAnchor, Constants.horizontalInset)
         emptyLabel.pinRight(to: trailingAnchor, Constants.horizontalInset)
         emptyLabel.pinBottom(to: bottomAnchor)
+
+        rightFadeView.isUserInteractionEnabled = false
+        rightFadeView.backgroundColor = .clear
+        rightFadeView.pinTop(to: scrollView.topAnchor)
+        rightFadeView.pinRight(to: trailingAnchor)
+        rightFadeView.pinBottom(to: scrollView.bottomAnchor)
+        rightFadeView.setWidth(Constants.fadeWidth)
+
+        rightFadeLayer.colors = [
+            UIColor.artScopeGreen.withAlphaComponent(0).cgColor,
+            UIColor.artScopeGreen.withAlphaComponent(0.18).cgColor,
+            UIColor.artScopeGreen.withAlphaComponent(0.72).cgColor,
+            UIColor.artScopeGreen.cgColor
+        ]
+        rightFadeLayer.locations = [0.0, 0.42, 0.78, 1.0]
+        rightFadeLayer.startPoint = CGPoint(x: 0, y: 0.5)
+        rightFadeLayer.endPoint = CGPoint(x: 1, y: 0.5)
+        rightFadeView.layer.addSublayer(rightFadeLayer)
     }
 
     private func clearCards() {
@@ -107,5 +129,10 @@ final class ProfileHistorySectionView: UIView {
             stackView.removeArrangedSubview($0)
             $0.removeFromSuperview()
         }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        rightFadeLayer.frame = rightFadeView.bounds
     }
 }
