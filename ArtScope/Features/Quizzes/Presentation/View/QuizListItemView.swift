@@ -19,6 +19,8 @@ final class QuizListItemView: UIControl {
     private let descriptionLabel = UILabel()
     private let iconView = UIImageView()
     private let checkmarkView = UIImageView()
+    private let titleRowView = UIView()
+    private let titleContentStack = UIStackView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -39,17 +41,24 @@ final class QuizListItemView: UIControl {
     private func configureUI() {
         backgroundColor = .clear
         isUserInteractionEnabled = true
-                
-        let titleStack = UIStackView(arrangedSubviews: [titleLabel, checkmarkView])
-        let textStack = UIStackView(arrangedSubviews: [titleStack, descriptionLabel])
+
+        let textStack = UIStackView(arrangedSubviews: [titleRowView, descriptionLabel])
         let containerStack = UIStackView(arrangedSubviews: [textStack, iconView])
         
         addSubview(containerStack)
 
-        titleStack.axis = .horizontal
-        titleStack.spacing = 0
-        titleStack.alignment = .center
-        titleStack.distribution = .fill
+        titleRowView.addSubview(titleContentStack)
+        titleRowView.translatesAutoresizingMaskIntoConstraints = false
+
+        titleContentStack.axis = .horizontal
+        titleContentStack.alignment = .center
+        titleContentStack.spacing = 4
+        titleContentStack.addArrangedSubview(titleLabel)
+        titleContentStack.addArrangedSubview(checkmarkView)
+        titleContentStack.pinTop(to: titleRowView.topAnchor)
+        titleContentStack.pinLeft(to: titleRowView.leadingAnchor)
+        titleContentStack.pinBottom(to: titleRowView.bottomAnchor)
+        titleContentStack.pinRight(to: titleRowView.trailingAnchor, 0, .lsOE)
         
         textStack.axis = .vertical
         textStack.spacing = 2
@@ -84,7 +93,7 @@ final class QuizListItemView: UIControl {
         checkmarkView.tintColor = .systemGreen
         checkmarkView.isHidden = true
         checkmarkView.setContentHuggingPriority(.required, for: .horizontal)
-        
+        checkmarkView.setContentCompressionResistancePriority(.required, for: .horizontal)
         checkmarkView.setWidth(20)
         checkmarkView.setHeight(20)
     }
