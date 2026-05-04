@@ -33,6 +33,7 @@ final class StyleQuizViewModel: ObservableObject {
     private var correctAnswersCount = 0
     private var didPersistCompletion = false
     private var isLoading = false
+    private var selectedAnswersByQuestionID: [String: String] = [:]
 
     @Published private(set) var state: State = .loading
 
@@ -85,6 +86,7 @@ final class StyleQuizViewModel: ObservableObject {
                     self.selectedOptionID = nil
                     self.isAnswerRevealed = false
                     self.correctAnswersCount = 0
+                    self.selectedAnswersByQuestionID.removeAll()
                     self.state = .ready
                 case .failure:
                     self.quiz = nil
@@ -100,6 +102,7 @@ final class StyleQuizViewModel: ObservableObject {
         isAnswerRevealed = false
         correctAnswersCount = 0
         didPersistCompletion = false
+        selectedAnswersByQuestionID.removeAll()
         showCurrentQuestion()
     }
 
@@ -118,6 +121,10 @@ final class StyleQuizViewModel: ObservableObject {
         if isAnswerRevealed {
             if selectedOptionID == question.correctOptionID {
                 correctAnswersCount += 1
+            }
+
+            if let selectedOptionID {
+                selectedAnswersByQuestionID[question.id] = selectedOptionID
             }
 
             currentQuestionIndex += 1
@@ -148,6 +155,7 @@ final class StyleQuizViewModel: ObservableObject {
         isAnswerRevealed = false
         correctAnswersCount = 0
         didPersistCompletion = false
+        selectedAnswersByQuestionID.removeAll()
         state = .ready
     }
 
@@ -188,7 +196,17 @@ final class StyleQuizViewModel: ObservableObject {
                 scorePercent: scorePercent,
                 imageURLString: styleImageURL?.absoluteString,
                 elapsedTimeText: formatElapsedTime(seconds: quiz.estimatedTimeSeconds),
-                completedAt: Date()
+                showsElapsedTime: false,
+                completedAt: Date(),
+                answerRecords: quiz.payload.questions.map { question in
+                    let index = quiz.payload.questions.firstIndex(where: { $0.id == question.id }) ?? 0
+                    return CompletedQuizAnswerRecord(
+                        questionIndex: index,
+                        questionID: question.id,
+                        selectedOptionID: selectedAnswersByQuestionID[question.id]
+                    )
+                },
+                quizSnapshot: quiz
             )
         )
     }

@@ -21,16 +21,25 @@ struct QuizPlayScreen: View {
             elapsedTimeText: String,
             scorePercent: Int
         )
+        case review(
+            questionIndex: Int,
+            selectedOptionID: String?,
+            elapsedTimeText: String,
+            scorePercent: Int,
+            showsElapsedTime: Bool
+        )
     }
 
     let title: String
     let subtitle: String?
     let quiz: Quiz
     let mode: Mode
-    var onBack: (() -> Void)?
-    var onSelectOption: ((String) -> Void)?
-    var onAction: (() -> Void)?
-    var onRetry: (() -> Void)?
+    var onBack: (() -> Void)? = nil
+    var onSelectOption: ((String) -> Void)? = nil
+    var onAction: (() -> Void)? = nil
+    var onRetry: (() -> Void)? = nil
+    var onPreviousQuestion: (() -> Void)? = nil
+    var onNextQuestion: (() -> Void)? = nil
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -74,6 +83,14 @@ struct QuizPlayScreen: View {
             resultContent(
                 elapsedTimeText: elapsedTimeText,
                 scorePercent: scorePercent
+            )
+        case let .review(questionIndex, selectedOptionID, elapsedTimeText, scorePercent, showsElapsedTime):
+            reviewContent(
+                questionIndex: questionIndex,
+                selectedOptionID: selectedOptionID,
+                elapsedTimeText: elapsedTimeText,
+                scorePercent: scorePercent,
+                showsElapsedTime: showsElapsedTime
             )
         }
     }
@@ -124,6 +141,88 @@ struct QuizPlayScreen: View {
             onRetry: onRetry
         )
         .padding(.top, 24)
+    }
+
+    private func reviewContent(
+        questionIndex: Int,
+        selectedOptionID: String?,
+        elapsedTimeText: String,
+        scorePercent: Int,
+        showsElapsedTime: Bool
+    ) -> some View {
+        let safeIndex = min(max(questionIndex, 0), max(quiz.payload.questions.count - 1, 0))
+        let question = quiz.payload.questions[safeIndex]
+
+        return VStack(alignment: .leading, spacing: 18) {
+            QuizProgressHeaderView(
+                currentQuestion: safeIndex + 1,
+                totalQuestions: max(quiz.payload.questions.count, 1),
+                timeText: nil
+            )
+
+            QuizQuestionCardView(
+                question: question,
+                imageURL: nil,
+                displayState: .revealed(
+                    selectedOptionID: selectedOptionID,
+                    correctOptionID: question.correctOptionID,
+                    explanation: question.explanation
+                ),
+                actionTitle: nil,
+                onSelectOption: nil,
+                onAction: nil
+            )
+
+            QuizReviewNavigationView(
+                canGoPrevious: safeIndex > 0,
+                canGoNext: safeIndex < quiz.payload.questions.count - 1,
+                onPrevious: onPreviousQuestion,
+                onNext: onNextQuestion
+            )
+
+            QuizResultCardView(
+                elapsedTimeText: elapsedTimeText,
+                scorePercent: scorePercent,
+                showsTime: showsElapsedTime,
+                showsRetryButton: false,
+                onRetry: nil
+            )
+        }
+    }
+}
+
+private struct QuizReviewNavigationView: View {
+    let canGoPrevious: Bool
+    let canGoNext: Bool
+    var onPrevious: (() -> Void)?
+    var onNext: (() -> Void)?
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Button(action: { onPrevious?() }) {
+                Text("Previous")
+                    .font(.InstrumentSansSemiBold18)
+                    .foregroundStyle(QuizTheme.lightText)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 40)
+                    .background(Color.black.opacity(canGoPrevious ? 1 : 0.45))
+                    .clipShape(Capsule())
+            }
+            .buttonStyle(.plain)
+            .disabled(!canGoPrevious)
+
+            Button(action: { onNext?() }) {
+                Text("Next")
+                    .font(.InstrumentSansSemiBold18)
+                    .foregroundStyle(QuizTheme.lightText)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 40)
+                    .background(QuizTheme.primaryAction.opacity(canGoNext ? 1 : 0.45))
+                    .clipShape(Capsule())
+            }
+            .buttonStyle(.plain)
+            .disabled(!canGoNext)
+        }
     }
 }
 

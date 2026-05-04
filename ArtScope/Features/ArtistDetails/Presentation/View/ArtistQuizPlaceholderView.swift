@@ -53,9 +53,10 @@ final class ArtistQuizPlaceholderView: UIView {
     private var currentQuestionIndex = 0
     private var correctAnswersCount = 0
     private var didCountCurrentAnswer = false
+    private var selectedAnswersByQuestionID: [String: String] = [:]
 
     var onRetryTapped: (() -> Void)?
-    var onQuizCompleted: ((Quiz, Int, Int) -> Void)?
+    var onQuizCompleted: ((Quiz, Int, Int, [CompletedQuizAnswerRecord]) -> Void)?
     
     // MARK: - Lifecycle
     override init(frame: CGRect) {
@@ -127,8 +128,8 @@ final class ArtistQuizPlaceholderView: UIView {
             self?.beginQuiz()
         }
         
-        questionCardView.onAdvance = { [weak self] _, wasCorrect in
-            self?.advanceQuestion(wasCorrect: wasCorrect)
+        questionCardView.onAdvance = { [weak self] selectedOptionID, wasCorrect in
+            self?.advanceQuestion(selectedOptionID: selectedOptionID, wasCorrect: wasCorrect)
         }
         
         resultCardView.onRetryTapped = { [weak self] in
@@ -168,6 +169,7 @@ final class ArtistQuizPlaceholderView: UIView {
         currentQuestionIndex = 0
         correctAnswersCount = 0
         didCountCurrentAnswer = false
+        selectedAnswersByQuestionID.removeAll()
         showCurrentQuestion()
     }
     
@@ -189,12 +191,22 @@ final class ArtistQuizPlaceholderView: UIView {
         show(state: .question)
     }
     
-    private func advanceQuestion(wasCorrect: Bool) {
+    private func advanceQuestion(selectedOptionID: String?, wasCorrect: Bool) {
         if !didCountCurrentAnswer {
             if wasCorrect {
                 correctAnswersCount += 1
             }
             didCountCurrentAnswer = true
+        }
+
+        if
+            let quiz,
+            quiz.payload.questions.indices.contains(currentQuestionIndex)
+        {
+            let questionID = quiz.payload.questions[currentQuestionIndex].id
+            if let selectedOptionID {
+                selectedAnswersByQuestionID[questionID] = selectedOptionID
+            }
         }
         
         currentQuestionIndex += 1
@@ -215,7 +227,19 @@ final class ArtistQuizPlaceholderView: UIView {
         let totalQuestions = quiz?.payload.questions.count ?? 0
         resultCardView.configure(correctAnswers: correctAnswersCount, totalQuestions: totalQuestions)
         if let quiz {
-            onQuizCompleted?(quiz, correctAnswersCount, totalQuestions)
+            onQuizCompleted?(
+                quiz,
+                correctAnswersCount,
+                totalQuestions,
+                quiz.payload.questions.map { question in
+                    let index = quiz.payload.questions.firstIndex(where: { $0.id == question.id }) ?? 0
+                    return CompletedQuizAnswerRecord(
+                        questionIndex: index,
+                        questionID: question.id,
+                        selectedOptionID: selectedAnswersByQuestionID[question.id]
+                    )
+                }
+            )
         }
         show(state: .result)
     }
@@ -224,6 +248,7 @@ final class ArtistQuizPlaceholderView: UIView {
         currentQuestionIndex = 0
         correctAnswersCount = 0
         didCountCurrentAnswer = false
+        selectedAnswersByQuestionID.removeAll()
         show(state: .ready)
     }
     

@@ -10,7 +10,7 @@ import SwiftUI
 struct QuizProgressHeaderView: View {
     let currentQuestion: Int
     let totalQuestions: Int
-    let timeText: String
+    let timeText: String?
 
     private var progress: Double {
         guard totalQuestions > 0 else { return 0 }
@@ -19,9 +19,11 @@ struct QuizProgressHeaderView: View {
 
     var body: some View {
         VStack(spacing: 8) {
-            Text(timeText)
-                .font(.InstrumentSansBold27)
-                .foregroundStyle(QuizTheme.darkText)
+            if let timeText {
+                Text(timeText)
+                    .font(.InstrumentSansBold27)
+                    .foregroundStyle(QuizTheme.darkText)
+            }
 
             HStack(spacing: 12) {
                 Text("\(min(currentQuestion, totalQuestions))/\(totalQuestions)")

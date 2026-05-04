@@ -240,11 +240,12 @@ final class ArtistDetailsViewController: UIViewController {
         quizSectionView.onRetryTapped = { [weak self] in
             self?.requestArtistQuiz(force: true)
         }
-        quizSectionView.onQuizCompleted = { [weak self] quiz, correctAnswers, totalQuestions in
+        quizSectionView.onQuizCompleted = { [weak self] quiz, correctAnswers, totalQuestions, answerRecords in
             self?.recordQuizCompletion(
                 quiz: quiz,
                 correctAnswers: correctAnswers,
-                totalQuestions: totalQuestions
+                totalQuestions: totalQuestions,
+                answerRecords: answerRecords
             )
         }
     }
@@ -359,7 +360,12 @@ final class ArtistDetailsViewController: UIViewController {
         )
     }
 
-    private func recordQuizCompletion(quiz: Quiz, correctAnswers: Int, totalQuestions: Int) {
+    private func recordQuizCompletion(
+        quiz: Quiz,
+        correctAnswers: Int,
+        totalQuestions: Int,
+        answerRecords: [CompletedQuizAnswerRecord]
+    ) {
         let total = max(totalQuestions, 1)
         let scorePercent = Int((Double(correctAnswers) / Double(total)) * 100)
         let title = quiz.isDaily ? quiz.title : "\(artist.name) quiz"
@@ -372,7 +378,10 @@ final class ArtistDetailsViewController: UIViewController {
                 scorePercent: scorePercent,
                 imageURLString: portraitImageURL?.absoluteString ?? artist.imageURL?.absoluteString,
                 elapsedTimeText: formatElapsedTime(seconds: quiz.estimatedTimeSeconds),
-                completedAt: Date()
+                showsElapsedTime: false,
+                completedAt: Date(),
+                answerRecords: answerRecords,
+                quizSnapshot: quiz
             )
         )
     }

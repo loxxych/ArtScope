@@ -16,7 +16,7 @@ struct QuizQuestionCardView: View {
     let question: QuizQuestion
     let imageURL: URL?
     let displayState: DisplayState
-    let actionTitle: String
+    let actionTitle: String?
     var onSelectOption: ((String) -> Void)?
     var onAction: (() -> Void)?
 
@@ -89,18 +89,20 @@ struct QuizQuestionCardView: View {
                 }
             }
 
-            Button(action: { onAction?() }) {
-                Text(actionTitle)
-                    .font(.InstrumentSansSemiBold18)
-                    .foregroundStyle(QuizTheme.lightText)
-                    .frame(width: 138, height: 40)
-                    .background(QuizTheme.primaryAction)
-                    .clipShape(Capsule())
+            if let actionTitle {
+                Button(action: { onAction?() }) {
+                    Text(actionTitle)
+                        .font(.InstrumentSansSemiBold18)
+                        .foregroundStyle(QuizTheme.lightText)
+                        .frame(width: 138, height: 40)
+                        .background(QuizTheme.primaryAction)
+                        .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .disabled(isActionDisabled)
+                .opacity(isActionDisabled ? 0.55 : 1)
             }
-            .buttonStyle(.plain)
-            .frame(maxWidth: .infinity, alignment: .center)
-            .disabled(isActionDisabled)
-            .opacity(isActionDisabled ? 0.55 : 1)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

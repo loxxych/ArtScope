@@ -33,7 +33,7 @@ final class ArtistQuizQuestionCardView: UIView {
     private var selectedOptionID: String?
     private var hasRevealedAnswer = false
     
-    var onAdvance: ((String, Bool) -> Void)?
+    var onAdvance: ((String?, Bool) -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -118,7 +118,7 @@ final class ArtistQuizQuestionCardView: UIView {
         guard let question else { return }
         
         if hasRevealedAnswer {
-            onAdvance?(question.correctOptionID, selectedOptionID == question.correctOptionID)
+            onAdvance?(selectedOptionID, selectedOptionID == question.correctOptionID)
             return
         }
         

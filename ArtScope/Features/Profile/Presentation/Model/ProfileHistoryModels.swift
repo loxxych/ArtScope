@@ -7,6 +7,12 @@
 
 import Foundation
 
+struct CompletedQuizAnswerRecord: Codable {
+    let questionIndex: Int
+    let questionID: String
+    let selectedOptionID: String?
+}
+
 struct CompletedQuizHistoryItem: Codable {
     let id: String
     let sourceQuizID: String?
@@ -14,7 +20,10 @@ struct CompletedQuizHistoryItem: Codable {
     let scorePercent: Int
     let imageURLString: String?
     let elapsedTimeText: String?
+    let showsElapsedTime: Bool?
     let completedAt: Date
+    let answerRecords: [CompletedQuizAnswerRecord]?
+    let quizSnapshot: Quiz?
 
     var imageURL: URL? {
         guard let imageURLString else { return nil }

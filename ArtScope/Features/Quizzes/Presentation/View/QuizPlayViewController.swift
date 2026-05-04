@@ -18,10 +18,11 @@ final class QuizPlayViewController: UIViewController {
     private var correctAnswersCount = 0
     private var didCountCurrentQuestion = false
     private var didPersistCompletion = false
+    private var selectedAnswersByQuestionID: [String: String] = [:]
     private var startedAt = Date()
     private var questionStartedAt = Date()
     private var timer: Timer?
-    private let questionTimeLimitSeconds = 20
+    private let questionTimeLimitSeconds = 90
     
     var onQuizCompleted: (() -> Void)?
     
@@ -128,6 +129,10 @@ final class QuizPlayViewController: UIViewController {
                 didCountCurrentQuestion = true
             }
 
+            if let selectedOptionID {
+                selectedAnswersByQuestionID[currentQuestion.id] = selectedOptionID
+            }
+
             currentQuestionIndex += 1
             selectedOptionID = nil
             isAnswerRevealed = false
@@ -153,6 +158,7 @@ final class QuizPlayViewController: UIViewController {
         correctAnswersCount = 0
         didCountCurrentQuestion = false
         didPersistCompletion = false
+        selectedAnswersByQuestionID.removeAll()
         startedAt = Date()
         questionStartedAt = Date()
         startTimerIfNeeded()
@@ -231,7 +237,17 @@ final class QuizPlayViewController: UIViewController {
                 scorePercent: percentage,
                 imageURLString: nil,
                 elapsedTimeText: elapsedTimeText,
-                completedAt: Date()
+                showsElapsedTime: true,
+                completedAt: Date(),
+                answerRecords: quiz.payload.questions.map { question in
+                    let index = quiz.payload.questions.firstIndex(where: { $0.id == question.id }) ?? 0
+                    return CompletedQuizAnswerRecord(
+                        questionIndex: index,
+                        questionID: question.id,
+                        selectedOptionID: selectedAnswersByQuestionID[question.id]
+                    )
+                },
+                quizSnapshot: quiz
             )
         )
         

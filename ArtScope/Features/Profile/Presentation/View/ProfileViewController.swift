@@ -237,15 +237,21 @@ final class ProfileViewController: UIViewController {
     }
 
     private func showQuizHistory(for item: CompletedQuizHistoryItem) {
+        if let quizSnapshot = item.quizSnapshot {
+            let vc = CompletedQuizReviewViewController(quiz: quizSnapshot, historyItem: item)
+            navigationController?.pushViewController(vc, animated: true)
+            return
+        }
+
         guard
             let sourceQuizID = item.sourceQuizID,
-            let quiz = quizService.fetchStoredQuizzes().first(where: { $0.id == sourceQuizID })
+            let quiz = quizService.fetchStoredQuizzes().first(where: { $0.id == sourceQuizID || $0.topicID == sourceQuizID })
         else {
             print("[Profile] quiz history item is missing source quiz: \(item.id)")
             return
         }
 
-        let vc = QuizHistoryResultViewController(quiz: quiz, historyItem: item)
+        let vc = CompletedQuizReviewViewController(quiz: quiz, historyItem: item)
         navigationController?.pushViewController(vc, animated: true)
     }
 

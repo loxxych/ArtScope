@@ -35,6 +35,7 @@ final class ProfileQuizHistoryCardView: UIControl {
     func configure(with item: CompletedQuizHistoryItem) {
         titleLabel.text = item.title
         scoreLabel.text = "\(item.scorePercent)%"
+        scoreLabel.textColor = scoreColor(for: item.scorePercent)
 
         RemoteImageLoader.shared.loadImage(from: item.imageURL) { [weak self] image in
             DispatchQueue.main.async {
@@ -81,6 +82,18 @@ final class ProfileQuizHistoryCardView: UIControl {
         scoreLabel.pinTop(to: titleLabel.bottomAnchor, 2)
         scoreLabel.pinLeft(to: leadingAnchor)
         scoreLabel.pinBottom(to: bottomAnchor)
+    }
+
+    private func scoreColor(for percentage: Int) -> UIColor {
+        if percentage < 50 {
+            return UIColor(red: 255 / 255, green: 181 / 255, blue: 59 / 255, alpha: 1)
+        }
+
+        if percentage > 90 {
+            return UIColor(red: 237 / 255, green: 244 / 255, blue: 88 / 255, alpha: 1)
+        }
+
+        return .artScopeBlue
     }
 
     override var isHighlighted: Bool {

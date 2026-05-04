@@ -11,6 +11,7 @@ struct QuizResultCardView: View {
     let elapsedTimeText: String
     let scorePercent: Int
     var showsTime: Bool = true
+    var showsRetryButton: Bool = true
     var onRetry: (() -> Void)?
 
     private var performanceColor: Color {
@@ -63,22 +64,28 @@ struct QuizResultCardView: View {
             .padding(.top, 16)
             .padding(.horizontal, 42)
 
-            Button(action: { onRetry?() }) {
-                HStack(spacing: 8) {
-                    Text("Retry")
-                        .font(.InstrumentSansSemiBold18)
+            if showsRetryButton {
+                Button(action: { onRetry?() }) {
+                    HStack(spacing: 8) {
+                        Text("Retry")
+                            .font(.InstrumentSansSemiBold18)
 
-                    Image(systemName: "arrow.clockwise")
-                        .font(.system(size: 16, weight: .medium))
+                        Image(systemName: "arrow.clockwise")
+                            .font(.system(size: 16, weight: .medium))
+                    }
+                    .foregroundStyle(QuizTheme.lightText)
+                    .frame(width: 138, height: 40)
+                    .background(Color.black)
+                    .clipShape(Capsule())
                 }
-                .foregroundStyle(QuizTheme.lightText)
-                .frame(width: 138, height: 40)
-                .background(Color.black)
-                .clipShape(Capsule())
+                .buttonStyle(.plain)
+                .padding(.top, 30)
+                .padding(.bottom, 18)
+            } else {
+                Color.clear
+                    .frame(height: 18)
+                    .padding(.top, 18)
             }
-            .buttonStyle(.plain)
-            .padding(.top, 30)
-            .padding(.bottom, 18)
         }
         .frame(maxWidth: .infinity)
         .background(QuizTheme.cardBackground)
