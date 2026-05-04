@@ -25,6 +25,7 @@ final class StylesSectionView: UIView {
     private lazy var artistsPreviewCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: makeLayout())
     private var styles: [StylePreview] = []
     var onStyleSelected: ((StylePreview) -> Void)?
+    var onShowAllStylesTapped: (() -> Void)?
     
     // MARK: - Lifecycle
     init() {
@@ -46,6 +47,10 @@ final class StylesSectionView: UIView {
     // MARK: - Artist section title configuration
     private func configureArtistsSectionTitle() {
         addSubview(artistsSectionTitle)
+
+        artistsSectionTitle.onButtonPressed = { [weak self] in
+            self?.onShowAllStylesTapped?()
+        }
         
         artistsSectionTitle.pinLeft(to: self.leadingAnchor, Constants.artistsTitleLeft)
         artistsSectionTitle.pinTop(to: self.topAnchor)

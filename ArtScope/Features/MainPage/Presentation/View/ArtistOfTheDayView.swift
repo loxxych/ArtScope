@@ -206,8 +206,8 @@ final class ArtistOfTheDayView : UIView {
         artistImageView.setWidth(Constants.artistImageSize)
         artistImageView.setHeight(Constants.artistImageSize)
         
-        artistImageView.pinLeft(to: wrap.leadingAnchor, 10)
-        artistImageView.pinBottom(to: wrap.bottomAnchor, 10)
+        artistImageView.pinLeft(to: wrap.leadingAnchor, 20)
+        artistImageView.pinBottom(to: wrap.bottomAnchor, 20)
     }
     
     func configure(with artist: ArtistPreview) {

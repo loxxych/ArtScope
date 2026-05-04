@@ -31,6 +31,7 @@ final class MainPageViewController: UIViewController {
     private let artistsSectionView: ArtistsSectionView = .init()
     private let stylesSectionView: StylesSectionView = .init()
     private var artists: [ArtistPreview] = []
+    private var styles: [StylePreview] = []
     private var featuredArtist: ArtistPreview?
     
     // MARK: - Lifecycle
@@ -86,6 +87,10 @@ final class MainPageViewController: UIViewController {
         stylesSectionView.onStyleSelected = { [weak self] style in
             self?.showStyleDetails(for: style)
         }
+
+        stylesSectionView.onShowAllStylesTapped = { [weak self] in
+            self?.showAllStyles()
+        }
         
         viewModel.onArtistsLoaded = { [weak self] artists, featured in
             guard let self, !artists.isEmpty else { return }
@@ -98,6 +103,7 @@ final class MainPageViewController: UIViewController {
         }
         
         viewModel.onStylesLoaded = { [weak self] styles in
+            self?.styles = styles
             self?.stylesSectionView.update(with: styles)
         }
     }
@@ -178,6 +184,11 @@ final class MainPageViewController: UIViewController {
 
     private func showAllArtists() {
         let vc = AllArtistsViewController(artists: artists)
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    private func showAllStyles() {
+        let vc = AllStylesViewController(styles: styles)
         navigationController?.pushViewController(vc, animated: true)
     }
 

@@ -1,31 +1,30 @@
 //
-//  CompletedQuizzesListViewController.swift
+//  AllStylesViewController.swift
 //  ArtScope
 //
-//  Created by loxxy on 30.04.2026.
+//  Created by loxxy on 04.05.2026.
 //
 
 import SwiftUI
 import UIKit
 
-final class CompletedQuizzesListViewController: UIViewController {
-    private let items: [CompletedQuizHistoryItem]
-    private let quizService: QuizService = QuizServiceFactory.makeQuizService()
-
+final class AllStylesViewController: UIViewController {
+    private let styles: [StylePreview]
     private lazy var hostingController = UIHostingController(
-        rootView: CompletedQuizHistoryScreen(
-            items: items,
+        rootView: AllStylesScreen(
+            styles: styles,
             onBack: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             },
-            onItemSelected: { [weak self] item in
-                self?.showResult(for: item)
+            onStyleSelected: { [weak self] style in
+                let vc = StyleDetailViewController(style: style)
+                self?.navigationController?.pushViewController(vc, animated: true)
             }
         )
     )
 
-    init(items: [CompletedQuizHistoryItem]) {
-        self.items = items
+    init(styles: [StylePreview]) {
+        self.styles = styles
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -60,18 +59,5 @@ final class CompletedQuizzesListViewController: UIViewController {
         ])
 
         hostingController.didMove(toParent: self)
-    }
-
-    private func showResult(for item: CompletedQuizHistoryItem) {
-        guard
-            let sourceQuizID = item.sourceQuizID,
-            let quiz = quizService.fetchStoredQuizzes().first(where: { $0.id == sourceQuizID || $0.topicID == sourceQuizID })
-        else {
-            print("[Profile] quiz history item is missing source quiz: \(item.id)")
-            return
-        }
-
-        let vc = QuizHistoryResultViewController(quiz: quiz, historyItem: item)
-        navigationController?.pushViewController(vc, animated: true)
     }
 }
