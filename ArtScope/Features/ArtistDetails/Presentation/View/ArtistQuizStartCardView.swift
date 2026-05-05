@@ -11,10 +11,11 @@ final class ArtistQuizStartCardView: UIView {
     private enum Constants {
         static let backgroundColor: UIColor = .artScopePink
         static let cornerRadius: CGFloat = 18
-        static let contentInset: CGFloat = 22
+        static let horizontalInset: CGFloat = 20
+        static let verticalInset: CGFloat = 22
         static let iconSize: CGFloat = 56
-        static let buttonTopSpacing: CGFloat = 22
-        static let titleFont: UIFont = .ByteBounce30
+        static let buttonTopSpacing: CGFloat = 18
+        static let titleFont: UIFont = .ByteBounce28
         static let titleText: String = "Test yourself!"
         static let buttonTitle: String = "Begin"
     }
@@ -50,30 +51,30 @@ final class ArtistQuizStartCardView: UIView {
         titleLabel.text = Constants.titleText
         titleLabel.font = Constants.titleFont
         titleLabel.textAlignment = .center
-        titleLabel.pinTop(to: topAnchor, Constants.contentInset)
-        titleLabel.pinHorizontal(to: self, Constants.contentInset)
+        titleLabel.pinTop(to: topAnchor, Constants.verticalInset)
+        titleLabel.pinHorizontal(to: self, Constants.horizontalInset)
         
         leftIcon.image = UIImage.artScopePaintbrush?.withRenderingMode(.alwaysTemplate)
         leftIcon.tintColor = .white
         leftIcon.contentMode = .scaleAspectFit
         leftIcon.setWidth(Constants.iconSize)
         leftIcon.setHeight(Constants.iconSize)
-        leftIcon.pinLeft(to: leadingAnchor, Constants.contentInset)
-        leftIcon.pinBottom(to: bottomAnchor, Constants.contentInset)
+        leftIcon.pinLeft(to: leadingAnchor, Constants.horizontalInset)
+        leftIcon.pinBottom(to: bottomAnchor, Constants.verticalInset)
         
         rightIcon.image = UIImage.artScopePalette?.withRenderingMode(.alwaysTemplate)
         rightIcon.tintColor = .white
         rightIcon.contentMode = .scaleAspectFit
         rightIcon.setWidth(Constants.iconSize)
         rightIcon.setHeight(Constants.iconSize)
-        rightIcon.pinRight(to: trailingAnchor, Constants.contentInset)
-        rightIcon.pinBottom(to: bottomAnchor, Constants.contentInset)
+        rightIcon.pinRight(to: trailingAnchor, Constants.horizontalInset)
+        rightIcon.pinBottom(to: bottomAnchor, Constants.verticalInset)
         
         actionButton.setTitleText(Constants.buttonTitle)
         actionButton.addTarget(self, action: #selector(beginTapped), for: .touchUpInside)
         actionButton.pinTop(to: titleLabel.bottomAnchor, Constants.buttonTopSpacing)
         actionButton.pinCenterX(to: self)
-        actionButton.pinBottom(to: bottomAnchor, Constants.contentInset)
+        actionButton.pinBottom(to: bottomAnchor, Constants.verticalInset)
         bringSubviewToFront(actionButton)
     }
     

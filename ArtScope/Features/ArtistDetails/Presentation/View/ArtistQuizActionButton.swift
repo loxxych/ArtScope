@@ -10,7 +10,8 @@ import UIKit
 final class ArtistQuizActionButton: UIButton {
     private enum Constants {
         static let height: CGFloat = 40
-        static let horizontalInset: CGFloat = 20
+        static let width: CGFloat = 138
+        static let horizontalInset: CGFloat = 0
         static let spacing: CGFloat = 10
         static let cornerRadius: CGFloat = 20
         static let font: UIFont = .InstrumentSansSemiBold15
@@ -59,6 +60,7 @@ final class ArtistQuizActionButton: UIButton {
         tintColor = Constants.titleColor
         backgroundColor = Constants.backgroundColor
         layer.cornerRadius = Constants.cornerRadius
+        setWidth(Constants.width)
         setHeight(Constants.height)
     }
 

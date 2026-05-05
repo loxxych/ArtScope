@@ -11,14 +11,15 @@ final class ArtistQuizResultCardView: UIView {
     private enum Constants {
         static let backgroundColor: UIColor = .artScopePink
         static let cornerRadius: CGFloat = 18
-        static let inset: CGFloat = 20
-        static let iconTopSpacing: CGFloat = 4
+        static let inset: CGFloat = 18
+        static let iconTopSpacing: CGFloat = 8
         static let titleTopSpacing: CGFloat = 10
         static let subtitleTopSpacing: CGFloat = 6
-        static let scoreTopSpacing: CGFloat = 18
+        static let scoreTopSpacing: CGFloat = 24
         static let progressTopSpacing: CGFloat = 16
-        static let buttonTopSpacing: CGFloat = 26
-        static let iconSize: CGFloat = 80
+        static let buttonTopSpacing: CGFloat = 30
+        static let bottomInset: CGFloat = 18
+        static let iconSize: CGFloat = 86
         static let progressHeight: CGFloat = 10
         static let titleFont: UIFont = .InstrumentSansBold27
         static let subtitleFont: UIFont = .InstrumentSansRegular15
@@ -92,7 +93,7 @@ final class ArtistQuizResultCardView: UIView {
         iconView.contentMode = .scaleAspectFit
         iconView.setWidth(Constants.iconSize)
         iconView.setHeight(Constants.iconSize)
-        iconView.pinTop(to: topAnchor, Constants.inset + Constants.iconTopSpacing)
+        iconView.pinTop(to: topAnchor, Constants.iconTopSpacing)
         iconView.pinCenterX(to: self)
         
         titleLabel.text = Constants.titleText
@@ -121,7 +122,7 @@ final class ArtistQuizResultCardView: UIView {
         progressView.layer.cornerRadius = Constants.progressHeight / 2
         progressView.clipsToBounds = true
         progressView.pinTop(to: scoreLabel.bottomAnchor, Constants.progressTopSpacing)
-        progressView.pinHorizontal(to: self, Constants.inset + 12)
+        progressView.pinHorizontal(to: self, 42)
         progressView.setHeight(Constants.progressHeight)
         
         retryButton.setTitle(Constants.retryTitle, for: .normal)
@@ -136,7 +137,7 @@ final class ArtistQuizResultCardView: UIView {
         retryButton.addTarget(self, action: #selector(retryTapped), for: .touchUpInside)
         retryButton.pinTop(to: progressView.bottomAnchor, Constants.buttonTopSpacing)
         retryButton.pinCenterX(to: self)
-        retryButton.pinBottom(to: bottomAnchor, Constants.inset)
+        retryButton.pinBottom(to: bottomAnchor, Constants.bottomInset)
     }
     
     @objc private func retryTapped() {

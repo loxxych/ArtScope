@@ -12,12 +12,12 @@ final class ArtistQuizStatusCardView: UIView {
         static let backgroundColor: UIColor = .artScopePink
         static let cornerRadius: CGFloat = 18
         static let inset: CGFloat = 20
-        static let titleTopSpacing: CGFloat = 12
-        static let bodyTopSpacing: CGFloat = 10
+        static let titleTopSpacing: CGFloat = 18
+        static let bodyTopSpacing: CGFloat = 18
         static let buttonTopSpacing: CGFloat = 18
         static let titleFont: UIFont = .ByteBounce28
         static let bodyFont: UIFont = .InstrumentSansRegular15
-        static let spinnerScale: CGFloat = 1.15
+        static let spinnerScale: CGFloat = 1.2
     }
 
     private let spinner = UIActivityIndicatorView(style: .large)

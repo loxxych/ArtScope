@@ -12,10 +12,10 @@ final class ArtistQuizQuestionCardView: UIView {
         static let backgroundColor: UIColor = .artScopePink
         static let cornerRadius: CGFloat = 18
         static let inset: CGFloat = 18
-        static let stackSpacing: CGFloat = 14
+        static let stackSpacing: CGFloat = 12
         static let promptBottomSpacing: CGFloat = 18
-        static let explanationBottomSpacing: CGFloat = 12
-        static let buttonTopSpacing: CGFloat = 20
+        static let explanationBottomSpacing: CGFloat = 18
+        static let buttonTopSpacing: CGFloat = 18
         static let promptFont: UIFont = .InstrumentSansBold24
         static let promptLines: Int = 0
         static let answerTitle: String = "Answer"

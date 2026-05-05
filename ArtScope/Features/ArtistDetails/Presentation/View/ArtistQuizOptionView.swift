@@ -17,12 +17,13 @@ final class ArtistQuizOptionView: UIControl {
     }
     
     private enum Constants {
-        static let minHeight: CGFloat = 72
-        static let cornerRadius: CGFloat = 8
+        static let minHeight: CGFloat = 54
+        static let cornerRadius: CGFloat = 6
         static let horizontalInset: CGFloat = 18
         static let iconRightInset: CGFloat = 14
         static let borderWidth: CGFloat = 2
-        static let font: UIFont = .InstrumentSansRegular14
+        static let verticalInset: CGFloat = 14
+        static let font: UIFont = .InstrumentSansRegular16
         static let textColorLight: UIColor = .black
         static let textColorDark: UIColor = .white
         static let normalColor: UIColor = .black
@@ -128,8 +129,8 @@ final class ArtistQuizOptionView: UIControl {
         
         titleLabel.font = Constants.font
         titleLabel.numberOfLines = 0
-        titleLabel.pinTop(to: topAnchor, 14)
-        titleLabel.pinBottom(to: bottomAnchor, 14)
+        titleLabel.pinTop(to: topAnchor, Constants.verticalInset)
+        titleLabel.pinBottom(to: bottomAnchor, Constants.verticalInset)
         titleLabel.pinLeft(to: leadingAnchor, Constants.horizontalInset)
         titleLabel.pinRight(to: trailingAnchor, 52, .lsOE)
         

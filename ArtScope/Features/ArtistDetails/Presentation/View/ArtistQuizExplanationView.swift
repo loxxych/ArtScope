@@ -9,10 +9,11 @@ import UIKit
 
 final class ArtistQuizExplanationView: UIView {
     private enum Constants {
-        static let cornerRadius: CGFloat = 8
-        static let inset: CGFloat = 14
+        static let cornerRadius: CGFloat = 6
+        static let horizontalInset: CGFloat = 12
+        static let verticalInset: CGFloat = 12
         static let backgroundColor: UIColor = .white
-        static let font: UIFont = .InstrumentSansRegular14
+        static let font: UIFont = .InstrumentSansRegular16
         static let textColor: UIColor = .black
     }
     
@@ -44,9 +45,9 @@ final class ArtistQuizExplanationView: UIView {
         textLabel.font = Constants.font
         textLabel.textColor = Constants.textColor
         textLabel.numberOfLines = 0
-        textLabel.pinTop(to: topAnchor, Constants.inset)
-        textLabel.pinBottom(to: bottomAnchor, Constants.inset)
-        textLabel.pinLeft(to: leadingAnchor, Constants.inset)
+        textLabel.pinTop(to: topAnchor, Constants.verticalInset)
+        textLabel.pinBottom(to: bottomAnchor, Constants.verticalInset)
+        textLabel.pinLeft(to: leadingAnchor, Constants.horizontalInset)
         textLabel.pinRight(to: trailingAnchor, 44, .lsOE)
         
         iconView.image = UIImage.artScopeInfo
@@ -54,7 +55,7 @@ final class ArtistQuizExplanationView: UIView {
         iconView.contentMode = .scaleAspectFit
         iconView.setWidth(22)
         iconView.setHeight(22)
-        iconView.pinRight(to: trailingAnchor, Constants.inset)
+        iconView.pinRight(to: trailingAnchor, Constants.horizontalInset)
         iconView.pinCenterY(to: self)
     }
 }
