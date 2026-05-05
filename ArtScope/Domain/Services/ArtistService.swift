@@ -7,5 +7,10 @@
 
 protocol ArtistService {
     func fetchArtists(completion: @escaping (Result<[ArtistPreview], Error>) -> Void)
+    func fetchAdditionalArtists(
+        limit: Int,
+        excludingArtistIDs: [String],
+        completion: @escaping (Result<[ArtistPreview], Error>) -> Void
+    )
     func fetchStyles(completion: @escaping (Result<[StylePreview], Error>) -> Void)
 }

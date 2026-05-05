@@ -15,6 +15,7 @@ struct WikiDataArtistRelatedStylesDTO: Decodable {
     struct Binding: Decodable {
         let movement: Value?
         let movementLabel: Value?
+        let image: Value?
 
         struct Value: Decodable {
             let value: String

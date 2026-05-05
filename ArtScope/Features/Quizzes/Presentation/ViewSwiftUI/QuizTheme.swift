@@ -14,7 +14,7 @@ enum QuizTheme {
     static let cardBackground = Color.artScopePink
     static let lightText = Color.white
     static let darkText = Color.black
-    static let progressFill = Color(red: 237 / 255, green: 244 / 255, blue: 88 / 255)
+    static let progressFill = Color.artScopePink
     static let progressTrack = Color(red: 236 / 255, green: 177 / 255, blue: 171 / 255)
     static let correctFill = Color(red: 142 / 255, green: 236 / 255, blue: 102 / 255)
     static let incorrectFill = Color(red: 192 / 255, green: 18 / 255, blue: 31 / 255)

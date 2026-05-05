@@ -13,7 +13,13 @@ struct ArtistDetailsContent {
     let biography: String
     let lifeSpan: String
     let imageURL: URL?
-    let relatedStyles: [String]
+    let relatedStyles: [ArtistRelatedStyle]
+}
+
+struct ArtistRelatedStyle {
+    let id: String
+    let title: String
+    let imageURL: URL?
 }
 
 struct ArtistWork {
@@ -26,6 +32,7 @@ struct WorkDetailsContent {
     let title: String
     let metadataLine: String
     let artistName: String
+    let artistImageURL: URL?
     let infoText: String
     let imageURL: URL?
     let relatedItems: [WorkRelatedItem]

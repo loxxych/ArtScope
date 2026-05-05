@@ -65,6 +65,101 @@ enum WikidataEndpoint {
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         return request
     }
+
+    static func artistsList(limit: Int, excludingArtistIDs: [String]) -> URLRequest {
+        var components = URLComponents(
+            url: baseURL.appendingPathComponent("sparql"),
+            resolvingAgainstBaseURL: false
+        )!
+
+        let exclusionFilter: String
+        if excludingArtistIDs.isEmpty {
+            exclusionFilter = ""
+        } else {
+            let values = excludingArtistIDs
+                .map { id in
+                    let entityID = id.replacingOccurrences(of: "http://www.wikidata.org/entity/", with: "")
+                        .replacingOccurrences(of: "https://www.wikidata.org/entity/", with: "")
+                    return "wd:\(entityID)"
+                }
+                .joined(separator: ", ")
+            exclusionFilter = "FILTER(?artist NOT IN (\(values)))"
+        }
+
+        let query = """
+        PREFIX bd: <http://www.bigdata.com/rdf#>
+        PREFIX wikibase: <http://wikiba.se/ontology#>
+        PREFIX wd: <http://www.wikidata.org/entity/>
+        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+
+        SELECT DISTINCT ?artist ?artistLabel ?artistDescription ?image WHERE {
+          ?artist wdt:P31 wd:Q5;
+                  wdt:P106 ?occupation;
+                  wdt:P18 ?image.
+
+          ?occupation wdt:P279* wd:Q1281618.
+          \(exclusionFilter)
+
+          SERVICE wikibase:label {
+            bd:serviceParam wikibase:language "en".
+          }
+        }
+        LIMIT \(limit)
+        """
+
+        components.queryItems = [
+            .init(name: "format", value: "json"),
+            .init(name: "query", value: query)
+        ]
+
+        var request = URLRequest(url: components.url!)
+        request.timeoutInterval = requestTimeout
+        request.setValue("application/sparql-results+json", forHTTPHeaderField: "Accept")
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        return request
+    }
+
+    static func featuredArtists(names: [String]) -> URLRequest {
+        let components = URLComponents(
+            url: baseURL.appendingPathComponent("sparql"),
+            resolvingAgainstBaseURL: false
+        )!
+
+        let values = names
+            .map { "\"\($0.replacingOccurrences(of: "\"", with: "\\\""))\"@en" }
+            .joined(separator: " ")
+
+        let query = """
+        PREFIX bd: <http://www.bigdata.com/rdf#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX schema: <http://schema.org/>
+        PREFIX wikibase: <http://wikiba.se/ontology#>
+        PREFIX wd: <http://www.wikidata.org/entity/>
+        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+
+        SELECT DISTINCT ?artist ?artistLabel ?artistDescription ?image WHERE {
+          VALUES ?requestedName { \(values) }
+
+          ?artist wdt:P31 wd:Q5;
+                  rdfs:label ?requestedName;
+                  wdt:P106 ?occupation.
+
+          ?occupation wdt:P279* wd:Q1281618.
+
+          OPTIONAL { ?artist wdt:P18 ?image. }
+          OPTIONAL {
+            ?artist schema:description ?artistDescription.
+            FILTER(LANG(?artistDescription) = "en")
+          }
+
+          SERVICE wikibase:label {
+            bd:serviceParam wikibase:language "en".
+          }
+        }
+        """
+
+        return makeRequest(components: components, query: query)
+    }
     
     static func wikipediaStyleSummary(title: String) -> URLRequest {
         let encodedTitle = title.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? title
@@ -133,23 +228,29 @@ enum WikidataEndpoint {
 
         let query = """
         PREFIX bd: <http://www.bigdata.com/rdf#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX wikibase: <http://wikiba.se/ontology#>
         PREFIX wd: <http://www.wikidata.org/entity/>
         PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 
-        SELECT DISTINCT ?work ?workLabel ?image ?creatorLabel ?creatorImage WHERE {
+        SELECT ?work ?workLabel ?image (SAMPLE(?creatorLabelRaw) AS ?creatorLabel) (SAMPLE(?creatorImageRaw) AS ?creatorImage) WHERE {
           ?work wdt:P135 wd:\(entityID);
                 wdt:P170 ?creator;
                 wdt:P18 ?image;
                 wdt:P31 ?instanceOf.
 
           FILTER(?instanceOf != wd:Q5)
-          OPTIONAL { ?creator wdt:P18 ?creatorImage. }
+          OPTIONAL { ?creator wdt:P18 ?creatorImageRaw. }
+          OPTIONAL {
+            ?creator rdfs:label ?creatorLabelRaw.
+            FILTER(LANG(?creatorLabelRaw) = "en")
+          }
 
           SERVICE wikibase:label {
             bd:serviceParam wikibase:language "en".
           }
         }
+        GROUP BY ?work ?workLabel ?image
         LIMIT \(limit)
         """
 
@@ -210,7 +311,7 @@ enum WikidataEndpoint {
         PREFIX wd: <http://www.wikidata.org/entity/>
         PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 
-        SELECT DISTINCT ?movement ?movementLabel WHERE {
+        SELECT DISTINCT ?movement ?movementLabel ?image WHERE {
           BIND(wd:\(entityID) AS ?artist)
           {
             ?artist wdt:P135 ?movement.
@@ -220,6 +321,8 @@ enum WikidataEndpoint {
             ?work wdt:P170 ?artist;
                   wdt:P135 ?movement.
           }
+
+          OPTIONAL { ?movement wdt:P18 ?image. }
 
           SERVICE wikibase:label {
             bd:serviceParam wikibase:language "en".
@@ -264,6 +367,7 @@ enum WikidataEndpoint {
         
         let query = """
         PREFIX bd: <http://www.bigdata.com/rdf#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX schema: <http://schema.org/>
         PREFIX wikibase: <http://wikiba.se/ontology#>
         PREFIX wd: <http://www.wikidata.org/entity/>
@@ -271,7 +375,10 @@ enum WikidataEndpoint {
         PREFIX p: <http://www.wikidata.org/prop/>
         PREFIX psn: <http://www.wikidata.org/prop/statement/value-normalized/>
 
-        SELECT ?workLabel ?wikipediaTitle ?inception ?height ?width ?materialLabel ?workDescription ?movementLabel WHERE {
+        SELECT ?workLabel ?wikipediaTitle ?inception ?height ?width ?materialLabel ?workDescription ?movementLabel
+               (SAMPLE(?creatorLabelRaw) AS ?creatorLabel)
+               (SAMPLE(?creatorImageRaw) AS ?creatorImage)
+        WHERE {
           BIND(wd:\(workID) AS ?work)
           OPTIONAL {
             ?article schema:about ?work;
@@ -285,6 +392,14 @@ enum WikidataEndpoint {
           OPTIONAL { ?work wdt:P186 ?material. }
           OPTIONAL { ?work wdt:P135 ?movement. }
           OPTIONAL {
+            ?work wdt:P170 ?creator.
+            OPTIONAL { ?creator wdt:P18 ?creatorImageRaw. }
+            OPTIONAL {
+              ?creator rdfs:label ?creatorLabelRaw.
+              FILTER(LANG(?creatorLabelRaw) = "en")
+            }
+          }
+          OPTIONAL {
             ?work schema:description ?workDescription.
             FILTER(LANG(?workDescription) = "en")
           }
@@ -293,6 +408,7 @@ enum WikidataEndpoint {
             bd:serviceParam wikibase:language "en".
           }
         }
+        GROUP BY ?workLabel ?wikipediaTitle ?inception ?height ?width ?materialLabel ?workDescription ?movementLabel
         """
         
         return makeRequest(components: components, query: query)

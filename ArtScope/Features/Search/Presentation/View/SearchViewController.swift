@@ -9,8 +9,9 @@ import SwiftUI
 import UIKit
 
 final class SearchViewController: UIViewController {
-    private let viewModel = SearchViewModel(
-        artistService: WikiDataArtistService(client: URLSessionNetworkClient())
+    private let artistService: ArtistService = WikiDataArtistService(client: URLSessionNetworkClient())
+    private lazy var viewModel = SearchViewModel(
+        artistService: artistService
     )
     private lazy var hostingController = UIHostingController(
         rootView: SearchScreen(
@@ -78,7 +79,7 @@ final class SearchViewController: UIViewController {
     }
 
     private func showAllArtists() {
-        let vc = AllArtistsViewController(artists: viewModel.artists)
+        let vc = AllArtistsViewController(artists: viewModel.artists, artistService: artistService)
         navigationController?.pushViewController(vc, animated: true)
     }
 }

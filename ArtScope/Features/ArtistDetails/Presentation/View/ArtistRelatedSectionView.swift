@@ -10,8 +10,10 @@ import UIKit
 final class ArtistRelatedSectionView: UIView {
     // MARK: - Models
     struct Item {
+        let id: String
         let title: String
         let subtitle: String
+        let imageURL: URL?
     }
     
     // MARK: - Constants
@@ -125,7 +127,7 @@ private final class ArtistRelatedCardView: UIView {
     }
 
     private let item: ArtistRelatedSectionView.Item
-    private let imageView = UIView()
+    private let imageView = UIImageView()
     private let iconView = UIImageView()
     private let titleLabel = UILabel()
 
@@ -147,6 +149,9 @@ private final class ArtistRelatedCardView: UIView {
 
         imageView.backgroundColor = .white.withAlphaComponent(0.28)
         imageView.layer.cornerRadius = Constants.imageCornerRadius
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        imageView.image = UIImage.artScopePalettePlaceholder
         imageView.pinTop(to: topAnchor)
         imageView.pinHorizontal(to: self)
         imageView.setHeight(Constants.imageHeight)
@@ -159,6 +164,7 @@ private final class ArtistRelatedCardView: UIView {
         iconView.pinCenterY(to: imageView)
         iconView.setWidth(Constants.iconSize)
         iconView.setHeight(Constants.iconSize)
+        iconView.isHidden = true
 
         titleLabel.text = item.title
         titleLabel.font = Constants.titleFont
@@ -166,5 +172,23 @@ private final class ArtistRelatedCardView: UIView {
         titleLabel.pinTop(to: imageView.bottomAnchor, Constants.titleTopSpacing)
         titleLabel.pinHorizontal(to: self)
         titleLabel.pinBottom(to: bottomAnchor)
+
+        loadImageIfNeeded()
+    }
+
+    private func loadImageIfNeeded() {
+        guard let imageURL = item.imageURL else { return }
+
+        RemoteImageLoader.shared.loadImage(from: imageURL) { [weak self] image in
+            DispatchQueue.main.async {
+                guard let self else { return }
+
+                if let image {
+                    self.imageView.image = image
+                } else {
+                    self.imageView.image = UIImage.artScopePalettePlaceholder
+                }
+            }
+        }
     }
 }

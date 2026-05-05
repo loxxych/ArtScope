@@ -15,7 +15,7 @@ final class ArtistQuizStatusCardView: UIView {
         static let titleTopSpacing: CGFloat = 18
         static let bodyTopSpacing: CGFloat = 18
         static let buttonTopSpacing: CGFloat = 18
-        static let titleFont: UIFont = .ByteBounce28
+        static let titleFont: UIFont = .ByteBounce41
         static let bodyFont: UIFont = .InstrumentSansRegular15
         static let spinnerScale: CGFloat = 1.2
     }
@@ -58,20 +58,15 @@ final class ArtistQuizStatusCardView: UIView {
         backgroundColor = Constants.backgroundColor
         layer.cornerRadius = Constants.cornerRadius
 
-        addSubview(spinner)
         addSubview(titleLabel)
         addSubview(bodyLabel)
+        addSubview(spinner)
         addSubview(actionButton)
-
-        spinner.transform = CGAffineTransform(scaleX: Constants.spinnerScale, y: Constants.spinnerScale)
-        spinner.color = .white
-        spinner.pinTop(to: topAnchor, Constants.inset)
-        spinner.pinCenterX(to: self)
 
         titleLabel.font = Constants.titleFont
         titleLabel.textAlignment = .center
         titleLabel.numberOfLines = 0
-        titleLabel.pinTop(to: spinner.bottomAnchor, Constants.titleTopSpacing)
+        titleLabel.pinTop(to: topAnchor, Constants.inset)
         titleLabel.pinHorizontal(to: self, Constants.inset)
 
         bodyLabel.font = Constants.bodyFont
@@ -79,6 +74,12 @@ final class ArtistQuizStatusCardView: UIView {
         bodyLabel.textAlignment = .center
         bodyLabel.pinTop(to: titleLabel.bottomAnchor, Constants.bodyTopSpacing)
         bodyLabel.pinHorizontal(to: self, Constants.inset)
+
+        spinner.transform = CGAffineTransform(scaleX: Constants.spinnerScale, y: Constants.spinnerScale)
+        spinner.color = .white
+        spinner.pinTop(to: bodyLabel.bottomAnchor, Constants.buttonTopSpacing)
+        spinner.pinCenterX(to: self)
+        spinner.pinBottom(to: bottomAnchor, Constants.inset, .lsOE)
 
         actionButton.isHidden = true
         actionButton.addTarget(self, action: #selector(actionPressed), for: .touchUpInside)

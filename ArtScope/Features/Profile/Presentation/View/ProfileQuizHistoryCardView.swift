@@ -90,7 +90,7 @@ final class ProfileQuizHistoryCardView: UIControl {
         }
 
         if percentage > 90 {
-            return UIColor(red: 237 / 255, green: 244 / 255, blue: 88 / 255, alpha: 1)
+            return UIColor.artScopePink
         }
 
         return .artScopeBlue

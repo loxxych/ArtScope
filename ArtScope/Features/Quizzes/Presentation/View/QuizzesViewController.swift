@@ -20,6 +20,8 @@ final class QuizzesViewController: UIViewController {
 
         static let titleText = "Quizzes"
         static let quizzesTitleText = "All quizzes"
+        static let loadingTitleText = "Preparing quiz..."
+        static let loadingBodyText = "Loading the quiz and getting everything ready for you."
 
         static let titleFont: UIFont = .ByteBounce49
         static let sectionTitleFont: UIFont = .ByteBounce35
@@ -35,6 +37,11 @@ final class QuizzesViewController: UIViewController {
     private let quizzesStackView = UIStackView()
     private let emptyStateLabel = UILabel()
     private let footerSpacer = UIView()
+    private let loadingOverlayView = UIView()
+    private let loadingCardView = UIView()
+    private let loadingSpinner = UIActivityIndicatorView(style: .large)
+    private let loadingTitleLabel = UILabel()
+    private let loadingBodyLabel = UILabel()
 
     private let viewModel = QuizzesViewModel(
         quizService: QuizServiceFactory.makeQuizService()
@@ -42,6 +49,7 @@ final class QuizzesViewController: UIViewController {
 
     private var dailyQuiz: Quiz?
     private var quizzes: [QuizListItem] = []
+    private var isShowingQuizLoading = false
 
     // MARK: - Lifecycle
     init() {
@@ -105,6 +113,7 @@ final class QuizzesViewController: UIViewController {
         configureQuizzesStack()
         configureEmptyState()
         configureFooterSpacer()
+        configureLoadingOverlay()
     }
 
     // MARK: - Scroll view configuration
@@ -202,6 +211,53 @@ final class QuizzesViewController: UIViewController {
         footerSpacer.pinBottom(to: contentView.bottomAnchor)
     }
 
+    private func configureLoadingOverlay() {
+        view.addSubview(loadingOverlayView)
+
+        loadingOverlayView.backgroundColor = UIColor.black.withAlphaComponent(0.12)
+        loadingOverlayView.alpha = 0
+        loadingOverlayView.isHidden = true
+        loadingOverlayView.pin(to: view)
+
+        loadingOverlayView.addSubview(loadingCardView)
+        loadingCardView.backgroundColor = .artScopePink
+        loadingCardView.layer.cornerRadius = 18
+        loadingCardView.layer.shadowColor = UIColor.artScopePink.cgColor
+        loadingCardView.layer.shadowOpacity = 0.35
+        loadingCardView.layer.shadowRadius = 14
+        loadingCardView.layer.shadowOffset = CGSize(width: 0, height: 6)
+        loadingCardView.pinCenterX(to: loadingOverlayView)
+        loadingCardView.pinCenterY(to: loadingOverlayView)
+        loadingCardView.pinLeft(to: loadingOverlayView.leadingAnchor, 28, .grOE)
+        loadingCardView.pinRight(to: loadingOverlayView.trailingAnchor, 28, .lsOE)
+
+        loadingCardView.addSubview(loadingSpinner)
+        loadingSpinner.color = .white
+        loadingSpinner.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
+        loadingSpinner.pinTop(to: loadingCardView.topAnchor, 28)
+        loadingSpinner.pinCenterX(to: loadingCardView)
+
+        loadingCardView.addSubview(loadingTitleLabel)
+        loadingTitleLabel.text = Constants.loadingTitleText
+        loadingTitleLabel.font = .ByteBounce28
+        loadingTitleLabel.textColor = .black
+        loadingTitleLabel.textAlignment = .center
+        loadingTitleLabel.pinTop(to: loadingSpinner.bottomAnchor, 18)
+        loadingTitleLabel.pinLeft(to: loadingCardView.leadingAnchor, 20)
+        loadingTitleLabel.pinRight(to: loadingCardView.trailingAnchor, 20)
+
+        loadingCardView.addSubview(loadingBodyLabel)
+        loadingBodyLabel.text = Constants.loadingBodyText
+        loadingBodyLabel.font = .InstrumentSansRegular15
+        loadingBodyLabel.textColor = .black
+        loadingBodyLabel.numberOfLines = 0
+        loadingBodyLabel.textAlignment = .center
+        loadingBodyLabel.pinTop(to: loadingTitleLabel.bottomAnchor, 18)
+        loadingBodyLabel.pinLeft(to: loadingCardView.leadingAnchor, 20)
+        loadingBodyLabel.pinRight(to: loadingCardView.trailingAnchor, 20)
+        loadingBodyLabel.pinBottom(to: loadingCardView.bottomAnchor, 28)
+    }
+
     private func renderQuizList() {
         quizzesStackView.arrangedSubviews.forEach {
             quizzesStackView.removeArrangedSubview($0)
@@ -222,9 +278,11 @@ final class QuizzesViewController: UIViewController {
     @objc private func quizItemTapped(_ sender: QuizListItemView) {
         
         guard let quizID = sender.accessibilityIdentifier else { return }
+        showQuizLoadingOverlay()
         viewModel.loadCuratedQuiz(id: quizID) { [weak self] result in
             DispatchQueue.main.async {
                 guard let self else { return }
+                self.hideQuizLoadingOverlay()
 
                 switch result {
                 case let .success(quiz):
@@ -248,9 +306,37 @@ final class QuizzesViewController: UIViewController {
             return
         }
 
+        showQuizLoadingOverlay()
         let vc = QuizPlayViewController(quiz: dailyQuiz)
-        
-        navigationController?.pushViewController(vc, animated: true)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { [weak self] in
+            guard let self else { return }
+            self.hideQuizLoadingOverlay()
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
     }
-    
+
+    private func showQuizLoadingOverlay() {
+        guard !isShowingQuizLoading else { return }
+        isShowingQuizLoading = true
+        loadingOverlayView.isHidden = false
+        loadingSpinner.startAnimating()
+        loadingCardView.transform = CGAffineTransform(scaleX: 0.96, y: 0.96)
+
+        UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut]) {
+            self.loadingOverlayView.alpha = 1
+            self.loadingCardView.transform = .identity
+        }
+    }
+
+    private func hideQuizLoadingOverlay() {
+        guard isShowingQuizLoading else { return }
+        isShowingQuizLoading = false
+
+        UIView.animate(withDuration: 0.18, delay: 0, options: [.curveEaseInOut]) {
+            self.loadingOverlayView.alpha = 0
+        } completion: { _ in
+            self.loadingSpinner.stopAnimating()
+            self.loadingOverlayView.isHidden = true
+        }
+    }
 }

@@ -20,10 +20,10 @@ final class ArtistQuizPlaceholderView: UIView {
         static let subtitleFont: UIFont = .InstrumentSansRegular15
         static let bodyLinesCount: Int = 0
         static let statusCardHeight: CGFloat = 190
-        static let readyCardHeight: CGFloat = 190
+        static let readyCardHeight: CGFloat = 158
         static let resultCardHeight: CGFloat = 360
         static let loadingTitleText: String = "Preparing quiz..."
-        static let loadingBodyText: String = "Creating a short English quiz from the artist biography and artworks."
+        static let loadingBodyText: String = "Creating a short quiz about the artist."
         static let unavailableTitleText: String = "Quiz unavailable"
         static let unavailableBodyText: String = "The quiz couldn't be generated. Try requesting it again."
         static let retryButtonTitle: String = "Try again"

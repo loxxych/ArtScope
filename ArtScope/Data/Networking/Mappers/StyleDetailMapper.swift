@@ -31,12 +31,14 @@ enum StyleDetailMapper {
             )
         } ?? []
 
+        var seenWorkIDs = Set<String>()
         let works: [StyleWorkItem] = worksDTO?.results.bindings.compactMap { binding -> StyleWorkItem? in
             guard
                 let id = binding.work?.value,
                 let title = binding.workLabel?.value,
                 let artistName = binding.creatorLabel?.value,
-                !title.isEmpty
+                !title.isEmpty,
+                seenWorkIDs.insert(id).inserted
             else {
                 return nil
             }

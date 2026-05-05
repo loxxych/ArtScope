@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AllArtistsScreen: View {
-    let artists: [ArtistPreview]
+    @ObservedObject var viewModel: AllArtistsViewModel
     var onBack: (() -> Void)?
     var onArtistSelected: ((ArtistPreview) -> Void)?
 
@@ -27,14 +27,22 @@ struct AllArtistsScreen: View {
                         .frame(height: 96)
 
                     LazyVGrid(columns: columns, spacing: 24) {
-                        ForEach(artists, id: \.id) { artist in
+                        ForEach(viewModel.artists, id: \.id) { artist in
                             AllArtistsCardView(artist: artist) {
                                 onArtistSelected?(artist)
                             }
                         }
                     }
                     .padding(.horizontal, 20)
-                    .padding(.bottom, 36)
+
+                    if viewModel.isLoadingMore {
+                        ProgressView()
+                            .tint(.black)
+                            .padding(.top, 20)
+                    }
+
+                    Color.clear
+                        .frame(height: 36)
                 }
             }
 
@@ -136,25 +144,31 @@ private struct AllArtistsCardView: View {
 
 #Preview {
     AllArtistsScreen(
-        artists: [
-            ArtistPreview(
-                id: "1",
-                name: "Salvador Dali",
-                summary: "Spanish surrealist artist",
-                imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/commons/2/24/Salvador_Dal%C3%AD_1939.jpg")
-            ),
-            ArtistPreview(
-                id: "2",
-                name: "Claude Monet",
-                summary: "French impressionist painter",
-                imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/commons/4/4d/Claude_Monet_1899_Nadar_crop.jpg")
-            ),
-            ArtistPreview(
-                id: "3",
-                name: "Pablo Picasso",
-                summary: "Spanish painter and sculptor",
-                imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/commons/9/98/Pablo_picasso_1.jpg")
+        viewModel: {
+            let viewModel = AllArtistsViewModel(
+                artistService: WikiDataArtistService(client: URLSessionNetworkClient())
             )
-        ]
+            viewModel.configureInitialArtists([
+                ArtistPreview(
+                    id: "1",
+                    name: "Salvador Dali",
+                    summary: "Spanish surrealist artist",
+                    imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/commons/2/24/Salvador_Dal%C3%AD_1939.jpg")
+                ),
+                ArtistPreview(
+                    id: "2",
+                    name: "Claude Monet",
+                    summary: "French impressionist painter",
+                    imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/commons/4/4d/Claude_Monet_1899_Nadar_crop.jpg")
+                ),
+                ArtistPreview(
+                    id: "3",
+                    name: "Pablo Picasso",
+                    summary: "Spanish painter and sculptor",
+                    imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/commons/9/98/Pablo_picasso_1.jpg")
+                )
+            ])
+            return viewModel
+        }()
     )
 }

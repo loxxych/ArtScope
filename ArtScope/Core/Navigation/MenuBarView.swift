@@ -18,18 +18,28 @@ final class MenuBarView: UIView {
         static let shadowRadius: CGFloat = 10
         static let inititalSelected: Int = 0
         static let stackViewHorizontal: CGFloat = 16
+        static let borderWidth: CGFloat = 1
         
         // Colors
         static let backgroundColor: UIColor = .black
         static let shadowColor: CGColor = UIColor.black.cgColor
         static let unpickedColor: UIColor = .white
         static let pickedColor: UIColor = .artScopePink
+        static let tintOverlayColor: UIColor = UIColor.black.withAlphaComponent(0.58)
+        static let borderColor: CGColor = UIColor.white.withAlphaComponent(0.16).cgColor
+        static let topHighlightColor: CGColor = UIColor.white.withAlphaComponent(0.18).cgColor
+        static let bottomHighlightColor: CGColor = UIColor.white.withAlphaComponent(0.02).cgColor
     }
     
     // MARK: - Fields
     weak var delegate: MenuBarDelegate?
     
     private var buttons: [UIButton] = []
+    private let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterialDark))
+    private let tintOverlayView = UIView()
+    private let topHighlightView = UIView()
+    private let topHighlightLayer = CAGradientLayer()
+    private let contentContainer = UIView()
     
     // MARK: - Lifecycle
     override init(frame: CGRect) {
@@ -43,7 +53,7 @@ final class MenuBarView: UIView {
     
     // MARK: - UI configuration
     private func configureUI() {
-        backgroundColor = Constants.backgroundColor
+        backgroundColor = .clear
         layer.cornerRadius = Constants.cornerRadius
         layer.masksToBounds = false
         
@@ -51,6 +61,37 @@ final class MenuBarView: UIView {
         layer.shadowOpacity = Constants.shadowOpacity
         layer.shadowOffset = CGSize(width: Constants.shadowWidthOffset, height: Constants.shadowHeightOffset)
         layer.shadowRadius = Constants.shadowRadius
+
+        contentContainer.backgroundColor = .clear
+        contentContainer.layer.cornerRadius = Constants.cornerRadius
+        contentContainer.layer.masksToBounds = true
+        contentContainer.layer.borderWidth = Constants.borderWidth
+        contentContainer.layer.borderColor = Constants.borderColor
+        addSubview(contentContainer)
+        contentContainer.pin(to: self)
+
+        blurView.clipsToBounds = true
+        contentContainer.addSubview(blurView)
+        blurView.pin(to: contentContainer)
+
+        tintOverlayView.backgroundColor = Constants.tintOverlayColor
+        contentContainer.addSubview(tintOverlayView)
+        tintOverlayView.pin(to: contentContainer)
+
+        topHighlightView.backgroundColor = .clear
+        contentContainer.addSubview(topHighlightView)
+        topHighlightView.pinTop(to: contentContainer.topAnchor)
+        topHighlightView.pinLeft(to: contentContainer.leadingAnchor)
+        topHighlightView.pinRight(to: contentContainer.trailingAnchor)
+        topHighlightView.setHeight(26)
+
+        topHighlightLayer.colors = [
+            Constants.topHighlightColor,
+            Constants.bottomHighlightColor
+        ]
+        topHighlightLayer.startPoint = CGPoint(x: 0.5, y: 0)
+        topHighlightLayer.endPoint = CGPoint(x: 0.5, y: 1)
+        topHighlightView.layer.addSublayer(topHighlightLayer)
         
         configureButtons()
     }
@@ -76,12 +117,17 @@ final class MenuBarView: UIView {
             stackView.addArrangedSubview(button)
         }
 
-        addSubview(stackView)
+        contentContainer.addSubview(stackView)
 
-        stackView.pinHorizontal(to: self, Constants.stackViewHorizontal)
-        stackView.pinVertical(to: self)
+        stackView.pinHorizontal(to: contentContainer, Constants.stackViewHorizontal)
+        stackView.pinVertical(to: contentContainer)
 
         selectTab(index: Constants.inititalSelected)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        topHighlightLayer.frame = topHighlightView.bounds
     }
     
     // MARK: - Button press functions

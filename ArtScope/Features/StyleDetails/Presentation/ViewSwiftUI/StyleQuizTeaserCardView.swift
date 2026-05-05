@@ -13,7 +13,7 @@ struct StyleQuizTeaserCardView: View {
     var body: some View {
         VStack(spacing: 18) {
             Text("Test yourself!")
-                .font(.ByteBounce28)
+                .font(.ByteBounce41)
                 .foregroundStyle(StyleTheme.darkText)
 
             HStack {

@@ -77,19 +77,19 @@ struct StyleQuizSectionView: View {
 private struct StyleQuizLoadingCardView: View {
     var body: some View {
         VStack(spacing: 18) {
-            ProgressView()
-                .tint(StyleTheme.lightText.opacity(0.8))
-                .scaleEffect(1.2)
-
             Text("Preparing quiz...")
-                .font(.ByteBounce28)
+                .font(.ByteBounce41)
                 .foregroundStyle(StyleTheme.darkText)
 
-            Text("Creating a short English quiz from the style description and artworks.")
+            Text("Creating a short quiz about the style.")
                 .font(.InstrumentSansRegular15)
                 .foregroundStyle(StyleTheme.darkText)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 12)
+
+            ProgressView()
+                .tint(StyleTheme.lightText.opacity(0.8))
+                .scaleEffect(1.2)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 28)
@@ -109,7 +109,7 @@ private struct StyleQuizStatusCardView: View {
     var body: some View {
         VStack(spacing: 16) {
             Text(title)
-                .font(.ByteBounce28)
+                .font(.ByteBounce41)
                 .foregroundStyle(StyleTheme.darkText)
 
             Text(bodyStr)
@@ -143,7 +143,7 @@ private struct StyleQuizStartCardView: View {
     var body: some View {
         VStack(spacing: 18) {
             Text("Test yourself!")
-                .font(.ByteBounce28)
+                .font(.ByteBounce41)
                 .foregroundStyle(StyleTheme.darkText)
 
             HStack {

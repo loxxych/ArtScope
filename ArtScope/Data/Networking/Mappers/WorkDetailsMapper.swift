@@ -16,11 +16,18 @@ enum WorkDetailsMapper {
     ) -> WorkDetailsContent {
         let firstBinding = dto.results.bindings.first
         let title = firstBinding?.workLabel?.value ?? work.title
+        let resolvedArtistName = firstBinding?.creatorLabel?.value ?? artistName
+        let resolvedArtistImageURL: URL?
+        if let creatorImageValue = firstBinding?.creatorImage?.value {
+            resolvedArtistImageURL = URL(string: creatorImageValue)
+        } else {
+            resolvedArtistImageURL = nil
+        }
         let metadataLine = buildMetadataLine(binding: firstBinding)
         let infoText = buildInfoText(
             binding: firstBinding,
             title: title,
-            artistName: artistName,
+            artistName: resolvedArtistName,
             wikipediaSummary: wikipediaSummary
         )
         let relatedItems = buildRelatedItems(from: dto)
@@ -28,7 +35,8 @@ enum WorkDetailsMapper {
         return WorkDetailsContent(
             title: title,
             metadataLine: metadataLine,
-            artistName: artistName,
+            artistName: resolvedArtistName,
+            artistImageURL: resolvedArtistImageURL,
             infoText: infoText,
             imageURL: work.imageURL,
             relatedItems: relatedItems

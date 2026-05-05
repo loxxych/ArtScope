@@ -317,8 +317,10 @@ final class ArtistDetailsViewController: UIViewController {
         relatedSectionView.update(
             with: details.relatedStyles.map {
                 ArtistRelatedSectionView.Item(
-                    title: $0,
-                    subtitle: "An artistic movement associated with \(details.displayName)."
+                    id: $0.id,
+                    title: $0.title,
+                    subtitle: "An artistic movement associated with \(details.displayName).",
+                    imageURL: $0.imageURL
                 )
             }
         )

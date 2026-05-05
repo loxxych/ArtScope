@@ -21,6 +21,8 @@ struct WikiDataWorkDetailsDTO: Decodable {
         let materialLabel: Value?
         let workDescription: Value?
         let movementLabel: Value?
+        let creatorLabel: Value?
+        let creatorImage: Value?
         
         struct Value: Decodable {
             let value: String

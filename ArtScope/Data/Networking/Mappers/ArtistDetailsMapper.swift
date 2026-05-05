@@ -12,7 +12,7 @@ enum ArtistDetailsMapper {
         details dto: WikiDataArtistDetailsDTO,
         preview: ArtistPreview,
         wikipediaSummary: String?,
-        relatedStyles: [String]
+        relatedStyles: [ArtistRelatedStyle]
     ) -> ArtistDetailsContent {
         let binding = dto.results.bindings.first
         let realName = binding?.birthName?.value ?? preview.name

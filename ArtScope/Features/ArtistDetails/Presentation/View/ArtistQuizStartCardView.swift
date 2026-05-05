@@ -15,7 +15,7 @@ final class ArtistQuizStartCardView: UIView {
         static let verticalInset: CGFloat = 22
         static let iconSize: CGFloat = 56
         static let buttonTopSpacing: CGFloat = 18
-        static let titleFont: UIFont = .ByteBounce28
+        static let titleFont: UIFont = .ByteBounce41
         static let titleText: String = "Test yourself!"
         static let buttonTitle: String = "Begin"
     }

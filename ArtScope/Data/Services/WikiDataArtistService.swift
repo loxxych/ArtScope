@@ -36,12 +36,30 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
     func fetchArtists(
             completion: @escaping (Result<[ArtistPreview], Error>) -> Void
         ) {
-            let request = WikidataEndpoint.artistsList(limit: 8)
+            let request = WikidataEndpoint.featuredArtists(names: PopularArtistCatalog.names)
 
             client.request(request) { (result: Result<WikidataArtistsDTO, Error>) in
-                completion(result.map(ArtistPreviewMapper.map))
+                completion(result.map { dto in
+                    let mapped = ArtistPreviewMapper.map(dto)
+                    return self.sortArtists(mapped, byPreferredNames: PopularArtistCatalog.names)
+                })
             }
         }
+
+    func fetchAdditionalArtists(
+        limit: Int,
+        excludingArtistIDs: [String],
+        completion: @escaping (Result<[ArtistPreview], Error>) -> Void
+    ) {
+        let request = WikidataEndpoint.artistsList(
+            limit: limit,
+            excludingArtistIDs: excludingArtistIDs
+        )
+
+        client.request(request) { (result: Result<WikidataArtistsDTO, Error>) in
+            completion(result.map(ArtistPreviewMapper.map))
+        }
+    }
     
     func fetchStyles(
         completion: @escaping (Result<[StylePreview], Error>) -> Void
@@ -185,7 +203,7 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
                 let group = DispatchGroup()
                 let lock = NSLock()
                 var summary: String?
-                var relatedStyles: [String] = []
+                var relatedStyles: [ArtistRelatedStyle] = []
 
                 group.enter()
                 self.fetchWikipediaExtract(from: candidateTitles) { extract in
@@ -412,22 +430,85 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
         return URL(string: entityValue)?.lastPathComponent ?? entityValue.components(separatedBy: "/").last
     }
 
+    private func sortArtists(
+        _ artists: [ArtistPreview],
+        byPreferredNames preferredNames: [String]
+    ) -> [ArtistPreview] {
+        let order = Dictionary(
+            uniqueKeysWithValues: preferredNames.enumerated().map { ($1.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current), $0) }
+        )
+
+        return artists.sorted { lhs, rhs in
+            let lhsOrder = order[lhs.name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)] ?? .max
+            let rhsOrder = order[rhs.name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)] ?? .max
+            return lhsOrder < rhsOrder
+        }
+    }
+
     private func fetchArtistRelatedStyles(
         entityID: String,
-        completion: @escaping ([String]) -> Void
+        completion: @escaping ([ArtistRelatedStyle]) -> Void
     ) {
         let request = WikidataEndpoint.artistRelatedStyles(entityID: entityID, limit: 24)
 
         client.request(request) { (result: Result<WikiDataArtistRelatedStylesDTO, Error>) in
             switch result {
             case let .success(dto):
-                let styles = Array(
-                    NSOrderedSet(array: dto.results.bindings.compactMap { binding in
-                        let label = binding.movementLabel?.value.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-                        return label.isEmpty ? nil : label
-                    })
-                ) as? [String] ?? []
-                completion(styles)
+                let preferredTitles = Set(
+                    StyleConstants.seeds.map {
+                        $0.name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+                    }
+                )
+                var seenTitles = Set<String>()
+
+                let styles = dto.results.bindings.compactMap { binding -> ArtistRelatedStyle? in
+                    guard
+                        let id = binding.movement?.value,
+                        let rawTitle = binding.movementLabel?.value
+                    else {
+                        return nil
+                    }
+
+                    let title = rawTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+                    guard !title.isEmpty else { return nil }
+
+                    let normalizedTitle = title.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+                    guard seenTitles.insert(normalizedTitle).inserted else { return nil }
+
+                    let imageURL: URL?
+                    if let imageValue = binding.image?.value, !imageValue.isEmpty {
+                        imageURL = URL(string: imageValue)
+                    } else {
+                        imageURL = nil
+                    }
+
+                    return ArtistRelatedStyle(
+                        id: id,
+                        title: title,
+                        imageURL: imageURL
+                    )
+                }
+
+                let sorted = styles.sorted { lhs, rhs in
+                    let lhsIsPreferred = preferredTitles.contains(lhs.title.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current))
+                    let rhsIsPreferred = preferredTitles.contains(rhs.title.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current))
+
+                    if lhsIsPreferred != rhsIsPreferred {
+                        return lhsIsPreferred
+                    }
+
+                    if (lhs.imageURL != nil) != (rhs.imageURL != nil) {
+                        return lhs.imageURL != nil
+                    }
+
+                    if lhs.title.count != rhs.title.count {
+                        return lhs.title.count < rhs.title.count
+                    }
+
+                    return lhs.title.localizedCaseInsensitiveCompare(rhs.title) == .orderedAscending
+                }
+
+                completion(Array(sorted.prefix(5)))
             case .failure:
                 completion([])
             }

@@ -24,7 +24,11 @@ final class MainPageViewController: UIViewController {
     }
     
     // MARK: - Fields
-    private let viewModel = MainPageViewModel(artistService: WikiDataArtistService(client: URLSessionNetworkClient() as NetworkClient), artistOfTheDayService: ArtistOfTheDayService())
+    private let artistService: ArtistService = WikiDataArtistService(client: URLSessionNetworkClient() as NetworkClient)
+    private lazy var viewModel = MainPageViewModel(
+        artistService: artistService,
+        artistOfTheDayService: ArtistOfTheDayService()
+    )
     
     private let scrollView = UIScrollView()
     private let contentView = UIView()
@@ -184,7 +188,7 @@ final class MainPageViewController: UIViewController {
     }
 
     private func showAllArtists() {
-        let vc = AllArtistsViewController(artists: artists)
+        let vc = AllArtistsViewController(artists: artists, artistService: artistService)
         navigationController?.pushViewController(vc, animated: true)
     }
 

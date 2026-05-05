@@ -9,10 +9,10 @@ import SwiftUI
 import UIKit
 
 final class AllArtistsViewController: UIViewController {
-    private let artists: [ArtistPreview]
+    private let viewModel: AllArtistsViewModel
     private lazy var hostingController = UIHostingController(
         rootView: AllArtistsScreen(
-            artists: artists,
+            viewModel: viewModel,
             onBack: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             },
@@ -23,8 +23,12 @@ final class AllArtistsViewController: UIViewController {
         )
     )
 
-    init(artists: [ArtistPreview]) {
-        self.artists = artists
+    init(
+        artists: [ArtistPreview],
+        artistService: ArtistService = WikiDataArtistService(client: URLSessionNetworkClient())
+    ) {
+        self.viewModel = AllArtistsViewModel(artistService: artistService)
+        self.viewModel.configureInitialArtists(artists)
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -59,5 +63,6 @@ final class AllArtistsViewController: UIViewController {
         ])
 
         hostingController.didMove(toParent: self)
+        viewModel.loadAdditionalArtistsIfNeeded()
     }
 }

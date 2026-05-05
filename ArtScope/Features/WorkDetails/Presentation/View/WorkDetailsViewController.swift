@@ -316,7 +316,7 @@ final class WorkDetailsViewController: UIViewController {
         authorNameLabel.text = details.artistName
         updateInfoText(details.infoText)
         loadHeroImage(from: details.imageURL)
-        loadArtistImage(from: artistImageURL)
+        loadArtistImage(from: details.artistImageURL ?? artistImageURL)
     }
 
     private func recordStudiedArtwork(title: String) {
