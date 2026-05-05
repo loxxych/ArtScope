@@ -51,10 +51,25 @@ final class ArtistQuizResultCardView: UIView {
         let total = max(totalQuestions, 1)
         let percentage = Int((Double(correctAnswers) / Double(total)) * 100)
         scoreLabel.text = "\(percentage) %"
-        progressView.progress = Float(percentage) / 100
         let performanceColor = Self.performanceColor(for: percentage)
         scoreLabel.textColor = performanceColor
         progressView.progressTintColor = performanceColor
+        progressView.progress = 0
+        scoreLabel.alpha = 0
+        iconView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+        
+        UIView.animate(
+            withDuration: 0.28,
+            delay: 0,
+            usingSpringWithDamping: 0.74,
+            initialSpringVelocity: 0.25,
+            options: [.curveEaseOut]
+        ) {
+            self.scoreLabel.alpha = 1
+            self.iconView.transform = .identity
+        }
+        
+        progressView.setProgress(Float(percentage) / 100, animated: true)
     }
     
     private func configureUI() {

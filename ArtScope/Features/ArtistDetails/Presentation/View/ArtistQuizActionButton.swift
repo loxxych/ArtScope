@@ -31,7 +31,10 @@ final class ArtistQuizActionButton: UIButton {
     
     override var isEnabled: Bool {
         didSet {
-            backgroundColor = isEnabled ? Constants.backgroundColor : Constants.disabledBackgroundColor
+            UIView.animate(withDuration: 0.18, delay: 0, options: [.curveEaseInOut]) {
+                self.backgroundColor = self.isEnabled ? Constants.backgroundColor : Constants.disabledBackgroundColor
+                self.transform = self.isEnabled ? .identity : CGAffineTransform(scaleX: 0.98, y: 0.98)
+            }
         }
     }
     
@@ -57,5 +60,13 @@ final class ArtistQuizActionButton: UIButton {
         backgroundColor = Constants.backgroundColor
         layer.cornerRadius = Constants.cornerRadius
         setHeight(Constants.height)
+    }
+
+    override var isHighlighted: Bool {
+        didSet {
+            UIView.animate(withDuration: 0.12) {
+                self.transform = self.isHighlighted ? CGAffineTransform(scaleX: 0.96, y: 0.96) : .identity
+            }
+        }
     }
 }

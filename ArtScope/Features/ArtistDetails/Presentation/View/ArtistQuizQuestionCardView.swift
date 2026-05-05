@@ -49,7 +49,10 @@ final class ArtistQuizQuestionCardView: UIView {
         selectedOptionID = nil
         hasRevealedAnswer = false
         promptLabel.text = question.prompt
+        alpha = 1
+        transform = .identity
         explanationView.configure(text: nil)
+        explanationView.alpha = 0
         explanationHeightConstraint?.constant = 0
         explanationHeightConstraint?.isActive = true
         actionButton.isEnabled = false
@@ -131,17 +134,30 @@ final class ArtistQuizQuestionCardView: UIView {
         hasRevealedAnswer = true
         actionButton.setTitleText(Constants.nextTitle)
         explanationView.configure(text: question.explanation)
+        explanationView.alpha = 0
         explanationHeightConstraint?.isActive = false
-        setNeedsLayout()
-        layoutIfNeeded()
         
-        optionViews.forEach { optionView in
-            if optionView.optionID == question.correctOptionID {
-                optionView.apply(style: .correct)
-            } else if optionView.optionID == selectedOptionID, selectedOptionID != question.correctOptionID {
-                optionView.apply(style: .incorrect)
-            } else {
-                optionView.apply(style: .subdued)
+        UIView.animate(
+            withDuration: 0.24,
+            delay: 0,
+            usingSpringWithDamping: 0.88,
+            initialSpringVelocity: 0.22,
+            options: [.curveEaseInOut]
+        ) {
+            self.explanationView.alpha = 1
+            self.layoutIfNeeded()
+        }
+        
+        optionViews.enumerated().forEach { index, optionView in
+            let delay = 0.03 * Double(index)
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                if optionView.optionID == question.correctOptionID {
+                    optionView.apply(style: .correct)
+                } else if optionView.optionID == selectedOptionID, selectedOptionID != question.correctOptionID {
+                    optionView.apply(style: .incorrect)
+                } else {
+                    optionView.apply(style: .subdued)
+                }
             }
         }
     }

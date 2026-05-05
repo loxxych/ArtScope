@@ -90,5 +90,7 @@ struct QuizResultCardView: View {
         .frame(maxWidth: .infinity)
         .background(QuizTheme.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 18))
+        .transition(.scale(scale: 0.98).combined(with: .opacity))
+        .animation(.spring(response: 0.34, dampingFraction: 0.82), value: scorePercent)
     }
 }

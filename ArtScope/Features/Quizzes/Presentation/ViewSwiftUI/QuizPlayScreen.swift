@@ -65,6 +65,7 @@ struct QuizPlayScreen: View {
             )
         }
         .navigationBarHidden(true)
+        .animation(.spring(response: 0.32, dampingFraction: 0.84), value: animationKey)
     }
 
     @ViewBuilder
@@ -187,6 +188,19 @@ struct QuizPlayScreen: View {
                 showsRetryButton: false,
                 onRetry: nil
             )
+        }
+    }
+}
+
+private extension QuizPlayScreen {
+    var animationKey: String {
+        switch mode {
+        case let .question(questionIndex, _, selectedOptionID, revealed, _, _):
+            return "question-\(questionIndex)-\(selectedOptionID ?? "none")-\(revealed)"
+        case let .result(_, scorePercent):
+            return "result-\(scorePercent)"
+        case let .review(questionIndex, selectedOptionID, _, scorePercent, _):
+            return "review-\(questionIndex)-\(selectedOptionID ?? "none")-\(scorePercent)"
         }
     }
 }

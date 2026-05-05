@@ -74,6 +74,7 @@ struct QuizQuestionCardView: View {
 
             if let explanationText, !explanationText.isEmpty {
                 QuizExplanationBanner(text: explanationText)
+                    .transition(.move(edge: .top).combined(with: .opacity))
             }
 
             VStack(spacing: 12) {
@@ -88,6 +89,8 @@ struct QuizQuestionCardView: View {
                     )
                 }
             }
+            .animation(.spring(response: 0.28, dampingFraction: 0.82), value: selectedOptionID)
+            .animation(.spring(response: 0.34, dampingFraction: 0.8), value: correctOptionID)
 
             if let actionTitle {
                 Button(action: { onAction?() }) {
@@ -105,6 +108,7 @@ struct QuizQuestionCardView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .animation(.spring(response: 0.28, dampingFraction: 0.84), value: explanationText)
     }
 
     private var canSelectOption: Bool {
@@ -200,6 +204,7 @@ private struct QuizAnswerOptionButton: View {
             .frame(height: 54)
             .background(backgroundColor)
             .clipShape(RoundedRectangle(cornerRadius: 6))
+            .scaleEffect(scale)
         }
         .buttonStyle(.plain)
     }
@@ -249,6 +254,19 @@ private struct QuizAnswerOptionButton: View {
             return Color.white
         default:
             return QuizTheme.lightText
+        }
+    }
+
+    private var scale: CGFloat {
+        switch state {
+        case .selected:
+            return 0.985
+        case .correct:
+            return 1.01
+        case .incorrect:
+            return 1.01
+        default:
+            return 1
         }
     }
 }

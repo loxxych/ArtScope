@@ -138,6 +138,13 @@ final class ArtistQuizPlaceholderView: UIView {
     }
     
     private func show(state: State) {
+        let views = [statusCardView, startCardView, questionCardView, resultCardView]
+        views.forEach { view in
+            if !view.isHidden {
+                view.alpha = 1
+            }
+        }
+
         statusCardView.isHidden = !(state == .loading || state == .unavailable)
         startCardView.isHidden = state != .ready
         readyOverlayButton.isHidden = state != .ready
@@ -162,7 +169,31 @@ final class ArtistQuizPlaceholderView: UIView {
             contentContainerHeightConstraint?.isActive = false
         }
         
-        layoutIfNeeded()
+        let visibleView: UIView? = {
+            switch state {
+            case .loading, .unavailable:
+                return statusCardView
+            case .ready:
+                return startCardView
+            case .question:
+                return questionCardView
+            case .result:
+                return resultCardView
+            }
+        }()
+
+        visibleView?.alpha = 0
+        visibleView?.transform = CGAffineTransform(translationX: 0, y: 10)
+
+        UIView.animate(
+            withDuration: 0.22,
+            delay: 0,
+            options: [.curveEaseOut]
+        ) {
+            self.layoutIfNeeded()
+            visibleView?.alpha = 1
+            visibleView?.transform = .identity
+        }
     }
     
     private func beginQuiz() {
