@@ -20,6 +20,9 @@ final class ArtistQuizQuestionCardView: UIView {
         static let promptLines: Int = 0
         static let answerTitle: String = "Answer"
         static let nextTitle: String = "Next"
+        static let optionAppearOffsetY: CGFloat = -12
+        static let optionAppearDuration: TimeInterval = 0.28
+        static let optionAppearDelayStep: TimeInterval = 0.06
     }
     
     private let promptLabel = UILabel()
@@ -105,6 +108,9 @@ final class ArtistQuizQuestionCardView: UIView {
             optionsStack.addArrangedSubview(optionView)
             optionViews.append(optionView)
         }
+
+        layoutIfNeeded()
+        animateOptionsEntrance()
     }
     
     @objc private func optionTapped(_ sender: ArtistQuizOptionView) {
@@ -158,6 +164,22 @@ final class ArtistQuizQuestionCardView: UIView {
                 } else {
                     optionView.apply(style: .subdued)
                 }
+            }
+        }
+    }
+
+    private func animateOptionsEntrance() {
+        optionViews.enumerated().forEach { index, optionView in
+            optionView.alpha = 0
+            optionView.transform = CGAffineTransform(translationX: 0, y: Constants.optionAppearOffsetY)
+
+            UIView.animate(
+                withDuration: Constants.optionAppearDuration,
+                delay: Double(index) * Constants.optionAppearDelayStep,
+                options: [.curveEaseOut]
+            ) {
+                optionView.alpha = 1
+                optionView.transform = .identity
             }
         }
     }

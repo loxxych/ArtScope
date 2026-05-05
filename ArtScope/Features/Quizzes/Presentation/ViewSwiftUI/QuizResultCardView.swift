@@ -13,6 +13,9 @@ struct QuizResultCardView: View {
     var showsTime: Bool = true
     var showsRetryButton: Bool = true
     var onRetry: (() -> Void)?
+    @State private var displayedProgress: CGFloat = 0
+    @State private var scoreOpacity: Double = 0
+    @State private var iconScale: CGFloat = 0.9
 
     private var performanceColor: Color {
         QuizTheme.performanceColor(for: scorePercent)
@@ -27,6 +30,7 @@ struct QuizResultCardView: View {
                 .frame(width: 86, height: 86)
                 .foregroundStyle(QuizTheme.iconYellow)
                 .padding(.top, 8)
+                .scaleEffect(iconScale)
 
             Text("Congratulations!")
                 .font(.InstrumentSansBold27)
@@ -49,6 +53,7 @@ struct QuizResultCardView: View {
                 .font(.ByteBounce48)
                 .foregroundStyle(performanceColor)
                 .padding(.top, showsTime ? 20 : 24)
+                .opacity(scoreOpacity)
 
             ZStack(alignment: .leading) {
                 Capsule()
@@ -57,7 +62,7 @@ struct QuizResultCardView: View {
                 GeometryReader { proxy in
                     Capsule()
                         .fill(performanceColor)
-                        .frame(width: proxy.size.width * CGFloat(min(max(Double(scorePercent) / 100, 0), 1)))
+                        .frame(width: proxy.size.width * displayedProgress)
                 }
             }
             .frame(height: 10)
@@ -91,6 +96,26 @@ struct QuizResultCardView: View {
         .background(QuizTheme.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 18))
         .transition(.scale(scale: 0.98).combined(with: .opacity))
-        .animation(.spring(response: 0.34, dampingFraction: 0.82), value: scorePercent)
+        .onAppear {
+            runEntranceAnimation()
+        }
+        .onChange(of: scorePercent) { _ in
+            runEntranceAnimation()
+        }
+    }
+
+    private func runEntranceAnimation() {
+        displayedProgress = 0
+        scoreOpacity = 0
+        iconScale = 0.9
+
+        withAnimation(.spring(response: 0.34, dampingFraction: 0.82)) {
+            scoreOpacity = 1
+            iconScale = 1
+        }
+
+        withAnimation(.easeOut(duration: 0.9).delay(0.08)) {
+            displayedProgress = CGFloat(min(max(Double(scorePercent) / 100, 0), 1))
+        }
     }
 }

@@ -19,6 +19,7 @@ struct QuizQuestionCardView: View {
     let actionTitle: String?
     var onSelectOption: ((String) -> Void)?
     var onAction: (() -> Void)?
+    @State private var visibleOptionIDs: Set<String> = []
 
     private var selectedOptionID: String? {
         switch displayState {
@@ -87,6 +88,8 @@ struct QuizQuestionCardView: View {
                             onSelectOption?(option.id)
                         }
                     )
+                    .opacity(visibleOptionIDs.contains(option.id) ? 1 : 0)
+                    .offset(y: visibleOptionIDs.contains(option.id) ? 0 : -12)
                 }
             }
             .animation(.spring(response: 0.28, dampingFraction: 0.82), value: selectedOptionID)
@@ -109,6 +112,12 @@ struct QuizQuestionCardView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .animation(.spring(response: 0.28, dampingFraction: 0.84), value: explanationText)
+        .onAppear {
+            animateOptionsEntrance()
+        }
+        .onChange(of: question.id) { _ in
+            animateOptionsEntrance()
+        }
     }
 
     private var canSelectOption: Bool {
@@ -141,6 +150,17 @@ struct QuizQuestionCardView: View {
             }
 
             return .subdued
+        }
+    }
+
+    private func animateOptionsEntrance() {
+        visibleOptionIDs = []
+        question.options.enumerated().forEach { index, option in
+            DispatchQueue.main.asyncAfter(deadline: .now() + (Double(index) * 0.06)) {
+                withAnimation(.easeOut(duration: 0.28)) {
+                    visibleOptionIDs.formUnion([option.id])
+                }
+            }
         }
     }
 }

@@ -27,6 +27,7 @@ final class ArtistQuizResultCardView: UIView {
         static let subtitleText: String = "You did great! Keep going at it."
         static let retryTitle: String = "Retry"
         static let progressTrackColor: UIColor = UIColor.artScopeBlue.withAlphaComponent(0.3)
+        static let progressAnimationDuration: CFTimeInterval = 0.9
     }
     
     private let iconView = UIImageView()
@@ -68,8 +69,11 @@ final class ArtistQuizResultCardView: UIView {
             self.scoreLabel.alpha = 1
             self.iconView.transform = .identity
         }
-        
+
+        CATransaction.begin()
+        CATransaction.setAnimationDuration(Constants.progressAnimationDuration)
         progressView.setProgress(Float(percentage) / 100, animated: true)
+        CATransaction.commit()
     }
     
     private func configureUI() {
