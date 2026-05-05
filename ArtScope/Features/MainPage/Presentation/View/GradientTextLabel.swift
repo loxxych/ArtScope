@@ -8,6 +8,30 @@
 import UIKit
 
 final class GradientTextLabel: UIView {
+    private enum Constants {
+        static let animationDuration: CFTimeInterval = 3
+        static let gradientColors: [CGColor] = [
+            UIColor.white.cgColor,
+            UIColor.artScopeBlue.cgColor,
+            UIColor.artScopeGreen.cgColor,
+            UIColor.white.cgColor,
+            UIColor.artScopeBlue.cgColor,
+            UIColor.artScopeGreen.cgColor,
+            UIColor.white.cgColor,
+            UIColor.artScopeBlue.cgColor,
+            UIColor.artScopeGreen.cgColor
+        ]
+        static let startLocations: [NSNumber] = [
+            -0.75, -0.50, -0.25,
+             0.00,  0.25,  0.50,
+             0.75,  1.00,  1.25
+        ]
+        static let endLocations: [NSNumber] = [
+             0.00,  0.25,  0.50,
+             0.75,  1.00,  1.25,
+             1.50,  1.75,  2.00
+        ]
+    }
     
     private let textLayer = CATextLayer()
     private let gradientLayer = CAGradientLayer()
@@ -36,15 +60,8 @@ final class GradientTextLabel: UIView {
     }
     
     private func setup() {
-        gradientLayer.colors = [
-            UIColor.white.cgColor,
-            UIColor.artScopeBlue.cgColor,
-            UIColor.artScopeGreen.cgColor,
-
-            UIColor.white.cgColor,
-            UIColor.artScopeBlue.cgColor,
-            UIColor.artScopeGreen.cgColor
-        ]
+        gradientLayer.colors = Constants.gradientColors
+        gradientLayer.locations = Constants.startLocations
         
         gradientLayer.startPoint = CGPoint(x: 0, y: 0.5)
         gradientLayer.endPoint = CGPoint(x: 1, y: 0.5)
@@ -64,27 +81,17 @@ final class GradientTextLabel: UIView {
     }
     
     func startAnimation() {
+        guard gradientLayer.animation(forKey: "gradientAnimation") == nil else { return }
+
         let animation = CABasicAnimation(keyPath: "locations")
-
-        animation.fromValue = [
-            -0.5, -0.3, -0.1,
-            0.1, 0.3, 0.5
-        ]
-
-        animation.toValue = [
-            0.0, 0.2, 0.4,
-            0.6, 0.8, 1.0
-        ]
-
-        animation.duration = 3
+        animation.fromValue = Constants.startLocations
+        animation.toValue = Constants.endLocations
+        animation.duration = Constants.animationDuration
         animation.repeatCount = .infinity
         animation.timingFunction = CAMediaTimingFunction(name: .linear)
-        
-        gradientLayer.locations = [
-            0.0, 0.2, 0.4,
-            0.6, 0.8, 1.0
-        ] as [NSNumber]
-        
+        animation.isRemovedOnCompletion = false
+
+        gradientLayer.locations = Constants.startLocations
         gradientLayer.add(animation, forKey: "gradientAnimation")
     }
 }
