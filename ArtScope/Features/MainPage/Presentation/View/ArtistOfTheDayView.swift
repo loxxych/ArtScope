@@ -198,7 +198,7 @@ final class ArtistOfTheDayView : UIView {
     private func configureArtistImageView() {
         wrap.addSubview(artistImageView)
         
-        artistImageView.image = UIImage.artScopeDefaultArtistPreview
+        artistImageView.image = UIImage.artScopeArtistPlaceholder
         artistImageView.clipsToBounds = true
         artistImageView.contentMode = .scaleAspectFill
         artistImageView.layer.cornerRadius = Constants.artistImageCornerRadius
@@ -214,13 +214,13 @@ final class ArtistOfTheDayView : UIView {
         currentImageURL = artist.imageURL
         artistNameLabel.text = artist.name
         descirptionLabel.text = artist.summary
-        artistImageView.image = UIImage.artScopeDefaultArtistPreview
+        artistImageView.image = UIImage.artScopeArtistPlaceholder
         
         RemoteImageLoader.shared.loadImage(from: artist.imageURL) { [weak self] image in
             guard let self, self.currentImageURL == artist.imageURL else { return }
             
             DispatchQueue.main.async {
-                self.artistImageView.image = image ?? UIImage.artScopeDefaultArtistPreview
+                self.artistImageView.image = image ?? UIImage.artScopeArtistPlaceholder
             }
         }
     }

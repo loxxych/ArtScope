@@ -182,7 +182,7 @@ final class WorkDetailsViewController: UIViewController {
         heroImageView.backgroundColor = Constants.heroPlaceholderColor
         heroImageView.contentMode = .scaleAspectFill
         heroImageView.clipsToBounds = true
-        heroImageView.image = UIImage.artScopeDefaultArtistPreview
+        heroImageView.image = UIImage.artScopePalettePlaceholder
         heroImageView.pinTop(to: contentView.topAnchor)
         heroImageView.pinHorizontal(to: contentView)
         heroImageView.setHeight(Constants.heroHeight)
@@ -251,7 +251,7 @@ final class WorkDetailsViewController: UIViewController {
         authorRow.addSubview(authorImageView)
         authorImageView.clipsToBounds = true
         authorImageView.contentMode = .scaleAspectFill
-        authorImageView.image = UIImage.artScopeDefaultArtistPreview
+        authorImageView.image = UIImage.artScopeArtistPlaceholder
         authorImageView.pinLeft(to: authorRow.leadingAnchor)
         authorImageView.pinTop(to: authorRow.topAnchor)
         authorImageView.pinBottom(to: authorRow.bottomAnchor)
@@ -334,7 +334,7 @@ final class WorkDetailsViewController: UIViewController {
     private func loadHeroImage(from imageURL: URL?) {
         RemoteImageLoader.shared.loadImage(from: imageURL) { [weak self] image in
             DispatchQueue.main.async {
-                self?.heroImageView.image = image ?? UIImage.artScopeDefaultArtistPreview
+                self?.heroImageView.image = image ?? UIImage.artScopePalettePlaceholder
             }
         }
     }
@@ -342,7 +342,7 @@ final class WorkDetailsViewController: UIViewController {
     private func loadArtistImage(from imageURL: URL?) {
         RemoteImageLoader.shared.loadImage(from: imageURL) { [weak self] image in
             DispatchQueue.main.async {
-                self?.authorImageView.image = image ?? UIImage.artScopeDefaultArtistPreview
+                self?.authorImageView.image = image ?? UIImage.artScopeArtistPlaceholder
             }
         }
     }

@@ -38,7 +38,7 @@ final class DefaultUserProfileStore: UserProfileStore {
         let pictureURL = profilePictureURL()
         let picture = fileManager.fileExists(atPath: pictureURL.path)
             ? UIImage(contentsOfFile: pictureURL.path)
-            : UIImage.artScopeDefaultProfilePicture
+        : UIImage.artScopeArtistPlaceholder
 
         return UserProfile(name: normalizedName, profilePicture: picture)
     }

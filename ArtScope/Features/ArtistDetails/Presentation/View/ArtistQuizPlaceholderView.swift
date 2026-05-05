@@ -21,7 +21,7 @@ final class ArtistQuizPlaceholderView: UIView {
         static let bodyLinesCount: Int = 0
         static let statusCardHeight: CGFloat = 190
         static let readyCardHeight: CGFloat = 190
-        static let resultCardHeight: CGFloat = 300
+        static let resultCardHeight: CGFloat = 360
         static let loadingTitleText: String = "Preparing quiz..."
         static let loadingBodyText: String = "Creating a short English quiz from the artist biography and artworks."
         static let unavailableTitleText: String = "Quiz unavailable"

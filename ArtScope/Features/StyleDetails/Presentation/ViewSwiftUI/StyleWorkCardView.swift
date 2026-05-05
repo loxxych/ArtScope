@@ -24,8 +24,11 @@ struct StyleWorkCardView: View {
                         RoundedRectangle(cornerRadius: 12)
                             .fill(Color.white.opacity(0.55))
                             .overlay(
-                                Image(systemName: "photo")
-                                    .foregroundStyle(Color.black.opacity(0.35))
+                                Image(uiImage: .artScopePalettePlaceholder)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .padding(18)
+                                    .opacity(0.9)
                             )
                     }
                 }

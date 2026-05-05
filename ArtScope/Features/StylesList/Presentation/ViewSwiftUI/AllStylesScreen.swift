@@ -91,6 +91,13 @@ private struct AllStylesGridCard: View {
                     default:
                         Rectangle()
                             .fill(Color.white.opacity(0.28))
+                            .overlay(
+                                Image(uiImage: .artScopePalettePlaceholder)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .padding(22)
+                                    .opacity(0.9)
+                            )
                     }
                 }
                 .frame(height: 114)

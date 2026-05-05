@@ -228,17 +228,18 @@ final class QuizPlayViewController: UIViewController {
 
         let total = max(quiz.payload.questions.count, 1)
         let percentage = Int((Double(correctAnswersCount) / Double(total)) * 100)
+        let completedAt = Date()
 
         completedQuizHistoryStore.save(
             CompletedQuizHistoryItem(
                 id: "\(quiz.id)-\(UUID().uuidString)",
                 sourceQuizID: quiz.id,
-                title: quiz.subtitle ?? quiz.title,
+                title: historyTitle(for: quiz, completedAt: completedAt),
                 scorePercent: percentage,
                 imageURLString: nil,
                 elapsedTimeText: elapsedTimeText,
                 showsElapsedTime: true,
-                completedAt: Date(),
+                completedAt: completedAt,
                 answerRecords: quiz.payload.questions.map { question in
                     let index = quiz.payload.questions.firstIndex(where: { $0.id == question.id }) ?? 0
                     return CompletedQuizAnswerRecord(
@@ -252,5 +253,19 @@ final class QuizPlayViewController: UIViewController {
         )
         
         onQuizCompleted?()
+    }
+
+    private func historyTitle(for quiz: Quiz, completedAt: Date) -> String {
+        if quiz.isDaily {
+            return "\(quizDateString(from: completedAt)) Quiz of the day"
+        }
+
+        return quiz.title
+    }
+
+    private func quizDateString(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM.yy"
+        return formatter.string(from: date)
     }
 }

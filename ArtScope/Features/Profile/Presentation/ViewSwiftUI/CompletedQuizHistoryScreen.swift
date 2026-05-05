@@ -85,10 +85,11 @@ private struct CompletedQuizGridCard: View {
                         Rectangle()
                             .fill(Color.white.opacity(0.35))
                             .overlay(
-                                Image(uiImage: .artScopeArtist)
+                                Image(uiImage: .artScopePalettePlaceholder)
                                     .resizable()
-                                    .scaledToFill()
-                                    .opacity(0.8)
+                                    .scaledToFit()
+                                    .padding(26)
+                                    .opacity(0.9)
                             )
                     }
                 }

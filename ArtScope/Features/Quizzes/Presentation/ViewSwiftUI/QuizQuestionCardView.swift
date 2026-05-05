@@ -223,6 +223,8 @@ private struct QuizAnswerOptionButton: View {
         switch state {
         case .selected:
             return QuizTheme.darkText
+        case .correct:
+            return QuizTheme.darkText
         default:
             return QuizTheme.lightText
         }

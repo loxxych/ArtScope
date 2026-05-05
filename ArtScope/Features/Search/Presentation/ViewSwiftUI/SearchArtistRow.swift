@@ -24,8 +24,11 @@ struct SearchArtistRow: View {
                         Circle()
                             .fill(Color.white.opacity(0.5))
                             .overlay(
-                                Image(systemName: "person.fill")
-                                    .foregroundStyle(Color.black.opacity(0.45))
+                                Image(uiImage: .artScopeArtistPlaceholder)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .padding(12)
+                                    .opacity(0.95)
                             )
                     }
                 }

@@ -39,7 +39,7 @@ final class ProfileQuizHistoryCardView: UIControl {
 
         RemoteImageLoader.shared.loadImage(from: item.imageURL) { [weak self] image in
             DispatchQueue.main.async {
-                self?.imageView.image = image ?? UIImage.artScopeArtist
+                self?.imageView.image = image ?? UIImage.artScopePalettePlaceholder
             }
         }
     }
@@ -56,7 +56,7 @@ final class ProfileQuizHistoryCardView: UIControl {
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = Constants.cornerRadius
-        imageView.image = UIImage.artScopeArtist
+        imageView.image = UIImage.artScopePalettePlaceholder
         imageView.pinTop(to: topAnchor)
         imageView.pinLeft(to: leadingAnchor)
         imageView.pinRight(to: trailingAnchor)

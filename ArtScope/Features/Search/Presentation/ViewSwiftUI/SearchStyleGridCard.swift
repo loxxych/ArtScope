@@ -23,6 +23,13 @@ struct SearchStyleGridCard: View {
                     default:
                         Rectangle()
                             .fill(Color.white.opacity(0.35))
+                            .overlay(
+                                Image(uiImage: .artScopePalettePlaceholder)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .padding(24)
+                                    .opacity(0.9)
+                            )
                     }
                 }
                 .frame(maxWidth: .infinity)

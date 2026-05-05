@@ -48,19 +48,19 @@ final class ArtistPreviewViewCell : UICollectionViewCell {
         super.prepareForReuse()
         currentImageURL = nil
         nameLabel.text = nil
-        imageView.image = UIImage.artScopeDefaultArtistPreview
+        imageView.image = UIImage.artScopeArtistPlaceholder
     }
     
     func configure(with artist: ArtistPreview) {
         currentImageURL = artist.imageURL
         nameLabel.text = artist.name
-        imageView.image = UIImage.artScopeDefaultArtistPreview
+        imageView.image = UIImage.artScopeArtistPlaceholder
         
         RemoteImageLoader.shared.loadImage(from: artist.imageURL) { [weak self] image in
             guard let self, self.currentImageURL == artist.imageURL else { return }
             
             DispatchQueue.main.async {
-                self.imageView.image = image ?? UIImage.artScopeDefaultArtistPreview
+                self.imageView.image = image ?? UIImage.artScopeArtistPlaceholder
             }
         }
     }

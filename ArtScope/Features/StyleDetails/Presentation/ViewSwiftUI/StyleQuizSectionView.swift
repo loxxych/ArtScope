@@ -53,9 +53,7 @@ struct StyleQuizSectionView: View {
                 onSelectOption: { viewModel.selectOption($0) },
                 onAction: { viewModel.advanceAction() }
             )
-            .padding(.horizontal, 14)
-            .padding(.top, 4)
-            .padding(.bottom, 6)
+            .padding(18)
             .background(StyleTheme.quizCardBackground)
             .clipShape(RoundedRectangle(cornerRadius: 18))
             .shadow(color: StyleTheme.quizCardBackground.opacity(0.35), radius: 10, x: 0, y: 5)

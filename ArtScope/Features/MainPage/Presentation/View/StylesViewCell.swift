@@ -41,19 +41,19 @@ final class StylesViewCell : UICollectionViewCell {
         super.prepareForReuse()
         currentImageURL = nil
         nameLabel.text = nil
-        imageView.image = UIImage.artScopeDefaultArtistPreview
+        imageView.image = UIImage.artScopePalettePlaceholder
     }
     
     func configure(with style: StylePreview) {
         currentImageURL = style.imageURL
         nameLabel.text = style.name
-        imageView.image = UIImage.artScopeDefaultArtistPreview
+        imageView.image = UIImage.artScopePalettePlaceholder
         
         RemoteImageLoader.shared.loadImage(from: style.imageURL) { [weak self] image in
             guard let self, self.currentImageURL == style.imageURL else { return }
             
             DispatchQueue.main.async {
-                self.imageView.image = image ?? UIImage.artScopeDefaultArtistPreview
+                self.imageView.image = image ?? UIImage.artScopePalettePlaceholder
             }
         }
     }

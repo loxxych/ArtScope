@@ -74,6 +74,13 @@ private struct ViewedCollectionGridCard: View {
                     default:
                         Rectangle()
                             .fill(Color.white.opacity(0.28))
+                            .overlay(
+                                Image(uiImage: item.kind == .artist ? .artScopeArtistPlaceholder : .artScopePalettePlaceholder)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .padding(24)
+                                    .opacity(0.9)
+                            )
                     }
                 }
                 .frame(height: 114)

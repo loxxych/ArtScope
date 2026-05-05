@@ -24,8 +24,11 @@ struct StyleArtistAvatarView: View {
                         Circle()
                             .fill(Color.white.opacity(0.75))
                             .overlay(
-                                Image(systemName: "person.fill")
-                                    .foregroundStyle(Color.black.opacity(0.5))
+                                Image(uiImage: .artScopeArtistPlaceholder)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .padding(18)
+                                    .opacity(0.95)
                             )
                     }
                 }

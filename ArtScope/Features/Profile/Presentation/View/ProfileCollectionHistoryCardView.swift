@@ -35,7 +35,7 @@ final class ProfileCollectionHistoryCardView: UIControl {
 
         RemoteImageLoader.shared.loadImage(from: item.imageURL) { [weak self] image in
             DispatchQueue.main.async {
-                let fallback = item.kind == .artist ? UIImage.artScopeDefaultArtistPreview : UIImage.artScopeArtist
+                let fallback = item.kind == .artist ? UIImage.artScopeArtistPlaceholder : UIImage.artScopePalettePlaceholder
                 self?.imageView.image = image ?? fallback
             }
         }

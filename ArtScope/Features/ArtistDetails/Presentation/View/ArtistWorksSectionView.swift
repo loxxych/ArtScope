@@ -121,7 +121,7 @@ private final class ArtistWorkCardView: UIView {
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = Constants.imageCornerRadius
-        imageView.image = UIImage.artScopeDefaultArtistPreview
+        imageView.image = UIImage.artScopePalettePlaceholder
         imageView.pinTop(to: topAnchor)
         imageView.pinHorizontal(to: self)
         imageView.setHeight(Constants.imageHeight)
@@ -138,7 +138,7 @@ private final class ArtistWorkCardView: UIView {
     private func loadImage() {
         RemoteImageLoader.shared.loadImage(from: work.imageURL) { [weak self] image in
             DispatchQueue.main.async {
-                self?.imageView.image = image ?? UIImage.artScopeDefaultArtistPreview
+                self?.imageView.image = image ?? UIImage.artScopePalettePlaceholder
             }
         }
     }

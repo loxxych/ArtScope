@@ -56,7 +56,7 @@ final class ProfilePictureView: UIView {
 
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
-        imageView.image = UIImage.artScopeDefaultProfilePicture
+        imageView.image = UIImage.artScopeUserIcon
         imageView.pin(to: self)
     }
 
@@ -87,7 +87,7 @@ final class ProfilePictureView: UIView {
 
     // MARK: - Update functions
     func updatePicture(with image: UIImage?) {
-        imageView.image = image ?? UIImage.artScopeDefaultProfilePicture
+        imageView.image = image ?? UIImage.artScopeUserIcon
     }
 
     func getPicture() -> UIImage? {

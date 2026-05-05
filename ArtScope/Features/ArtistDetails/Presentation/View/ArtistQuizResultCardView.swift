@@ -112,6 +112,7 @@ final class ArtistQuizResultCardView: UIView {
         retryButton.tintColor = .white
         retryButton.backgroundColor = .black
         retryButton.layer.cornerRadius = 20
+        retryButton.setWidth(138)
         retryButton.setHeight(40)
         retryButton.addTarget(self, action: #selector(retryTapped), for: .touchUpInside)
         retryButton.pinTop(to: progressView.bottomAnchor, Constants.buttonTopSpacing)

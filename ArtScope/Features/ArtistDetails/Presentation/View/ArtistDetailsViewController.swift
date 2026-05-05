@@ -152,7 +152,7 @@ final class ArtistDetailsViewController: UIViewController {
         heroImageView.backgroundColor = Constants.heroPlaceholderColor
         heroImageView.contentMode = .scaleAspectFill
         heroImageView.clipsToBounds = true
-        heroImageView.image = UIImage.artScopeDefaultArtistPreview
+        heroImageView.image = UIImage.artScopeArtistPlaceholder
         heroImageView.pinTop(to: contentView.topAnchor)
         heroImageView.pinHorizontal(to: contentView)
         heroImageView.setHeight(Constants.heroHeight)
@@ -179,7 +179,7 @@ final class ArtistDetailsViewController: UIViewController {
         portraitImageView.clipsToBounds = true
         portraitImageView.layer.borderWidth = Constants.portraitBorderWidth
         portraitImageView.layer.borderColor = Constants.portraitBorderColor
-        portraitImageView.image = UIImage.artScopeDefaultArtistPreview
+        portraitImageView.image = UIImage.artScopeArtistPlaceholder
         portraitImageView.setWidth(Constants.portraitSize)
         portraitImageView.setHeight(Constants.portraitSize)
         portraitImageView.pinTop(to: heroImageView.bottomAnchor, -Constants.portraitOverlap)
@@ -368,7 +368,7 @@ final class ArtistDetailsViewController: UIViewController {
     ) {
         let total = max(totalQuestions, 1)
         let scorePercent = Int((Double(correctAnswers) / Double(total)) * 100)
-        let title = quiz.isDaily ? quiz.title : "\(artist.name) quiz"
+        let title = artist.name
 
         completedQuizHistoryStore.save(
             CompletedQuizHistoryItem(
@@ -396,7 +396,7 @@ final class ArtistDetailsViewController: UIViewController {
     private func loadPortraitImage(from imageURL: URL?) {
         RemoteImageLoader.shared.loadImage(from: imageURL) { [weak self] image in
             DispatchQueue.main.async {
-                self?.portraitImageView.image = image ?? UIImage.artScopeDefaultArtistPreview
+                self?.portraitImageView.image = image ?? UIImage.artScopeArtistPlaceholder
             }
         }
     }
@@ -406,7 +406,7 @@ final class ArtistDetailsViewController: UIViewController {
         
         RemoteImageLoader.shared.loadImage(from: fallbackURL) { [weak self] image in
             DispatchQueue.main.async {
-                self?.heroImageView.image = image ?? UIImage.artScopeDefaultArtistPreview
+                self?.heroImageView.image = image ?? UIImage.artScopeArtistPlaceholder
             }
         }
     }

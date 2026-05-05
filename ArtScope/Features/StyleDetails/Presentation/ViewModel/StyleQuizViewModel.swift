@@ -192,7 +192,7 @@ final class StyleQuizViewModel: ObservableObject {
             CompletedQuizHistoryItem(
                 id: "\(quiz.id)-\(styleID)-\(UUID().uuidString)",
                 sourceQuizID: quiz.id,
-                title: "\(styleName) quiz",
+                title: styleName,
                 scorePercent: scorePercent,
                 imageURLString: styleImageURL?.absoluteString,
                 elapsedTimeText: formatElapsedTime(seconds: quiz.estimatedTimeSeconds),
