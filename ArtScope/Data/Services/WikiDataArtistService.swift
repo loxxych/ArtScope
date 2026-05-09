@@ -41,7 +41,8 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
             client.request(request) { (result: Result<WikidataArtistsDTO, Error>) in
                 completion(result.map { dto in
                     let mapped = ArtistPreviewMapper.map(dto)
-                    return self.sortArtists(mapped, byPreferredNames: PopularArtistCatalog.names)
+                    let sorted = self.sortArtists(mapped, byPreferredNames: PopularArtistCatalog.names)
+                    return self.deduplicatedFeaturedArtists(sorted, preferredNames: PopularArtistCatalog.names)
                 })
             }
         }
@@ -443,6 +444,60 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
             let rhsOrder = order[rhs.name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)] ?? .max
             return lhsOrder < rhsOrder
         }
+    }
+
+    private func deduplicatedFeaturedArtists(
+        _ artists: [ArtistPreview],
+        preferredNames: [String]
+    ) -> [ArtistPreview] {
+        var seenIDs = Set<String>()
+        var seenNames = Set<String>()
+        var seenPreferredKeys = Set<String>()
+
+        return artists.compactMap { artist in
+            guard seenIDs.insert(artist.id).inserted else {
+                return nil
+            }
+
+            let normalizedName = normalizeArtistName(artist.name)
+            guard seenNames.insert(normalizedName).inserted else {
+                return nil
+            }
+
+            if let preferredKey = matchedPreferredNameKey(for: artist.name, preferredNames: preferredNames) {
+                guard seenPreferredKeys.insert(preferredKey).inserted else {
+                    return nil
+                }
+            }
+
+            return artist
+        }
+    }
+
+    private func matchedPreferredNameKey(
+        for artistName: String,
+        preferredNames: [String]
+    ) -> String? {
+        let normalizedArtistName = normalizeArtistName(artistName)
+        let artistTokens = Set(normalizedArtistName.split(separator: " ").map(String.init))
+
+        return preferredNames.first(where: { preferredName in
+            let normalizedPreferredName = normalizeArtistName(preferredName)
+            if normalizedArtistName == normalizedPreferredName {
+                return true
+            }
+
+            let preferredTokens = normalizedPreferredName.split(separator: " ").map(String.init)
+            return preferredTokens.allSatisfy { artistTokens.contains($0) }
+        }).map(normalizeArtistName)
+    }
+
+    private func normalizeArtistName(_ name: String) -> String {
+        name
+            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+            .replacingOccurrences(of: "[^a-z0-9 ]", with: " ", options: .regularExpression)
+            .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     private func fetchArtistRelatedStyles(
