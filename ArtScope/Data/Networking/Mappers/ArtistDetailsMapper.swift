@@ -15,7 +15,7 @@ enum ArtistDetailsMapper {
         relatedStyles: [ArtistRelatedStyle]
     ) -> ArtistDetailsContent {
         let binding = dto.results.bindings.first
-        let realName = binding?.birthName?.value ?? preview.name
+        let realName = WikidataDisplaySanitizer.sanitizedTitle(binding?.birthName?.value, fallback: preview.name) ?? preview.name
         let biography = buildBiography(
             binding: binding,
             fallback: wikipediaSummary ?? preview.summary
@@ -26,7 +26,7 @@ enum ArtistDetailsMapper {
         )
         
         return ArtistDetailsContent(
-            displayName: binding?.artistLabel?.value ?? preview.name,
+            displayName: WikidataDisplaySanitizer.sanitizedTitle(binding?.artistLabel?.value, fallback: preview.name) ?? preview.name,
             realName: realName,
             biography: biography,
             lifeSpan: lifeSpan,
@@ -36,11 +36,13 @@ enum ArtistDetailsMapper {
     }
     
     static func map(works dto: WikiDataArtistWorksDTO) -> [ArtistWork] {
-        dto.results.bindings.compactMap { binding in
+        var seenWorkIDs = Set<String>()
+
+        return dto.results.bindings.compactMap { binding in
             guard
                 let id = binding.work?.value,
-                let title = binding.workLabel?.value,
-                !title.isEmpty
+                let title = WikidataDisplaySanitizer.sanitizedTitle(binding.workLabel?.value),
+                seenWorkIDs.insert(id).inserted
             else { return nil }
             
             return ArtistWork(

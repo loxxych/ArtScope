@@ -15,8 +15,8 @@ enum WorkDetailsMapper {
         wikipediaSummary: String?
     ) -> WorkDetailsContent {
         let firstBinding = dto.results.bindings.first
-        let title = firstBinding?.workLabel?.value ?? work.title
-        let resolvedArtistName = firstBinding?.creatorLabel?.value ?? artistName
+        let title = WikidataDisplaySanitizer.sanitizedTitle(firstBinding?.workLabel?.value, fallback: work.title) ?? work.title
+        let resolvedArtistName = WikidataDisplaySanitizer.sanitizedTitle(firstBinding?.creatorLabel?.value, fallback: artistName) ?? artistName
         let resolvedArtistImageURL: URL?
         if let creatorImageValue = firstBinding?.creatorImage?.value {
             resolvedArtistImageURL = URL(string: creatorImageValue)

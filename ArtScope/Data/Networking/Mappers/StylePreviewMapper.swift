@@ -12,8 +12,7 @@ enum StylePreviewMapper {
         dto.results.bindings.compactMap { binding in
             guard
                 let id = binding.style?.value,
-                let name = binding.styleLabel?.value,
-                !name.isEmpty
+                let name = WikidataDisplaySanitizer.sanitizedTitle(binding.styleLabel?.value)
             else {
                 return nil
             }

@@ -548,13 +548,10 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
                 let styles = dto.results.bindings.compactMap { binding -> ArtistRelatedStyle? in
                     guard
                         let id = binding.movement?.value,
-                        let rawTitle = binding.movementLabel?.value
+                        let title = WikidataDisplaySanitizer.sanitizedTitle(binding.movementLabel?.value)
                     else {
                         return nil
                     }
-
-                    let title = rawTitle.trimmingCharacters(in: .whitespacesAndNewlines)
-                    guard !title.isEmpty else { return nil }
 
                     let normalizedTitle = title.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
                     guard seenTitles.insert(normalizedTitle).inserted else { return nil }

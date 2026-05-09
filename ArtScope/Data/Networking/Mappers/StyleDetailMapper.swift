@@ -19,8 +19,7 @@ enum StyleDetailMapper {
         let artists: [StyleArtistItem] = artistsDTO?.results.bindings.compactMap { binding -> StyleArtistItem? in
             guard
                 let id = binding.artist?.value,
-                let name = binding.artistLabel?.value,
-                !name.isEmpty,
+                let name = WikidataDisplaySanitizer.sanitizedTitle(binding.artistLabel?.value),
                 seenArtistIDs.insert(id).inserted
             else {
                 return nil
@@ -37,9 +36,8 @@ enum StyleDetailMapper {
         let works: [StyleWorkItem] = worksDTO?.results.bindings.compactMap { binding -> StyleWorkItem? in
             guard
                 let id = binding.work?.value,
-                let title = binding.workLabel?.value,
-                let artistName = binding.creatorLabel?.value,
-                !title.isEmpty,
+                let title = WikidataDisplaySanitizer.sanitizedTitle(binding.workLabel?.value),
+                let artistName = WikidataDisplaySanitizer.sanitizedTitle(binding.creatorLabel?.value),
                 seenWorkIDs.insert(id).inserted
             else {
                 return nil
