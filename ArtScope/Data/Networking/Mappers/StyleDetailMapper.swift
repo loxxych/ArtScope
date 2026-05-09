@@ -15,11 +15,13 @@ enum StyleDetailMapper {
         artistsDTO: WikiDataStyleArtistsDTO?,
         worksDTO: WikiDataStyleWorksDTO?
     ) -> StyleDetailContent {
+        var seenArtistIDs = Set<String>()
         let artists: [StyleArtistItem] = artistsDTO?.results.bindings.compactMap { binding -> StyleArtistItem? in
             guard
                 let id = binding.artist?.value,
                 let name = binding.artistLabel?.value,
-                !name.isEmpty
+                !name.isEmpty,
+                seenArtistIDs.insert(id).inserted
             else {
                 return nil
             }

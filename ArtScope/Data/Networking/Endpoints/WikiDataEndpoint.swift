@@ -12,7 +12,7 @@ enum WikidataEndpoint {
     static let wikipediaBaseURL = URL(string: "https://en.wikipedia.org/api/rest_v1/page/summary")!
     static let wikipediaAPIBaseURL = URL(string: "https://en.wikipedia.org/w/api.php")!
     private static let userAgent = "ArtScope/1.0 (educational iOS app)"
-    private static let requestTimeout: TimeInterval = 30
+    private static let requestTimeout: TimeInterval = 200
 
     static func artist(by name: String) -> URLRequest {
         var components = URLComponents(
@@ -45,7 +45,7 @@ enum WikidataEndpoint {
                   wdt:P106 ?occupation;
                   wdt:P18 ?image.
           
-          ?occupation wdt:P279* wd:Q1281618.
+          ?artist wdt:P106 wd:Q1028181.
 
           SERVICE wikibase:label {
             bd:serviceParam wikibase:language "en".
@@ -97,7 +97,7 @@ enum WikidataEndpoint {
                   wdt:P106 ?occupation;
                   wdt:P18 ?image.
 
-          ?occupation wdt:P279* wd:Q1281618.
+          ?artist wdt:P106 wd:Q1028181.
           \(exclusionFilter)
 
           SERVICE wikibase:label {
@@ -144,7 +144,7 @@ enum WikidataEndpoint {
                   rdfs:label ?requestedName;
                   wdt:P106 ?occupation.
 
-          ?occupation wdt:P279* wd:Q1281618.
+          ?artist wdt:P106 wd:Q1028181.
 
           OPTIONAL { ?artist wdt:P18 ?image. }
           OPTIONAL {
@@ -208,7 +208,7 @@ enum WikidataEndpoint {
                   wdt:P135 wd:\(entityID);
                   wdt:P18 ?image.
 
-          ?occupation wdt:P279* wd:Q1028181.
+          ?artist wdt:P106 wd:Q1028181.
 
           SERVICE wikibase:label {
             bd:serviceParam wikibase:language "en".

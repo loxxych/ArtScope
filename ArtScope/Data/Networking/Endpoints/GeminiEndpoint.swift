@@ -9,7 +9,7 @@ import Foundation
 
 enum GeminiEndpoint {
     private static let baseURL = URL(string: "https://generativelanguage.googleapis.com/v1beta/models")!
-    private static let requestTimeout: TimeInterval = 45
+    private static let requestTimeout: TimeInterval = 300
 
     static func generateContent(
         configuration: GeminiConfiguration,

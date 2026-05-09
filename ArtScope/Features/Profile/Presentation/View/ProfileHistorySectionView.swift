@@ -21,6 +21,8 @@ final class ProfileHistorySectionView: UIView {
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
     private let emptyLabel = UILabel()
+    private let leftFadeView = UIView()
+    private let leftFadeLayer = CAGradientLayer()
     private let rightFadeView = UIView()
     private let rightFadeLayer = CAGradientLayer()
     var onHeaderIconTapped: (() -> Void)?
@@ -69,6 +71,7 @@ final class ProfileHistorySectionView: UIView {
         addSubview(headerView)
         addSubview(scrollView)
         addSubview(emptyLabel)
+        addSubview(leftFadeView)
         addSubview(rightFadeView)
 
         headerView.onIconTap = { [weak self] in
@@ -105,6 +108,24 @@ final class ProfileHistorySectionView: UIView {
         emptyLabel.pinRight(to: trailingAnchor, Constants.horizontalInset)
         emptyLabel.pinBottom(to: bottomAnchor)
 
+        leftFadeView.isUserInteractionEnabled = false
+        leftFadeView.backgroundColor = .clear
+        leftFadeView.pinTop(to: scrollView.topAnchor)
+        leftFadeView.pinLeft(to: leadingAnchor)
+        leftFadeView.pinBottom(to: scrollView.bottomAnchor)
+        leftFadeView.setWidth(Constants.fadeWidth)
+
+        leftFadeLayer.colors = [
+            UIColor.artScopeGreen.cgColor,
+            UIColor.artScopeGreen.withAlphaComponent(0.72).cgColor,
+            UIColor.artScopeGreen.withAlphaComponent(0.18).cgColor,
+            UIColor.artScopeGreen.withAlphaComponent(0).cgColor
+        ]
+        leftFadeLayer.locations = [0.0, 0.22, 0.58, 1.0]
+        leftFadeLayer.startPoint = CGPoint(x: 0, y: 0.5)
+        leftFadeLayer.endPoint = CGPoint(x: 1, y: 0.5)
+        leftFadeView.layer.addSublayer(leftFadeLayer)
+
         rightFadeView.isUserInteractionEnabled = false
         rightFadeView.backgroundColor = .clear
         rightFadeView.pinTop(to: scrollView.topAnchor)
@@ -133,6 +154,7 @@ final class ProfileHistorySectionView: UIView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
+        leftFadeLayer.frame = leftFadeView.bounds
         rightFadeLayer.frame = rightFadeView.bounds
     }
 }
