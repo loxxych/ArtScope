@@ -17,6 +17,7 @@ struct CompletedQuizHistoryItem: Codable {
     let id: String
     let sourceQuizID: String?
     let title: String
+    let subtitle: String?
     let scorePercent: Int
     let imageURLString: String?
     let elapsedTimeText: String?

@@ -235,6 +235,7 @@ final class QuizPlayViewController: UIViewController {
                 id: "\(quiz.id)-\(UUID().uuidString)",
                 sourceQuizID: quiz.id,
                 title: historyTitle(for: quiz, completedAt: completedAt),
+                subtitle: historySubtitle(for: quiz),
                 scorePercent: percentage,
                 imageURLString: nil,
                 elapsedTimeText: elapsedTimeText,
@@ -261,6 +262,25 @@ final class QuizPlayViewController: UIViewController {
         }
 
         return quiz.title
+    }
+
+    private func historySubtitle(for quiz: Quiz) -> String {
+        if quiz.isDaily {
+            return "Daily quiz"
+        }
+
+        switch quiz.type.lowercased() {
+        case "artist":
+            return "Artist quiz"
+        case "style":
+            return "Style quiz"
+        case "movement":
+            return "Movement quiz"
+        case "era":
+            return "Era quiz"
+        default:
+            return "Quiz"
+        }
     }
 
     private func quizDateString(from date: Date) -> String {

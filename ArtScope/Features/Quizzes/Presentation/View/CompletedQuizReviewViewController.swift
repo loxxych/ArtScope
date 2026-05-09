@@ -56,8 +56,8 @@ final class CompletedQuizReviewViewController: UIViewController {
 
     private func makeRootView() -> QuizPlayScreen {
         QuizPlayScreen(
-            title: quiz.title,
-            subtitle: quiz.subtitle,
+            title: historyItem.title,
+            subtitle: historyItem.subtitle ?? fallbackSubtitle,
             quiz: quiz,
             mode: .review(
                 questionIndex: currentQuestionIndex,
@@ -118,5 +118,24 @@ final class CompletedQuizReviewViewController: UIViewController {
         let minutes = safeSeconds / 60
         let remainder = safeSeconds % 60
         return String(format: "%d:%02d", minutes, remainder)
+    }
+
+    private var fallbackSubtitle: String {
+        if quiz.isDaily {
+            return "Daily quiz"
+        }
+
+        switch quiz.type.lowercased() {
+        case "artist":
+            return "Artist quiz"
+        case "style":
+            return "Style quiz"
+        case "movement":
+            return "Movement quiz"
+        case "era":
+            return "Era quiz"
+        default:
+            return "Quiz"
+        }
     }
 }

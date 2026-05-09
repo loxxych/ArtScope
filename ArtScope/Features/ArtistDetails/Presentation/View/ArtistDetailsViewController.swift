@@ -377,6 +377,7 @@ final class ArtistDetailsViewController: UIViewController {
                 id: "\(quiz.id)-\(artist.id)",
                 sourceQuizID: quiz.id,
                 title: title,
+                subtitle: "Artist quiz",
                 scorePercent: scorePercent,
                 imageURLString: portraitImageURL?.absoluteString ?? artist.imageURL?.absoluteString,
                 elapsedTimeText: formatElapsedTime(seconds: quiz.estimatedTimeSeconds),
