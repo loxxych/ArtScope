@@ -2,7 +2,7 @@
 //  AllArtistsViewModel.swift
 //  ArtScope
 //
-//  Created by Codex on 05.05.2026.
+//  Created by loxxy on 05.05.2026.
 //
 
 import Combine

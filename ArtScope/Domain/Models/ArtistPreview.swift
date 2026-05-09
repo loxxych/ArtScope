@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct ArtistPreview {
+struct ArtistPreview: Codable {
     let id: String
     let name: String
     let summary: String

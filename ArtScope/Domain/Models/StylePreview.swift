@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct StylePreview {
+struct StylePreview: Codable {
     let id: String
     let name: String
     let imageURL: URL?

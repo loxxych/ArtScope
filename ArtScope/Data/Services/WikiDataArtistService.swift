@@ -26,23 +26,43 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
             .init(id: "style-symbolism", name: "Symbolism", wikipediaTitle: "Symbolism_(arts)")
         ]
     }
+
+    private enum CacheConstants {
+        static let featuredArtistsLifetime: TimeInterval = 60 * 60 * 12
+        static let stylesLifetime: TimeInterval = 60 * 60 * 24
+    }
     
     private let client: NetworkClient
+    private let catalogCacheStore: CatalogCacheStore
 
-    init(client: NetworkClient) {
+    init(
+        client: NetworkClient,
+        catalogCacheStore: CatalogCacheStore = UserDefaultsCatalogCacheStore()
+    ) {
         self.client = client
+        self.catalogCacheStore = catalogCacheStore
     }
 
     func fetchArtists(
             completion: @escaping (Result<[ArtistPreview], Error>) -> Void
         ) {
+            if let cachedArtists = catalogCacheStore.featuredArtists(), !cachedArtists.isEmpty {
+                completion(.success(cachedArtists))
+                return
+            }
+
             let request = WikidataEndpoint.featuredArtists(names: PopularArtistCatalog.names)
 
             client.request(request) { (result: Result<WikidataArtistsDTO, Error>) in
                 completion(result.map { dto in
                     let mapped = ArtistPreviewMapper.map(dto)
                     let sorted = self.sortArtists(mapped, byPreferredNames: PopularArtistCatalog.names)
-                    return self.deduplicatedFeaturedArtists(sorted, preferredNames: PopularArtistCatalog.names)
+                    let artists = self.deduplicatedFeaturedArtists(sorted, preferredNames: PopularArtistCatalog.names)
+                    self.catalogCacheStore.saveFeaturedArtists(
+                        artists,
+                        expirationDate: Date().addingTimeInterval(CacheConstants.featuredArtistsLifetime)
+                    )
+                    return artists
                 })
             }
         }
@@ -65,6 +85,11 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
     func fetchStyles(
         completion: @escaping (Result<[StylePreview], Error>) -> Void
     ) {
+        if let cachedStyles = catalogCacheStore.styles(), !cachedStyles.isEmpty {
+            completion(.success(cachedStyles))
+            return
+        }
+
         let group = DispatchGroup()
         let lock = NSLock()
         var collected: [StylePreview] = []
@@ -105,6 +130,10 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
                 let ordered = StyleConstants.seeds.compactMap { seed in
                     collected.first(where: { $0.id == seed.id })
                 }
+                self.catalogCacheStore.saveStyles(
+                    ordered,
+                    expirationDate: Date().addingTimeInterval(CacheConstants.stylesLifetime)
+                )
                 completion(.success(ordered))
             }
         }
