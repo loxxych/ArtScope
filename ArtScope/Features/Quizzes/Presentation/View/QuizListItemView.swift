@@ -44,6 +44,15 @@ final class QuizListItemView: UIControl {
 
         let textStack = UIStackView(arrangedSubviews: [titleRowView, descriptionLabel])
         let containerStack = UIStackView(arrangedSubviews: [textStack, iconView])
+
+        textStack.isUserInteractionEnabled = false
+        containerStack.isUserInteractionEnabled = false
+        titleRowView.isUserInteractionEnabled = false
+        titleContentStack.isUserInteractionEnabled = false
+        titleLabel.isUserInteractionEnabled = false
+        descriptionLabel.isUserInteractionEnabled = false
+        iconView.isUserInteractionEnabled = false
+        checkmarkView.isUserInteractionEnabled = false
         
         addSubview(containerStack)
 
@@ -102,5 +111,9 @@ final class QuizListItemView: UIControl {
         didSet {
             alpha = isHighlighted ? 0.65 : 1
         }
+    }
+
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        bounds.contains(point)
     }
 }
