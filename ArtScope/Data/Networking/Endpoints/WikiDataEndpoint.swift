@@ -299,7 +299,7 @@ enum WikidataEndpoint {
         return makeRequest(components: components, query: query)
     }
 
-    static func artistRelatedStyles(entityID: String, limit: Int) -> URLRequest {
+    static func artistDirectRelatedStyles(entityID: String, limit: Int) -> URLRequest {
         let components = URLComponents(
             url: baseURL.appendingPathComponent("sparql"),
             resolvingAgainstBaseURL: false
@@ -313,14 +313,7 @@ enum WikidataEndpoint {
 
         SELECT DISTINCT ?movement ?movementLabel ?image WHERE {
           BIND(wd:\(entityID) AS ?artist)
-          {
-            ?artist wdt:P135 ?movement.
-          }
-          UNION
-          {
-            ?work wdt:P170 ?artist;
-                  wdt:P135 ?movement.
-          }
+          ?artist wdt:P135 ?movement.
 
           OPTIONAL { ?movement wdt:P18 ?image. }
 
@@ -328,6 +321,37 @@ enum WikidataEndpoint {
             bd:serviceParam wikibase:language "en".
           }
         }
+        LIMIT \(limit)
+        """
+
+        return makeRequest(components: components, query: query)
+    }
+
+    static func artistWorkRelatedStyles(entityID: String, limit: Int) -> URLRequest {
+        let components = URLComponents(
+            url: baseURL.appendingPathComponent("sparql"),
+            resolvingAgainstBaseURL: false
+        )!
+
+        let query = """
+        PREFIX bd: <http://www.bigdata.com/rdf#>
+        PREFIX wikibase: <http://wikiba.se/ontology#>
+        PREFIX wd: <http://www.wikidata.org/entity/>
+        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+
+        SELECT ?movement ?movementLabel ?image (COUNT(DISTINCT ?work) AS ?workCount) WHERE {
+          BIND(wd:\(entityID) AS ?artist)
+          ?work wdt:P170 ?artist;
+                wdt:P135 ?movement.
+
+          OPTIONAL { ?movement wdt:P18 ?image. }
+
+          SERVICE wikibase:label {
+            bd:serviceParam wikibase:language "en".
+          }
+        }
+        GROUP BY ?movement ?movementLabel ?image
+        ORDER BY DESC(?workCount) ?movementLabel
         LIMIT \(limit)
         """
 

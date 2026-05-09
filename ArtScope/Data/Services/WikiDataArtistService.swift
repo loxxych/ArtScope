@@ -533,8 +533,30 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
         entityID: String,
         completion: @escaping ([ArtistRelatedStyle]) -> Void
     ) {
-        let request = WikidataEndpoint.artistRelatedStyles(entityID: entityID, limit: 24)
+        fetchArtistRelatedStyles(
+            request: WikidataEndpoint.artistDirectRelatedStyles(entityID: entityID, limit: 24)
+        ) { [weak self] directStyles in
+            guard let self else {
+                completion([])
+                return
+            }
 
+            if !directStyles.isEmpty {
+                completion(Array(directStyles.prefix(5)))
+                return
+            }
+
+            self.fetchArtistRelatedStyles(
+                request: WikidataEndpoint.artistWorkRelatedStyles(entityID: entityID, limit: 24),
+                completion: completion
+            )
+        }
+    }
+
+    private func fetchArtistRelatedStyles(
+        request: URLRequest,
+        completion: @escaping ([ArtistRelatedStyle]) -> Void
+    ) {
         client.request(request) { (result: Result<WikiDataArtistRelatedStylesDTO, Error>) in
             switch result {
             case let .success(dto):
