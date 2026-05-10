@@ -78,7 +78,12 @@ final class WorkDetailsViewController: UIViewController {
     private var currentInfoText: String?
     
     // MARK: - Lifecycle
-    init(work: ArtistWork, artistName: String, artistImageURL: URL?) {
+    init(
+        work: ArtistWork,
+        artistName: String,
+        artistImageURL: URL?,
+        service: WorkDetailsService = AppServicesFactory.makeWorkDetailsService()
+    ) {
         self.work = work
         self.artistName = artistName
         self.artistImageURL = artistImageURL
@@ -86,7 +91,7 @@ final class WorkDetailsViewController: UIViewController {
         self.viewModel = WorkDetailsViewModel(
             work: work,
             artistName: artistName,
-            service: WikiDataArtistService(client: URLSessionNetworkClient())
+            service: service
         )
         super.init(nibName: nil, bundle: nil)
     }

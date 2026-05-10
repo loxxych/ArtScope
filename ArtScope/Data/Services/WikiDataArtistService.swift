@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDetailsService, StyleDetailsService {
+final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDetailsService, StyleDetailsService, ContentPreloadService {
     private struct StyleSeed {
         let id: String
         let name: String
@@ -30,17 +30,30 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
     private enum CacheConstants {
         static let featuredArtistsLifetime: TimeInterval = 60 * 60 * 12
         static let stylesLifetime: TimeInterval = 60 * 60 * 24
+        static let detailsLifetime: TimeInterval = 60 * 60 * 24
     }
     
     private let client: NetworkClient
     private let catalogCacheStore: CatalogCacheStore
+    private let detailsCacheStore: DetailsCacheStore
+    private let cacheLock = NSLock()
+    private var inMemoryArtistDetails: [String: ArtistDetailsContent] = [:]
+    private var inMemoryArtistWorks: [String: [ArtistWork]] = [:]
+    private var inMemoryStyleDetails: [String: StyleDetailContent] = [:]
+    private var inMemoryWorkDetails: [String: WorkDetailsContent] = [:]
+    private var inflightArtistDetails: [String: [(Result<ArtistDetailsContent, Error>) -> Void]] = [:]
+    private var inflightArtistWorks: [String: [(Result<[ArtistWork], Error>) -> Void]] = [:]
+    private var inflightStyleDetails: [String: [(Result<StyleDetailContent, Error>) -> Void]] = [:]
+    private var inflightWorkDetails: [String: [(Result<WorkDetailsContent, Error>) -> Void]] = [:]
 
     init(
         client: NetworkClient,
-        catalogCacheStore: CatalogCacheStore = UserDefaultsCatalogCacheStore()
+        catalogCacheStore: CatalogCacheStore = UserDefaultsCatalogCacheStore(),
+        detailsCacheStore: DetailsCacheStore = UserDefaultsDetailsCacheStore()
     ) {
         self.client = client
         self.catalogCacheStore = catalogCacheStore
+        self.detailsCacheStore = detailsCacheStore
     }
 
     func fetchArtists(
@@ -143,6 +156,15 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
         style: StylePreview,
         completion: @escaping (Result<StyleDetailContent, Error>) -> Void
     ) {
+        if let cached = cachedStyleDetails(for: style.id) {
+            completion(.success(cached))
+            return
+        }
+
+        if appendInflightStyleDetailsCompletion(completion, for: style.id) {
+            return
+        }
+
         let seed = styleSeed(for: style)
         let wikipediaTitle = seed?.wikipediaTitle ?? style.name
 
@@ -188,17 +210,17 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
         group.notify(queue: .global()) {
             guard let entityID else {
                 if let summary {
-                    completion(.success(
-                        StyleDetailMapper.map(
+                    let content = StyleDetailMapper.map(
                             style: style,
                             description: summary.extract,
                             fallbackImageURL: URL(string: summary.thumbnail?.source ?? "") ?? style.imageURL,
                             artistsDTO: nil,
                             worksDTO: nil
                         )
-                    ))
+                    self.storeStyleDetails(content, for: style.id)
+                    self.resolveInflightStyleDetails(.success(content), for: style.id)
                 } else {
-                    completion(.failure(entityError ?? summaryError ?? NetworkError.noData))
+                    self.resolveInflightStyleDetails(.failure(entityError ?? summaryError ?? NetworkError.noData), for: style.id)
                 }
                 return
             }
@@ -218,6 +240,15 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
         preview: ArtistPreview,
         completion: @escaping (Result<ArtistDetailsContent, Error>) -> Void
     ) {
+        if let cached = cachedArtistDetails(for: entityID) {
+            completion(.success(cached))
+            return
+        }
+
+        if appendInflightArtistDetailsCompletion(completion, for: entityID) {
+            return
+        }
+
         let request = WikidataEndpoint.artistDetails(entityID: entityID)
         
         client.request(request) { (result: Result<WikiDataArtistDetailsDTO, Error>) in
@@ -252,17 +283,17 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
                 }
 
                 group.notify(queue: .global()) {
-                    completion(.success(
-                        ArtistDetailsMapper.map(
+                    let content = ArtistDetailsMapper.map(
                             details: dto,
                             preview: preview,
                             wikipediaSummary: summary,
                             relatedStyles: relatedStyles
                         )
-                    ))
+                    self.storeArtistDetails(content, for: entityID)
+                    self.resolveInflightArtistDetails(.success(content), for: entityID)
                 }
             case let .failure(error):
-                completion(.failure(error))
+                self.resolveInflightArtistDetails(.failure(error), for: entityID)
             }
         }
     }
@@ -271,10 +302,26 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
         entityID: String,
         completion: @escaping (Result<[ArtistWork], Error>) -> Void
     ) {
+        if let cached = cachedArtistWorks(for: entityID) {
+            completion(.success(cached))
+            return
+        }
+
+        if appendInflightArtistWorksCompletion(completion, for: entityID) {
+            return
+        }
+
         let request = WikidataEndpoint.artistWorks(entityID: entityID, limit: 8)
         
         client.request(request) { (result: Result<WikiDataArtistWorksDTO, Error>) in
-            completion(result.map { ArtistDetailsMapper.map(works: $0) })
+            switch result {
+            case let .success(dto):
+                let works = ArtistDetailsMapper.map(works: dto)
+                self.storeArtistWorks(works, for: entityID)
+                self.resolveInflightArtistWorks(.success(works), for: entityID)
+            case let .failure(error):
+                self.resolveInflightArtistWorks(.failure(error), for: entityID)
+            }
         }
     }
     
@@ -284,6 +331,15 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
         artistName: String,
         completion: @escaping (Result<WorkDetailsContent, Error>) -> Void
     ) {
+        if let cached = cachedWorkDetails(for: workID) {
+            completion(.success(cached))
+            return
+        }
+
+        if appendInflightWorkDetailsCompletion(completion, for: workID) {
+            return
+        }
+
         let request = WikidataEndpoint.workDetails(workID: workID)
         
         client.request(request) { (result: Result<WikiDataWorkDetailsDTO, Error>) in
@@ -296,17 +352,17 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
                     work.title
                 ]
                 self.fetchWikipediaExtract(from: candidateTitles) { summary in
-                    completion(.success(
-                        WorkDetailsMapper.map(
+                    let content = WorkDetailsMapper.map(
                             dto: dto,
                             work: work,
                             artistName: artistName,
                             wikipediaSummary: summary
                         )
-                    ))
+                    self.storeWorkDetails(content, for: workID)
+                    self.resolveInflightWorkDetails(.success(content), for: workID)
                 }
             case let .failure(error):
-                completion(.failure(error))
+                self.resolveInflightWorkDetails(.failure(error), for: workID)
             }
         }
     }
@@ -442,9 +498,10 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
             )
 
             if summary == nil, artistsDTO == nil, worksDTO == nil, let capturedError {
-                completion(.failure(summaryError ?? capturedError))
+                self.resolveInflightStyleDetails(.failure(summaryError ?? capturedError), for: style.id)
             } else {
-                completion(.success(content))
+                self.storeStyleDetails(content, for: style.id)
+                self.resolveInflightStyleDetails(.success(content), for: style.id)
             }
         }
     }
@@ -616,5 +673,199 @@ final class WikiDataArtistService: ArtistService, ArtistDetailsService, WorkDeta
                 completion([])
             }
         }
+    }
+
+    func preloadArtistContent(_ artists: [ArtistPreview], limit: Int) {
+        var seenIDs = Set<String>()
+        let preloadedArtists = artists.filter { seenIDs.insert($0.id).inserted }.prefix(limit)
+
+        preloadedArtists.forEach { artist in
+            guard let entityID = URL(string: artist.id)?.lastPathComponent else { return }
+            fetchArtistDetails(entityID: entityID, preview: artist) { _ in }
+            fetchArtistWorks(entityID: entityID) { _ in }
+        }
+    }
+
+    func preloadStyleContent(_ styles: [StylePreview], limit: Int) {
+        var seenIDs = Set<String>()
+        styles.filter { seenIDs.insert($0.id).inserted }.prefix(limit).forEach { style in
+            fetchStyleDetails(style: style) { _ in }
+        }
+    }
+
+    private func cacheExpirationDate() -> Date {
+        Date().addingTimeInterval(CacheConstants.detailsLifetime)
+    }
+
+    private func cachedArtistDetails(for entityID: String) -> ArtistDetailsContent? {
+        cacheLock.lock()
+        if let cached = inMemoryArtistDetails[entityID] {
+            cacheLock.unlock()
+            return cached
+        }
+        cacheLock.unlock()
+
+        guard let cached = detailsCacheStore.artistDetails(for: entityID) else { return nil }
+        cacheLock.lock()
+        inMemoryArtistDetails[entityID] = cached
+        cacheLock.unlock()
+        return cached
+    }
+
+    private func storeArtistDetails(_ details: ArtistDetailsContent, for entityID: String) {
+        cacheLock.lock()
+        inMemoryArtistDetails[entityID] = details
+        cacheLock.unlock()
+        detailsCacheStore.saveArtistDetails(details, for: entityID, expirationDate: cacheExpirationDate())
+    }
+
+    private func cachedArtistWorks(for entityID: String) -> [ArtistWork]? {
+        cacheLock.lock()
+        if let cached = inMemoryArtistWorks[entityID] {
+            cacheLock.unlock()
+            return cached
+        }
+        cacheLock.unlock()
+
+        guard let cached = detailsCacheStore.artistWorks(for: entityID) else { return nil }
+        cacheLock.lock()
+        inMemoryArtistWorks[entityID] = cached
+        cacheLock.unlock()
+        return cached
+    }
+
+    private func storeArtistWorks(_ works: [ArtistWork], for entityID: String) {
+        cacheLock.lock()
+        inMemoryArtistWorks[entityID] = works
+        cacheLock.unlock()
+        detailsCacheStore.saveArtistWorks(works, for: entityID, expirationDate: cacheExpirationDate())
+    }
+
+    private func cachedStyleDetails(for styleID: String) -> StyleDetailContent? {
+        cacheLock.lock()
+        if let cached = inMemoryStyleDetails[styleID] {
+            cacheLock.unlock()
+            return cached
+        }
+        cacheLock.unlock()
+
+        guard let cached = detailsCacheStore.styleDetails(for: styleID) else { return nil }
+        cacheLock.lock()
+        inMemoryStyleDetails[styleID] = cached
+        cacheLock.unlock()
+        return cached
+    }
+
+    private func storeStyleDetails(_ details: StyleDetailContent, for styleID: String) {
+        cacheLock.lock()
+        inMemoryStyleDetails[styleID] = details
+        cacheLock.unlock()
+        detailsCacheStore.saveStyleDetails(details, for: styleID, expirationDate: cacheExpirationDate())
+    }
+
+    private func cachedWorkDetails(for workID: String) -> WorkDetailsContent? {
+        cacheLock.lock()
+        if let cached = inMemoryWorkDetails[workID] {
+            cacheLock.unlock()
+            return cached
+        }
+        cacheLock.unlock()
+
+        guard let cached = detailsCacheStore.workDetails(for: workID) else { return nil }
+        cacheLock.lock()
+        inMemoryWorkDetails[workID] = cached
+        cacheLock.unlock()
+        return cached
+    }
+
+    private func storeWorkDetails(_ details: WorkDetailsContent, for workID: String) {
+        cacheLock.lock()
+        inMemoryWorkDetails[workID] = details
+        cacheLock.unlock()
+        detailsCacheStore.saveWorkDetails(details, for: workID, expirationDate: cacheExpirationDate())
+    }
+
+    private func appendInflightArtistDetailsCompletion(
+        _ completion: @escaping (Result<ArtistDetailsContent, Error>) -> Void,
+        for entityID: String
+    ) -> Bool {
+        cacheLock.lock()
+        defer { cacheLock.unlock() }
+        if inflightArtistDetails[entityID] != nil {
+            inflightArtistDetails[entityID, default: []].append(completion)
+            return true
+        }
+        inflightArtistDetails[entityID] = [completion]
+        return false
+    }
+
+    private func resolveInflightArtistDetails(_ result: Result<ArtistDetailsContent, Error>, for entityID: String) {
+        cacheLock.lock()
+        let completions = inflightArtistDetails.removeValue(forKey: entityID) ?? []
+        cacheLock.unlock()
+        completions.forEach { $0(result) }
+    }
+
+    private func appendInflightArtistWorksCompletion(
+        _ completion: @escaping (Result<[ArtistWork], Error>) -> Void,
+        for entityID: String
+    ) -> Bool {
+        cacheLock.lock()
+        defer { cacheLock.unlock() }
+        if inflightArtistWorks[entityID] != nil {
+            inflightArtistWorks[entityID, default: []].append(completion)
+            return true
+        }
+        inflightArtistWorks[entityID] = [completion]
+        return false
+    }
+
+    private func resolveInflightArtistWorks(_ result: Result<[ArtistWork], Error>, for entityID: String) {
+        cacheLock.lock()
+        let completions = inflightArtistWorks.removeValue(forKey: entityID) ?? []
+        cacheLock.unlock()
+        completions.forEach { $0(result) }
+    }
+
+    private func appendInflightStyleDetailsCompletion(
+        _ completion: @escaping (Result<StyleDetailContent, Error>) -> Void,
+        for styleID: String
+    ) -> Bool {
+        cacheLock.lock()
+        defer { cacheLock.unlock() }
+        if inflightStyleDetails[styleID] != nil {
+            inflightStyleDetails[styleID, default: []].append(completion)
+            return true
+        }
+        inflightStyleDetails[styleID] = [completion]
+        return false
+    }
+
+    private func resolveInflightStyleDetails(_ result: Result<StyleDetailContent, Error>, for styleID: String) {
+        cacheLock.lock()
+        let completions = inflightStyleDetails.removeValue(forKey: styleID) ?? []
+        cacheLock.unlock()
+        completions.forEach { $0(result) }
+    }
+
+    private func appendInflightWorkDetailsCompletion(
+        _ completion: @escaping (Result<WorkDetailsContent, Error>) -> Void,
+        for workID: String
+    ) -> Bool {
+        cacheLock.lock()
+        defer { cacheLock.unlock() }
+        if inflightWorkDetails[workID] != nil {
+            inflightWorkDetails[workID, default: []].append(completion)
+            return true
+        }
+        inflightWorkDetails[workID] = [completion]
+        return false
+    }
+
+    private func resolveInflightWorkDetails(_ result: Result<WorkDetailsContent, Error>, for workID: String) {
+        cacheLock.lock()
+        let completions = inflightWorkDetails.removeValue(forKey: workID) ?? []
+        cacheLock.unlock()
+        completions.forEach { $0(result) }
     }
 }

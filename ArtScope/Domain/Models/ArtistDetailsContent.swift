@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ArtistDetailsContent {
+struct ArtistDetailsContent: Codable {
     let displayName: String
     let realName: String
     let biography: String
@@ -16,19 +16,19 @@ struct ArtistDetailsContent {
     let relatedStyles: [ArtistRelatedStyle]
 }
 
-struct ArtistRelatedStyle {
+struct ArtistRelatedStyle: Codable {
     let id: String
     let title: String
     let imageURL: URL?
 }
 
-struct ArtistWork {
+struct ArtistWork: Codable {
     let id: String
     let title: String
     let imageURL: URL?
 }
 
-struct WorkDetailsContent {
+struct WorkDetailsContent: Codable {
     let title: String
     let metadataLine: String
     let artistName: String
@@ -38,7 +38,7 @@ struct WorkDetailsContent {
     let relatedItems: [WorkRelatedItem]
 }
 
-struct WorkRelatedItem {
+struct WorkRelatedItem: Codable {
     let title: String
     let subtitle: String
 }

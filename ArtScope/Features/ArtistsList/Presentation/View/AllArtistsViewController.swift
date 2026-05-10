@@ -17,7 +17,10 @@ final class AllArtistsViewController: UIViewController {
                 self?.navigationController?.popViewController(animated: true)
             },
             onArtistSelected: { [weak self] artist in
-                let vc = ArtistDetailsViewController(artist: artist)
+                let vc = ArtistDetailsViewController(
+                    artist: artist,
+                    service: AppServicesFactory.makeArtistDetailsService()
+                )
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         )
@@ -25,7 +28,7 @@ final class AllArtistsViewController: UIViewController {
 
     init(
         artists: [ArtistPreview],
-        artistService: ArtistService = WikiDataArtistService(client: URLSessionNetworkClient())
+        artistService: ArtistService = AppServicesFactory.makeArtistService()
     ) {
         self.viewModel = AllArtistsViewModel(artistService: artistService)
         self.viewModel.configureInitialArtists(artists)

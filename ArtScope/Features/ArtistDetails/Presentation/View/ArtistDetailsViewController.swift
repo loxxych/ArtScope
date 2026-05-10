@@ -67,11 +67,14 @@ final class ArtistDetailsViewController: UIViewController {
     private var didResolveArtistWorks = false
     private var didRequestArtistQuiz = false
     
-    init(artist: ArtistPreview) {
+    init(
+        artist: ArtistPreview,
+        service: ArtistDetailsService = AppServicesFactory.makeArtistDetailsService()
+    ) {
         self.artist = artist
         self.viewModel = ArtistDetailsViewModel(
             preview: artist,
-            service: WikiDataArtistService(client: URLSessionNetworkClient())
+            service: service
         )
         self.viewedCollectionHistoryStore = ProfileHistoryFactory.makeViewedCollectionHistoryStore()
         self.completedQuizHistoryStore = ProfileHistoryFactory.makeCompletedQuizHistoryStore()
@@ -419,7 +422,8 @@ final class ArtistDetailsViewController: UIViewController {
         let vc = WorkDetailsViewController(
             work: work,
             artistName: artist.name,
-            artistImageURL: portraitImageURL
+            artistImageURL: portraitImageURL,
+            service: AppServicesFactory.makeWorkDetailsService()
         )
         navigationController?.pushViewController(vc, animated: true)
     }

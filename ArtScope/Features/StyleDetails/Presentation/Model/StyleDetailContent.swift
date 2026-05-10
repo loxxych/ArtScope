@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct StyleDetailContent: Identifiable {
+struct StyleDetailContent: Identifiable, Codable {
     let id: String
     let title: String
     let description: String
@@ -16,13 +16,13 @@ struct StyleDetailContent: Identifiable {
     let works: [StyleWorkItem]
 }
 
-struct StyleArtistItem: Identifiable {
+struct StyleArtistItem: Identifiable, Codable {
     let id: String
     let name: String
     let imageURL: URL?
 }
 
-struct StyleWorkItem: Identifiable {
+struct StyleWorkItem: Identifiable, Codable {
     let id: String
     let title: String
     let imageURL: URL?

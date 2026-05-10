@@ -19,7 +19,7 @@ final class StyleDetailViewController: UIViewController {
 
     init(
         style: StylePreview,
-        service: StyleDetailsService = WikiDataArtistService(client: URLSessionNetworkClient())
+        service: StyleDetailsService = AppServicesFactory.makeStyleDetailsService()
     ) {
         self.style = style
         self.viewModel = StyleDetailViewModel(service: service)
@@ -159,7 +159,10 @@ final class StyleDetailViewController: UIViewController {
             summary: "",
             imageURL: artist.imageURL
         )
-        let vc = ArtistDetailsViewController(artist: preview)
+        let vc = ArtistDetailsViewController(
+            artist: preview,
+            service: AppServicesFactory.makeArtistDetailsService()
+        )
         navigationController?.pushViewController(vc, animated: true)
     }
 
@@ -172,7 +175,8 @@ final class StyleDetailViewController: UIViewController {
         let vc = WorkDetailsViewController(
             work: artistWork,
             artistName: work.artistName,
-            artistImageURL: work.artistImageURL
+            artistImageURL: work.artistImageURL,
+            service: AppServicesFactory.makeWorkDetailsService()
         )
         navigationController?.pushViewController(vc, animated: true)
     }

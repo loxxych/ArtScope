@@ -9,7 +9,7 @@ import SwiftUI
 import UIKit
 
 final class SearchViewController: UIViewController {
-    private let artistService: ArtistService = WikiDataArtistService(client: URLSessionNetworkClient())
+    private let artistService: ArtistService = AppServicesFactory.makeArtistService()
     private lazy var viewModel = SearchViewModel(
         artistService: artistService
     )
@@ -69,12 +69,18 @@ final class SearchViewController: UIViewController {
     }
 
     private func showArtistDetails(for artist: ArtistPreview) {
-        let vc = ArtistDetailsViewController(artist: artist)
+        let vc = ArtistDetailsViewController(
+            artist: artist,
+            service: AppServicesFactory.makeArtistDetailsService()
+        )
         navigationController?.pushViewController(vc, animated: true)
     }
 
     private func showStyleDetails(for style: StylePreview) {
-        let vc = StyleDetailViewController(style: style)
+        let vc = StyleDetailViewController(
+            style: style,
+            service: AppServicesFactory.makeStyleDetailsService()
+        )
         navigationController?.pushViewController(vc, animated: true)
     }
 

@@ -24,7 +24,8 @@ final class MainPageViewController: UIViewController {
     }
     
     // MARK: - Fields
-    private let artistService: ArtistService = WikiDataArtistService(client: URLSessionNetworkClient() as NetworkClient)
+    private let artistService: ArtistService = AppServicesFactory.makeArtistService()
+    private let contentPreloadService: ContentPreloadService = AppServicesFactory.makeContentPreloadService()
     private lazy var viewModel = MainPageViewModel(
         artistService: artistService,
         artistOfTheDayService: ArtistOfTheDayService()
@@ -105,11 +106,13 @@ final class MainPageViewController: UIViewController {
             
             self.artistOfTheDayView.configure(with: featured)
             self.artistsSectionView.update(with: artists)
+            self.contentPreloadService.preloadArtistContent([featured] + artists, limit: 5)
         }
         
         viewModel.onStylesLoaded = { [weak self] styles in
             self?.styles = styles
             self?.stylesSectionView.update(with: styles)
+            self?.contentPreloadService.preloadStyleContent(styles, limit: 4)
         }
     }
 
@@ -178,12 +181,18 @@ final class MainPageViewController: UIViewController {
     }
     
     private func showArtistDetails(for artist: ArtistPreview) {
-        let vc = ArtistDetailsViewController(artist: artist)
+        let vc = ArtistDetailsViewController(
+            artist: artist,
+            service: AppServicesFactory.makeArtistDetailsService()
+        )
         navigationController?.pushViewController(vc, animated: true)
     }
 
     private func showStyleDetails(for style: StylePreview) {
-        let vc = StyleDetailViewController(style: style)
+        let vc = StyleDetailViewController(
+            style: style,
+            service: AppServicesFactory.makeStyleDetailsService()
+        )
         navigationController?.pushViewController(vc, animated: true)
     }
 
